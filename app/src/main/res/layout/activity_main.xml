@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.esc.test.apps.activities.BoardActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="O's and X's"
+        android:textSize="20sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="30dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/quit"
+        android:layout_marginEnd="15dp"
+        android:text="@string/quit"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/title"
+        app:layout_constraintBottom_toBottomOf="@id/title"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/layers"
+        android:id="@+id/explanation_image"
+        app:layout_constraintWidth_percent="0.5"
+        app:layout_constraintDimensionRatio="2:1"
+        app:layout_constraintTop_toBottomOf="@id/title"
+        app:layout_constraintBottom_toTopOf="@id/new_game"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/check_move"
+        android:text=""
+        app:layout_constraintTop_toBottomOf="@id/explanation_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/new_game"/>
+
+    <Button
+        android:id="@+id/new_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_game"
+        android:onClick="onClick"
+        app:layout_constraintBottom_toTopOf="@id/front_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/new_set"
+        app:layout_constraintHorizontal_chainStyle="packed"/>
+
+    <Button
+        android:id="@+id/new_set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_set"
+        android:onClick="onClick"
+        app:layout_constraintBottom_toTopOf="@id/front_text"
+        app:layout_constraintStart_toEndOf="@id/new_game"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/back_middle_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Back middle"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/back_middle"
+        app:layout_constraintStart_toStartOf="@id/back_middle"
+        app:layout_constraintEnd_toEndOf="@id/back_middle"/>
+    <GridView
+        android:id="@+id/back_middle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_background"
+        android:numColumns="4"
+        app:layout_constraintEnd_toStartOf="@id/centre_space"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_guideline"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintDimensionRatio="1:1"/>
+
+    <TextView
+        android:id="@+id/back_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/back"
+        app:layout_constraintStart_toStartOf="@id/back"
+        app:layout_constraintEnd_toEndOf="@id/back"/>
+    <GridView
+        android:id="@+id/back"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_background"
+        android:numColumns="4"
+        app:layout_constraintStart_toEndOf="@id/centre_space"
+        app:layout_constraintBottom_toBottomOf="@id/bottom_guideline"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintDimensionRatio="1:1"/>
+
+    <View
+        android:id="@+id/centre_space"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.05"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/back_middle"/>
+
+    <TextView
+        android:id="@+id/front_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Front"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/front"
+        app:layout_constraintStart_toStartOf="@id/front"
+        app:layout_constraintEnd_toEndOf="@id/front"/>
+    <GridView
+        android:id="@+id/front"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_background"
+        android:numColumns="4"
+        app:layout_constraintBottom_toTopOf="@id/centre_space"
+        app:layout_constraintEnd_toStartOf="@id/centre_space"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintDimensionRatio="1:1"/>
+
+    <TextView
+        android:id="@+id/front_middle_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Front middle"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/front_middle"
+        app:layout_constraintStart_toStartOf="@id/front_middle"
+        app:layout_constraintEnd_toEndOf="@id/front_middle"/>
+    <GridView
+        android:id="@+id/front_middle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_background"
+        android:numColumns="4"
+        app:layout_constraintBottom_toTopOf="@id/centre_space"
+        app:layout_constraintStart_toEndOf="@id/centre_space"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintDimensionRatio="1:1"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.9"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/x_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="X"
+        android:onClick="onClick"
+        android:background="@color/colorAccent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/o_button"
+        app:layout_constraintTop_toTopOf="@id/bottom_guideline"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/o_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="O"
+        android:onClick="onClick"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/x_button"
+        app:layout_constraintTop_toTopOf="@id/bottom_guideline"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <TextView
+        android:id="@+id/x_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottom_guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/x_button"/>
+
+    <TextView
+        android:id="@+id/o_score"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottom_guideline"
+        app:layout_constraintStart_toEndOf="@id/o_button"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,38 @@
+package com.esc.test.apps.gamestuff;
+
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
+
+import java.util.List;
+
+import com.esc.test.apps.entities.Move;
+
+@Dao
+public interface GameMovesDao {
+
+    @Insert
+    void insert(Move move);
+
+    @Insert
+    void insertMoves(Move...moves);
+
+    @Query("DELETE FROM game_moves_table")
+    void deleteGame();
+
+    @Query("SELECT position FROM game_moves_table WHERE position = :position")
+    LiveData<String> getPosition(String position);
+
+    @Query("SELECT piece_played FROM game_moves_table WHERE position = :position")
+    String getPiece_played(String position);
+
+    @Query("SELECT * FROM game_moves_table ORDER BY position ASC")
+    LiveData<List<Move>> getAllMoves();
+
+    @Query("SELECT * FROM game_moves_table ORDER BY id DESC LIMIT 1")
+    LiveData<Move> getMove();
+
+    @Query("SELECT piece_played FROM game_moves_table WHERE id = 1")
+    LiveData<String> getFirstMove();
+}

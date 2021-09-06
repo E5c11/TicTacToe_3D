@@ -1,0 +1,74 @@
+<resources>
+    <string name="app_name">TicTacToe 3D</string>
+    <string name="open_drawer">Open</string>
+    <string name="close_drawer">Close</string>
+
+    <string name="phone_asterisk">Phone number </string>
+    <string name="email_asterisk">Email address </string>
+    <string name="display_name_asterisk">Display name </string>
+    <string name="password_asterisk">Password </string>
+    <string name="passcon_asterisk">Confirm Password </string>
+    <string name="friend_search_asterisk">Search for a friend</string>
+
+    <string name="display_name">display_name</string>
+    <string name="users">users</string>
+    <string name="profile_picture">profile_picture</string>
+    <string name="status">status</string>
+    <string name="token">token</string>
+    <string name="friends">friends</string>
+    <string name="friend_invites">friend_invites</string>
+    <string name="invite_time">invite_time</string>
+    <string name="friend_requests">friend_requests</string>
+    <string name="request_time">request_time</string>
+    <string name="online_users">online_users</string>
+    <string name="game_invite">game_invite</string>
+    <string name="game_request">game_request</string>
+    <string name="active_game">active_game</string>
+    <string name="games">games</string>
+
+    <string name="play">play</string>
+    <string name="accept">accept</string>
+    <string name="invite">invite</string>
+    <string name="cancel">cancel</string>
+    <string name="resume">resume</string>
+    <string name="start">start</string>
+    <string name="quit">quit</string>
+    <string name="new_set">new set</string>
+    <string name="new_game">new game</string>
+
+    <string name="moves">moves</string>
+    <string name="cross">cross</string>
+    <string name="circle">circle</string>
+    <string name="winner">winner</string>
+
+    <string name="game_active">game_active</string>
+    <string name="coordinates">coordinates</string>
+    <string name="position">position</string>
+    <string name="piece_played">piece_played</string>
+    <string name="starter">starter</string>
+    <string name="me">me</string>
+    <string name="opponent">opponent</string>
+    <string name="in_progress">in progress</string>
+    <string name="game_won">\ has won the game</string>
+
+    <string name="your_turn">Your turn</string>
+    <string name="their_turn">Their turn</string>
+
+    <string name="register_welcome">Welcome to Tic Tac Toe \n in 3D</string>
+    <string name="register_message">Please enter an Email and Password to register your an account to play with friends</string>
+    <string name="login_message">Please enter your Email and Password to login in</string>
+    <string name="login_instead">Login if you already have an account</string>
+
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="online">online</string>
+    <string name="offline">offline</string>
+
+    <string-array name="menu">
+        <item>Home</item>
+        <item>Game</item>
+        <item>Login</item>
+        <item>Profile</item>
+        <item>Find friends</item>
+    </string-array>
+</resources>

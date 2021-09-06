@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#A4A4A4</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#FF0000</color>
+    <color name="colorSignIn">#0000FF</color>
+    <color name="colorPrimaryGrey">#424242</color>
+    <color name="colorPrimaryGray">#BDBDBD</color>
+    <color name="colorPrimaryTransGray">#60BDBDBD</color>
+    <color name="colorPrimaryTransGrey">#95424242</color>
+    <color name="colorTransparent">#00000000</color>
+    <color name="colorTransBlue">#800000FF</color>
+</resources>

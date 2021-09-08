@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
-import com.esc.test.apps.databinding.ActivityMainBinding;
+import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.gamestuff.CubeID;
 import com.esc.test.apps.modelviews.PassPlayBoardViewModel;
 import com.esc.test.apps.modelviews.PlayFriendBoardViewModel;
@@ -29,12 +29,12 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     private PlayFriendBoardViewModel playWithFriendViewModel;
     private static final String TAG = "myT";
     private int numLayers;
-    private ActivityMainBinding binding;
+    private BoardActivityBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = BoardActivityBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         Log.d("myT", "BoardActivity");
         passPlayViewModel = new ViewModelProvider(this).get(PassPlayBoardViewModel.class);
@@ -168,7 +168,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                 Log.d(TAG, "winner : " + winner);
                 passPlayViewModel.updateScore(winner);
                 binding.title.setText(winner + getResources().getString(R.string.game_won));
-                passPlayViewModel.updateWinners();
                 changeGridOnClick(false);
                 if (playWithFriendViewModel != null) playWithFriendViewModel.uploadWinner();
             }

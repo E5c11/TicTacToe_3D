@@ -15,20 +15,19 @@ public class MovesFactory {
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
     private final FirebaseMoveRepository firebaseMoveRepository;
-    private final ResourceProvider rp;
 
     @Inject
-    public MovesFactory(GameState gameState, GameRepository gameRepository, MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository, ResourceProvider rp) {
+    public MovesFactory(GameState gameState, GameRepository gameRepository,
+                        MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository
+    ) {
         this.gameState = gameState;
         this.gameRepository = gameRepository;
         this.moveRepository = moveRepository;
         this.firebaseMoveRepository = firebaseMoveRepository;
-        this.rp = rp;
     }
 
-    public Moves createMoves(String coordinates, String playedPiece) {
-        return new Moves(gameState, gameRepository,
-                moveRepository, firebaseMoveRepository,
+    public void createMoves(String coordinates, String playedPiece) {
+        new Moves(gameState, gameRepository, moveRepository, firebaseMoveRepository,
                 coordinates, playedPiece);
     }
 }

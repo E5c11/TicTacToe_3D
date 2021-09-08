@@ -4,41 +4,38 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.esc.test.apps.BaseActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.esc.test.apps.R;
+import com.esc.test.apps.databinding.HomeActivityBinding;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Home extends BaseActivity {
+public class Home extends AppCompatActivity {
 
-    private Button button;
-    private TextView login;
+    private HomeActivityBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.home_activity, baseLayout);
-
-        button = findViewById(R.id.home_button);
-        login = findViewById(R.id.login_text);
+        binding = HomeActivityBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         setButton();
-        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+//        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
     }
 
     private void setButton() {
         final Animation an1 = AnimationUtils.loadAnimation(this, R.anim.rotate);
-        button.setOnClickListener(v -> {
+        binding.homeButton.setOnClickListener(v -> {
             v.startAnimation(an1);
             startActivity(new Intent(this, BoardActivity.class));
         });
-        login.setOnClickListener(v -> {
+        binding.loginText.setOnClickListener(v -> {
             startActivity(new Intent(this, Login.class));
         });
     }

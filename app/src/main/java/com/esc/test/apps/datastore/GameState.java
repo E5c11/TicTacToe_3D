@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.other.ResourceProvider;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,14 +18,14 @@ public class GameState {
 
     private final SharedPreferences pref;
     private final SharedPreferences.Editor editor;
+    private final Application app;
     private final ArrayList<String> winnerLine = new ArrayList<>();
-    private final ResourceProvider rp;
 
     @Inject
-    public GameState(Application app, ResourceProvider rp) {
+    public GameState(Application app) {
+        this.app = app;
         pref = app.getSharedPreferences("MyPref", 0);
         editor = pref.edit();
-        this.rp = rp;
     }
 
     public String isWinner() {
@@ -59,9 +58,9 @@ public class GameState {
         setWinner(null);
         clearWinnerLine();
         if (getStarter() != null) {
-            if (getStarter().equals(rp.getString(R.string.circle))) starter =rp.getString(R.string.cross);
-            else starter = rp.getString(R.string.circle);
-        } else starter = rp.getString(R.string.cross);
+            if (getStarter().equals(app.getString(R.string.circle))) starter = app.getString(R.string.cross);
+            else starter = app.getString(R.string.circle);
+        } else starter = app.getString(R.string.cross);
         Log.d("myT", "new game");
         circle = getCircleScore();
         cross = getCrossScore();

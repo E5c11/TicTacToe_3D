@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import com.esc.test.apps.datastore.GameState;
 
 import com.esc.test.apps.network.FirebaseQueryLiveData;
-import com.esc.test.apps.other.ResourceProvider;
+
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.pojos.UserInfo;
@@ -45,6 +45,21 @@ public class FriendsModelView extends ViewModel {
     private final MutableLiveData<String[]> startGame = new MutableLiveData<>();
     public static final String lookUp = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     public static final String TAG = "myT";
+    private static final String USERS = "users";
+    private static final String DISPLAY_NAME = "display_name";
+    private static final String GAMES = "games";
+    private static final String FRIENDS = "friends";
+    private static final String ACTIVE_GAME = "active_game";
+    private static final String STARTER = "starter";
+    private static final String GAME_ACTIVE = "game_active";
+    private static final String GAME_INVITE = "game_invite";
+    private static final String GAME_REQUEST = "game_request";
+    private static final String FRIEND_INVITE = "friend_invites";
+    private static final String FRIEND_REQUEST = "friend_requests";
+    private static final String INVITE_TIME = "invite_time";
+    private static final String REQUEST_TIME = "request_time";
+    private static final String ME = "me";
+    private static final String OPPONENT = "opponent";
 
     @Inject
     public FriendsModelView(GameState gameState, Application app,
@@ -53,13 +68,12 @@ public class FriendsModelView extends ViewModel {
         this.app = app;
         this.userDetails = userDetails;
         this.gameState = gameState;
-        games = db.child(app.getString(R.string.games));
-        users = db.child(app.getString(R.string.users));
+        games = db.child(GAMES);
+        users = db.child(USERS);
     }
 
     public void findFriend(String friend_name) {
-        Query findFriend = users.orderByChild(app.getString(R.string.display_name)).equalTo(friend_name);
-        Log.d(TAG, "findFriend: ");
+        Query findFriend = users.orderByChild(DISPLAY_NAME).equalTo(friend_name);
         findFriend.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -82,12 +96,12 @@ public class FriendsModelView extends ViewModel {
     }
 
     public void acceptInvite(UserInfo user) {
-        users.child(user.getUid()).child(app.getString(R.string.friends)).child(userDetails.getUid())
-                .child(app.getString(R.string.display_name)).setValue(userDetails.getDisplayName());
-        users.child(userDetails.getUid()).child(app.getString(R.string.friends)).child(user.getUid())
-                .child(app.getString(R.string.display_name)).setValue(user.getDisplay_name());
-        users.child(user.getUid()).child(app.getString(R.string.friend_invites)).child(userDetails.getUid()).removeValue();
-        users.child(userDetails.getUid()).child(app.getString(R.string.friend_requests)).child(user.getUid()).removeValue();
+        users.child(user.getUid()).child(FRIENDS).child(userDetails.getUid())
+                .child(DISPLAY_NAME).setValue(userDetails.getDisplayName());
+        users.child(userDetails.getUid()).child(FRIENDS).child(user.getUid())
+                .child(DISPLAY_NAME).setValue(user.getDisplay_name());
+        users.child(user.getUid()).child(FRIEND_INVITE).child(userDetails.getUid()).removeValue();
+        users.child(userDetails.getUid()).child(FRIEND_REQUEST).child(user.getUid()).removeValue();
     }
 
     public void startGame(UserInfo user, boolean firstPlayer) {
@@ -96,9 +110,9 @@ public class FriendsModelView extends ViewModel {
         if (firstPlayer) {
             String gameRef = getGameUID();
             gameState.setGameID(gameRef);
-            users.child(userDetails.getUid()).child(app.getString(R.string.friends)).child(user.getUid()).child(app.getString(R.string.active_game)).setValue(gameRef);
-            users.child(user.getUid()).child(app.getString(R.string.friends)).child(userDetails.getUid()).child(app.getString(R.string.active_game)).setValue(gameRef);
-            games.child(gameSetRef).child(gameRef).child(app.getString(R.string.game_active)).setValue(true);
+            users.child(userDetails.getUid()).child(FRIENDS).child(user.getUid()).child(ACTIVE_GAME).setValue(gameRef);
+            users.child(user.getUid()).child(FRIENDS).child(userDetails.getUid()).child(ACTIVE_GAME).setValue(gameRef);
+            games.child(gameSetRef).child(gameRef).child(GAME_ACTIVE).setValue(true);
             startPlayer = gameSetup(user.getUid(), gameSetRef, gameRef);
             if (startPlayer.equals(userDetails.getUid())) startGame.setValue(new String[] {gameSetRef, app.getString(R.string.circle)});
             else startGame.setValue(new String[] {gameSetRef, app.getString(R.string.cross)});
@@ -108,25 +122,25 @@ public class FriendsModelView extends ViewModel {
     }
 
     public void changeInviteState(String uid) {
-        users.child(userDetails.getUid()).child(app.getString(R.string.friends)).child(uid).child(app.getString(R.string.game_request)).setValue(false);
-        users.child(uid).child(app.getString(R.string.friends)).child(userDetails.getUid()).child(app.getString(R.string.game_invite)).setValue(false);
+        users.child(userDetails.getUid()).child(FRIENDS).child(uid).child(GAME_REQUEST).setValue(false);
+        users.child(uid).child(FRIENDS).child(userDetails.getUid()).child(GAME_INVITE).setValue(false);
     }
 
     public void sendGameInvite(UserInfo user, boolean startGame) {
-        users.child(user.getUid()).child(app.getString(R.string.friends)).child(userDetails.getUid()).child(app.getString(R.string.game_request)).setValue(startGame);
+        users.child(user.getUid()).child(FRIENDS).child(userDetails.getUid()).child(GAME_REQUEST).setValue(startGame);
         receiveGameInvite(user.getUid(), startGame);
     }
     private void receiveGameInvite(String uid, boolean startGame) {
-        users.child(userDetails.getUid()).child(app.getString(R.string.friends)).child(uid).child(app.getString(R.string.game_invite)).setValue(startGame);
+        users.child(userDetails.getUid()).child(FRIENDS).child(uid).child(GAME_INVITE).setValue(startGame);
     }
 
     public LiveData<List<UserInfo>> getActiveFriends() {
-        FirebaseQueryLiveData friends = new FirebaseQueryLiveData(users.child(userDetails.getUid()).child(app.getString(R.string.friends)));
+        FirebaseQueryLiveData friends = new FirebaseQueryLiveData(users.child(userDetails.getUid()).child(FRIENDS));
         return Transformations.map(friends, this::getFriends);
     }
 
     public LiveData<List<UserInfo>> getFriendRequests() {
-        FirebaseQueryLiveData requests = new FirebaseQueryLiveData(users.child(userDetails.getUid()).child(app.getString(R.string.friend_requests)));
+        FirebaseQueryLiveData requests = new FirebaseQueryLiveData(users.child(userDetails.getUid()).child(FRIEND_REQUEST));
         return Transformations.map(requests, this::getFriends);
     }
 
@@ -145,7 +159,7 @@ public class FriendsModelView extends ViewModel {
     private String gameSetup(String uid, String gameSetRef, String gameRef) {
         String startPlayer = new Random().nextBoolean() ? uid : userDetails.getUid();
         Log.d(TAG, "start player: " + startPlayer);
-        games.child(gameSetRef).child(gameRef).child(app.getString(R.string.starter)).setValue(startPlayer);
+        games.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer);
         notifySecondPlayer(startPlayer, uid);
         return startPlayer;
     }
@@ -153,12 +167,12 @@ public class FriendsModelView extends ViewModel {
     private void notifySecondPlayer(String startPlayer, String opponent ) {
         if (startPlayer.equals(userDetails.getUid())) {
             Log.d(TAG, "notifySecondPlayer: I start");
-            users.child(userDetails.getUid()).child(app.getString(R.string.friends)).child(opponent).child(app.getString(R.string.starter)).setValue(app.getString(R.string.me));
-            users.child(opponent).child(app.getString(R.string.friends)).child(userDetails.getUid()).child(app.getString(R.string.starter)).setValue(app.getString(R.string.opponent));
+            users.child(userDetails.getUid()).child(FRIENDS).child(opponent).child(STARTER).setValue(ME);
+            users.child(opponent).child(FRIENDS).child(userDetails.getUid()).child(STARTER).setValue(OPPONENT);
         } else {
             Log.d(TAG, "notifySecondPlayer: I don't start");
-            users.child(userDetails.getUid()).child(app.getString(R.string.friends)).child(opponent).child(app.getString(R.string.starter)).setValue(app.getString(R.string.opponent));
-            users.child(opponent).child(app.getString(R.string.friends)).child(userDetails.getUid()).child(app.getString(R.string.starter)).setValue(app.getString(R.string.me));
+            users.child(userDetails.getUid()).child(FRIENDS).child(opponent).child(STARTER).setValue(OPPONENT);
+            users.child(opponent).child(FRIENDS).child(userDetails.getUid()).child(STARTER).setValue(ME);
         }
         //Log.d(TAG, "notifySecondPlayer: set friend start " + gameState.getFriendStart());
     }
@@ -182,19 +196,17 @@ public class FriendsModelView extends ViewModel {
     public void inviteNewFriend() {
         UserInfo userInfo = getNewFriend().getValue();
 //        Log.d("myT", "invite friend " + userInfo.getUid());
-        users.child(userDetails.getUid()).child(app.getString(R.string.friend_invites))
-                .child(userInfo.getUid()).child(app.getString(R.string.invite_time)).setValue(getDate());
-        users.child(userDetails.getUid()).child(app.getString(R.string.friend_invites))
-                .child(userInfo.getUid()).child(app.getString(R.string.display_name)).setValue(userInfo.getDisplay_name());
+        users.child(userDetails.getUid()).child(FRIEND_INVITE)
+                .child(userInfo.getUid()).child(INVITE_TIME).setValue(getDate());
+        users.child(userDetails.getUid()).child(FRIEND_INVITE)
+                .child(userInfo.getUid()).child(DISPLAY_NAME).setValue(userInfo.getDisplay_name());
         sendRequest(userInfo);
     }
     private void sendRequest(UserInfo userInfo) {
-        users.child(userInfo.getUid()).child(app.getString(R.string.friend_requests))
-                .child(userDetails.getUid()).child(app.getString(R.string.request_time)).setValue(getDate());
-        //Log.d("myT", "name is: " + userDetails.getDisplayName());
-        users.child(userInfo.getUid()).child(app.getString(R.string.friend_requests))
-                .child(userDetails.getUid()).child(app.getString(R.string.display_name)).setValue(userDetails.getDisplayName());
-        //Log.d(TAG, "sendRequest: " + userDetails.getDisplayName());
+        users.child(userInfo.getUid()).child(FRIEND_REQUEST)
+                .child(userDetails.getUid()).child(REQUEST_TIME).setValue(getDate());
+        users.child(userInfo.getUid()).child(FRIEND_REQUEST)
+                .child(userDetails.getUid()).child(DISPLAY_NAME).setValue(userDetails.getDisplayName());
     }
 
     private String getDaysAgo(LocalDate pastDate) {

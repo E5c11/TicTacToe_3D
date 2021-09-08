@@ -13,7 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name="com.esc.test.apps.activities.BoardActivity" />
-        <activity android:name=".BaseActivity" />
         <activity android:name="com.esc.test.apps.activities.Login" />
         <activity android:name="com.esc.test.apps.activities.PlayWithFriend" />
         <activity

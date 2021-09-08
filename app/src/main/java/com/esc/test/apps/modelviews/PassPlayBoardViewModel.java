@@ -53,9 +53,8 @@ public class PassPlayBoardViewModel extends ViewModel {
     private Disposable d;
 
     @Inject
-    public PassPlayBoardViewModel( MovesFactory moves, GameState gameState,
-                                  MoveRepository moveRepository, GameRepository gameRepository,
-                                  Application app
+    public PassPlayBoardViewModel(MovesFactory moves, GameState gameState, MoveRepository moveRepository,
+                                  GameRepository gameRepository, Application app
     ) {
         populateGridLists();
         turnColor = R.color.colorAccent;
@@ -175,6 +174,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     public void updateScore(String winner) {
         if (winner.equals(app.getString(R.string.cross))) addCrossScore();
         else addCircleScore();
+        updateWinners();
     }
 
     public void crossTurn() {

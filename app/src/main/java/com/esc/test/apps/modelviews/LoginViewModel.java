@@ -1,5 +1,6 @@
 package com.esc.test.apps.modelviews;
 
+import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.other.SingleLiveEvent;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -21,7 +23,6 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-import com.esc.test.apps.other.ResourceProvider;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import com.esc.test.apps.datastore.UserDetails;
 
@@ -29,7 +30,7 @@ import com.esc.test.apps.datastore.UserDetails;
 public class LoginViewModel extends ViewModel {
 
     private boolean emailExists, validEmail = false;
-    private final MutableLiveData<Boolean> loggedIn = new MutableLiveData<>();
+    private final SingleLiveEvent<Boolean> loggedIn = new SingleLiveEvent<>();
     private final MutableLiveData<Boolean> changePassFocus = new MutableLiveData<>();
     private final MutableLiveData<Boolean> displayNameExists = new MutableLiveData<>();
     private final MutableLiveData<String> displayNameError = new MutableLiveData<>();
@@ -43,16 +44,16 @@ public class LoginViewModel extends ViewModel {
     private final UserDetails userDetails;
     private final FirebaseAuth firebaseAuth;
     private final DatabaseReference db;
-    private final ResourceProvider rp;
+    private final Application app;
 
     @Inject
-    public LoginViewModel(FirebaseAuth firebaseAuth, ResourceProvider rp,
+    public LoginViewModel(FirebaseAuth firebaseAuth, Application app,
                           DatabaseReference db, UserDetails userDetails
     ) {
         this.userDetails = userDetails;
         this.firebaseAuth = firebaseAuth;
         this.db = db;
-        this.rp = rp;
+        this.app = app;
         logUserIn();
     }
 
@@ -89,7 +90,7 @@ public class LoginViewModel extends ViewModel {
     }
 
     private void getDisplayNameFromDB(String uid) {
-        db.child(rp.getString(R.string.users)).child(uid).child(rp.getString(R.string.display_name)).addListenerForSingleValueEvent(new ValueEventListener() {
+        db.child(app.getString(R.string.users)).child(uid).child(app.getString(R.string.display_name)).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) userDetails.setDisplayName(snapshot.getValue().toString());
@@ -196,7 +197,7 @@ public class LoginViewModel extends ViewModel {
             displayNameError.setValue("Enter a display name");
             return false;
         }
-        else if (getDisplayNameExists().getValue()) return false;
+        else if (displayNameExists.getValue()) return false;
         else {
             displayNameError.setValue(null);
             return true;
@@ -261,9 +262,9 @@ public class LoginViewModel extends ViewModel {
     }
 
     private void setUserOnline(String uid) {
-        DatabaseReference onlineRef = db.child(rp.getString(R.string.users));
-        onlineRef.child(uid).child(rp.getString(R.string.status)).setValue(rp.getString(R.string.online));
-        onlineRef.child(uid).child(rp.getString(R.string.status)).onDisconnect().setValue(rp.getString(R.string.offline));
+        DatabaseReference onlineRef = db.child(app.getString(R.string.users));
+        onlineRef.child(uid).child(app.getString(R.string.status)).setValue(app.getString(R.string.online));
+        onlineRef.child(uid).child(app.getString(R.string.status)).onDisconnect().setValue(app.getString(R.string.offline));
     }
 
     public void setPassword(String viewPassword) {

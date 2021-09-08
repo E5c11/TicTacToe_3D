@@ -173,7 +173,6 @@ public class PlayFriendBoardViewModel extends ViewModel {
     public void friendGamePiece(boolean friendStarts) {
         if (friendStarts) friendGamePiece = app.getString(R.string.cross);
         else friendGamePiece = app.getString(R.string.circle);
-        gameState.setFriendStart(friendStarts);
     }
 
     public LiveData<Turn> getTurn() {

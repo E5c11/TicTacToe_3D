@@ -218,10 +218,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private void getNewMoves() {
         passPlayViewModel.getLastMove().observe(this, s -> {
-            if (s != null) {
-                binding.checkMove.setText(s.getPosition());
-                updateGridView(s.getPosition(), s.getPiece_played());
-            }
+            if (s != null) updateGridView(s.getPosition(), s.getPiece_played());
         });
     }
 

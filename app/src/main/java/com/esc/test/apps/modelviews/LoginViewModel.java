@@ -57,9 +57,8 @@ public class LoginViewModel extends ViewModel {
     }
 
     private void logUserIn() {
-        if (checkExistingUser()) {
-            connectLogin(userDetails.getEmail(), userDetails.getPassword());
-        } else {
+        if (checkExistingUser()) connectLogin(userDetails.getEmail(), userDetails.getPassword());
+        else {
             Log.d("myT", "first launch");
             loggedIn.setValue(false);
         }
@@ -73,7 +72,6 @@ public class LoginViewModel extends ViewModel {
     private void connectLogin(String email, String password) {
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                //Log.d("myTag", "User created " + task.getResult().getUser().getUid());
                 String uid = task.getResult().getUser().getUid();
                 userDetails.setUid(uid);
                 userDetails.setEmail(email);
@@ -103,9 +101,7 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
-    private Boolean checkExistingUser() {
-        return userDetails.getEmail() != null;
-    }
+    private Boolean checkExistingUser() { return userDetails.getEmail() != null; }
 
     public MutableLiveData<Boolean> getLoggedIn() {
         return loggedIn;

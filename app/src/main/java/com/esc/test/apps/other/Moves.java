@@ -20,7 +20,6 @@ public class Moves {
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
     private final FirebaseMoveRepository firebaseMoveRepository;
-    private final ResourceProvider rp;
     private int cubePos;
     private final ArrayList<int[]> lines2check = new ArrayList<>();
     private int[] winnerRow = new int[4];
@@ -31,14 +30,13 @@ public class Moves {
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public Moves(GameState gameState, GameRepository gameRepository,
-                 MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository, ResourceProvider rp,
+                 MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository,
                  String coordinates, String playedPiece
     ) {
         this.gameState = gameState;
         this.gameRepository = gameRepository;
         this.moveRepository = moveRepository;
         this.firebaseMoveRepository = firebaseMoveRepository;
-        this.rp = rp;
         executor.execute(() -> findPos(coordinates, playedPiece));
     }
 

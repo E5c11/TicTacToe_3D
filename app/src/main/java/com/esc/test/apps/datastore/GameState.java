@@ -50,10 +50,8 @@ public class GameState {
     }
 
     public void clearWinnerLine() {
-        ArrayList<String> clearLine = new ArrayList<>();
-        Set<String> set = new HashSet<>(clearLine);
-        editor.putStringSet("winnerLine", set).commit();
-        editor.putString("winner", null);
+        setWinnerLine(new ArrayList<>());
+        setWinner(null);
     }
 
     public void newGame() {
@@ -82,24 +80,10 @@ public class GameState {
     public String getStarter() {return pref.getString("starter", null);}
 
     public void setCircleScore(String circleScore) {editor.putString("circle_score", circleScore).commit();}
-    public String getCircleScore() {
-        String temp = pref.getString("circle_score", "0");
-        //Log.d("myT", "game state: get circle score: " + temp);
-        return temp;
-    }
+    public String getCircleScore() { return pref.getString("circle_score", "0"); }
 
-    public void setCrossScore(String crossScore) {
-        editor.putString("cross_score", crossScore).commit();
-        //Log.d("myT", "game state: set circle score: " + crossScore);
-    }
-    public String getCrossScore() {
-        String temp = pref.getString("cross_score", "0");
-        //Log.d("myT", "game state: get cross score: " + temp);
-        return temp;
-    }
-
-    public void setFriendStart(boolean friendStart) {editor.putBoolean("friend_start", friendStart).commit();}
-    public boolean getFriendStart() {return pref.getBoolean("friend_start", false);}
+    public void setCrossScore(String crossScore) { editor.putString("cross_score", crossScore).commit(); }
+    public String getCrossScore() { return pref.getString("cross_score", "0"); }
 
     public void setGameID(String gameID) {editor.putString("game_id", gameID).commit();}
     public String getGameID() {return pref.getString("game_id", null);}

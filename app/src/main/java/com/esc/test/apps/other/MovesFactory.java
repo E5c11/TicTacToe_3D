@@ -28,7 +28,7 @@ public class MovesFactory {
 
     public Moves createMoves(String coordinates, String playedPiece) {
         return new Moves(gameState, gameRepository,
-                moveRepository, firebaseMoveRepository, rp,
+                moveRepository, firebaseMoveRepository,
                 coordinates, playedPiece);
     }
 }

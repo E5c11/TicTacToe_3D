@@ -3,8 +3,6 @@ package com.esc.test.apps.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,7 +16,7 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.LoginActivityBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
-import com.esc.test.apps.modelviews.LoginViewModel;
+import com.esc.test.apps.viewmodels.LoginViewModel;
 import com.esc.test.apps.utils.LetterWatcher;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -61,10 +59,10 @@ public class Login extends AppCompatActivity {
                 Snackbar.make(binding.getRoot(), s, Snackbar.LENGTH_LONG).show());
         loginViewModel.getNetwork().observe(this, s -> {
             if (s != null) {
-                if (s)
-                    Snackbar.make(binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
-                else
-                    Snackbar.make(binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
+                if (s) Snackbar.make(
+                        binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
+                else Snackbar.make(
+                        binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
             }
         });
     }
@@ -95,6 +93,7 @@ public class Login extends AppCompatActivity {
                 loginViewModel.setPassword(binding.passInput.getText().toString().trim());
             }
         });
+        binding.forgotText.setOnClickListener(v -> {});
         binding.submit.setOnClickListener(v -> {
             String email = binding.emailInput.getText().toString().trim();
             if (binding.submit.getText().equals(getResources().getString(R.string.register))) {
@@ -132,12 +131,14 @@ public class Login extends AppCompatActivity {
         if (btnText.equals(getResources().getString(R.string.login))) {
             binding.submit.setText(getResources().getString(R.string.register));
             registerViewVisibility(View.VISIBLE);
+            binding.forgotText.setVisibility(View.GONE);
             loginViewModel.setLogin(false);
             setRegisterListeners();
             setRegisterObservers();
         } else {
             binding.submit.setText(getResources().getString(R.string.login));
             registerViewVisibility(View.GONE);
+            binding.forgotText.setVisibility(View.VISIBLE);
             loginViewModel.setLogin(true);
         }
     }

@@ -1,4 +1,4 @@
-package com.esc.test.apps.modelviews;
+package com.esc.test.apps.viewmodels;
 
 import android.app.Application;
 import android.util.Log;
@@ -12,6 +12,7 @@ import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
+import com.esc.test.apps.utils.Utils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +35,7 @@ public class LoginViewModel extends ViewModel {
     private String passCon;
     private String password;
     private String email;
-    private boolean login = true, netState = true;
+    private boolean login = true;
     private final UserDetails userDetails;
     private final FirebaseUserRepository fbUserRepo;
     private static final String TAG = "myT";
@@ -67,13 +68,8 @@ public class LoginViewModel extends ViewModel {
 
     private Boolean checkExistingUser() { return userDetails.getEmail() != null; }
 
-    public LiveData<Boolean> getLoggedIn() { return loggedIn; }
-
     public void isEmailValid(String viewEmail) {
-        String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
-        Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(viewEmail);
-        if (matcher.matches()) fbUserRepo.isEmailValid(viewEmail);
+        if (Utils.validEmail(viewEmail)) fbUserRepo.isEmailValid(viewEmail);
         else emailError.setValue("Enter a valid email");
     }
 
@@ -88,7 +84,7 @@ public class LoginViewModel extends ViewModel {
 
     public void loginUser() {
         if (!validateEmail() | !validatePassCon()) return;
-        else if (login) getUserDetails();
+        else getUserDetails();
     }
 
     private boolean validDisplayName() {
@@ -118,7 +114,6 @@ public class LoginViewModel extends ViewModel {
             return false;
         } else if (!passCon.equals(password)) {
             passConError.setValue("Passwords do not match");
-            Log.d(TAG, "validatePassCon: don't match");
             return false;
         } else {
             passConError.setValue("");
@@ -126,21 +121,7 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    private void validatePassword() {
-        if (password == null || password.isEmpty()) {
-            passwordError.setValue("Password cannot be empty");
-        } else if (password.equals(password.toLowerCase()) && !password.matches(".*\\d.*")) {
-            passwordError.setValue("Password must contain an uppercase and number");
-        } else if (password.equals(password.toLowerCase())) {
-            passwordError.setValue("Password must contain an uppercase");
-        } else if (!password.matches(".*\\d.*")) {
-            passwordError.setValue("Password must contain a number");
-        } else if (!(password.length() >= 6)) {
-            passwordError.setValue("Password must contain at least 6 characters");
-        } else {
-            passwordError.setValue("");
-        }
-    }
+    private void validatePassword() { passwordError.setValue(Utils.validatePassword(password)); }
 
     public void setPassword(String viewPassword) {
         password = viewPassword;
@@ -178,20 +159,12 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
+    public LiveData<Boolean> getLoggedIn() { return loggedIn; }
+
     public LiveData<String> getDisplayNameExists() { return displayNameExists; }
 
     public LiveData<String> getError() { return error; }
 
-    public LiveData<Boolean> getNetwork() {
-        return network;
-//        return Transformations.map(network, n -> {
-//            Log.d(TAG, "getNetwork: " + n);
-//            if (n != netState) {
-//                Log.d("myT", "checkValidNetworks: " + n + " : " + netState);
-//                netState = n;
-//                return n;
-//            } else return null;
-//        });
-    }
+    public LiveData<Boolean> getNetwork() { return network; }
 
 }

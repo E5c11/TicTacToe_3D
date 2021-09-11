@@ -9,6 +9,7 @@
     <string name="password_asterisk">Password </string>
     <string name="passcon_asterisk">Confirm Password </string>
     <string name="friend_search_asterisk">Search for a friend</string>
+    <string name="forgot_password">Forgot password?</string>
 
     <string name="display_name">display_name</string>
     <string name="users">users</string>
@@ -35,6 +36,7 @@
     <string name="quit">quit</string>
     <string name="new_set">new set</string>
     <string name="new_game">new game</string>
+    <string name="delete">Delete account</string>
 
     <string name="moves">moves</string>
     <string name="cross">cross</string>

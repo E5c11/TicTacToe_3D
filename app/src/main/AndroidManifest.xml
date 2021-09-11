@@ -16,6 +16,7 @@
         <activity android:name="com.esc.test.apps.activities.BoardActivity" />
         <activity android:name="com.esc.test.apps.activities.Login" />
         <activity android:name="com.esc.test.apps.activities.PlayWithFriend" />
+        <activity android:name=".activities.ProfileManagement" />
         <activity
             android:name="com.esc.test.apps.activities.Home"
             android:theme="@style/SplashTheme">

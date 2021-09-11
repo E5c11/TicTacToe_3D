@@ -1,4 +1,4 @@
-package com.esc.test.apps.modelviews;
+package com.esc.test.apps.viewmodels;
 
 import android.app.Application;
 import android.util.Log;

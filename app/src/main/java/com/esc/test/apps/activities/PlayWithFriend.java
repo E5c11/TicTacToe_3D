@@ -17,7 +17,7 @@ import com.esc.test.apps.databinding.FriendsActivityBinding;
 
 import com.esc.test.apps.adapters.ActiveFriendsAdapter;
 import dagger.hilt.android.AndroidEntryPoint;
-import com.esc.test.apps.modelviews.FriendsModelView;
+import com.esc.test.apps.viewmodels.FriendsModelView;
 import com.esc.test.apps.pojos.UserInfo;
 import com.google.firebase.database.DatabaseReference;
 

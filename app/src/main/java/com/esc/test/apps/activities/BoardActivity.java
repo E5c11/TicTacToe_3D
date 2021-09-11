@@ -14,8 +14,8 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.modelviews.PassPlayBoardViewModel;
-import com.esc.test.apps.modelviews.PlayFriendBoardViewModel;
+import com.esc.test.apps.viewmodels.PassPlayBoardViewModel;
+import com.esc.test.apps.viewmodels.PlayFriendBoardViewModel;
 
 import java.util.ArrayList;
 
@@ -54,6 +54,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             numLayers++;
         });
         passPlayViewModel.setEnded(false);
+        passPlayViewModel.clearMoves();
         setObservers();
     }
 
@@ -67,7 +68,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     private void checkExtras() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            passPlayViewModel.clearMoves();
             gameButtonsVis();
             String extra = (String) extras.get("friend_game_piece");
             playWithFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);

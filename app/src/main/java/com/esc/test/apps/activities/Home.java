@@ -31,12 +31,14 @@ public class Home extends AppCompatActivity {
 
     private void setButton() {
         final Animation an1 = AnimationUtils.loadAnimation(this, R.anim.rotate);
-        binding.homeButton.setOnClickListener(v -> {
+        binding.passPlay.setOnClickListener(v -> {
             v.startAnimation(an1);
             startActivity(new Intent(this, BoardActivity.class));
         });
-        binding.loginText.setOnClickListener(v -> {
+        binding.playFriend.setOnClickListener(v -> {
             startActivity(new Intent(this, Login.class));
         });
+        binding.manageProfile.setOnClickListener(v -> 
+                startActivity(new Intent(this, ProfileManagement.class)));
     }
 }

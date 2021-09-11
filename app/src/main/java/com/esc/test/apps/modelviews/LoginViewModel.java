@@ -22,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class LoginViewModel extends ViewModel {
 
     private final SingleLiveEvent<Boolean> loggedIn;
+    private final SingleLiveEvent<String> error;
     private final MutableLiveData<Boolean> changePassFocus = new MutableLiveData<>();
     private final LiveData<Boolean> displayNameExists;
     private final MutableLiveData<String> displayNameError = new MutableLiveData<>();
@@ -32,15 +33,17 @@ public class LoginViewModel extends ViewModel {
     private String passCon;
     private String password;
     private String email;
-    private boolean emailExists, validEmail = false;
+    private boolean login = true;
     private final UserDetails userDetails;
     private final FirebaseUserRepository fbUserRepo;
+    private static final String TAG = "myT";
 
     @Inject
     public LoginViewModel(UserDetails userDetails, FirebaseUserRepository fbUserRepo) {
         this.userDetails = userDetails;
         this.fbUserRepo = fbUserRepo;
         loggedIn = fbUserRepo.getLoggedIn();
+        error = fbUserRepo.getError();
         emailError = fbUserRepo.getEmailError();
         displayNameExists = fbUserRepo.getDisplayNameExists();
         logUserIn();
@@ -68,10 +71,8 @@ public class LoginViewModel extends ViewModel {
         String expression = "^[\\w\\.-]+@([\\w\\-]+\\.)+[A-Z]{2,4}$";
         Pattern pattern = Pattern.compile(expression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(viewEmail);
-        if (matcher.matches()) {
-            fbUserRepo.isEmailValid(viewEmail);
-            validEmail = true;
-        }
+        if (matcher.matches()) fbUserRepo.isEmailValid(viewEmail);
+        else emailError.setValue("Enter a valid email");
     }
 
     public void newDisplayName(CharSequence ds) {
@@ -87,8 +88,7 @@ public class LoginViewModel extends ViewModel {
         if (displayName.isEmpty()) {
             displayNameError.setValue("Enter a display name");
             return false;
-        }
-        else if (displayNameExists.getValue()) return false;
+        } else if (displayNameExists.getValue()) return false;
         else {
             displayNameError.setValue(null);
             return true;
@@ -97,19 +97,14 @@ public class LoginViewModel extends ViewModel {
 
     private boolean validateEmail() {
         Log.d("myT", "validating email");
+        String errorCheck = emailError.getValue();
         if (email.isEmpty()) {
             emailError.setValue("Email can not be empty");
             return false;
-        } else if (!validEmail) {
-            emailError.setValue("Please enter a valid email");
-            return false;
-        } else if (!emailExists) {
-            emailError.setValue("This email does not exists");
-            Log.d("myTagEmails", "New email is:" + email);
-            return true;
-        } else {
-            emailError.setValue("This email already exists");
-            Log.d("myTagEmails", "email already exists");
+        } else if (errorCheck.equals("Enter a valid email")) return false;
+        else if (errorCheck.isEmpty()) return true;
+        else {
+            isEmailValid(email);
             return false;
         }
     }
@@ -153,6 +148,8 @@ public class LoginViewModel extends ViewModel {
         validatePassword();
     }
 
+    public void setLogin(boolean loginPage) { login = loginPage;}
+
     public void setEmail(String viewEmail) { email = viewEmail; }
 
     public void setPassCon(String viewPassCon) {passCon = viewPassCon;}
@@ -165,14 +162,16 @@ public class LoginViewModel extends ViewModel {
 
     public LiveData<String> getEmailError() {
         return Transformations.map(emailError, msg -> {
-            if (msg.equals("This email already exists")) {
-                emailExists = true;
-                return msg;
+            switch (msg) {
+                case "This email already exists":
+                    return login ? "" : msg;
+                case "This email does not exist":
+                    return login ? msg : "";
+                case "Enter a valid email":
+                    return msg;
+                default:
+                    return "an error has occurred, try again";
             }
-            else if (msg.equals("This email does not exists")) {
-                emailExists = false;
-                return "";
-            } else return "an error has occurred, try again";
         });
     }
 
@@ -181,5 +180,7 @@ public class LoginViewModel extends ViewModel {
     public LiveData<Boolean> getDisplayNameExists() {return displayNameExists;}
 
     public LiveData<String> getDisplayNameError() {return displayNameError;}
+
+    public LiveData<String> getError() { return error; }
 
 }

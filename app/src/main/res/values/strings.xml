@@ -57,7 +57,8 @@
     <string name="register_welcome">Welcome to Tic Tac Toe \n in 3D</string>
     <string name="register_message">Please enter an Email and Password to register your an account to play with friends</string>
     <string name="login_message">Please enter your Email and Password to login in</string>
-    <string name="login_instead">Login if you already have an account</string>
+    <string name="login_instead">Login</string>
+    <string name="new_user_register">New user? Create account</string>
 
     <string name="register">Register</string>
     <string name="login">Login</string>

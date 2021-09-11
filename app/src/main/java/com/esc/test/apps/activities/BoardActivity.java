@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.BoardActivityBinding;
-import com.esc.test.apps.gamestuff.CubeID;
+import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.modelviews.PassPlayBoardViewModel;
 import com.esc.test.apps.modelviews.PlayFriendBoardViewModel;
 

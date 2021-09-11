@@ -4,16 +4,13 @@ import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.other.SingleLiveEvent;
-import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -56,7 +53,7 @@ public class FirebaseUserRepository {
             if (task.isSuccessful()) {
                 attempt = 0;
                 if (task.getResult().getSignInMethods().isEmpty())
-                    emailError.setValue("This email does not exists");
+                    emailError.setValue("This email does not exist");
                 else emailError.setValue("This email already exists");
             } else {
                 if (attempt < 3) {
@@ -127,13 +124,12 @@ public class FirebaseUserRepository {
                 } else if (attempt < 3){
                     attempt ++;
                     createUser(email, password, displayName);
-                    Log.d("myTag", "user not created: " + Thread.currentThread().getName());
-                } else Log.d("myTag", "user not created: cancelled last");
+                } else error.setValue("An error occurred, check the network");
             }).addOnCanceledListener(() -> {
                 if (attempt < 3) {
                     attempt ++;
                     createUser(email, password, displayName);
-                } else Log.d("myTag", "user not created: cancelled");
+                } else error.setValue("An error occurred, check the network");
             });
     }
 
@@ -158,8 +154,8 @@ public class FirebaseUserRepository {
                 }
             }
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onCancelled(@NonNull DatabaseError e) {
+                error.setValue("An error occurred, check the network");
             }
         });
     }
@@ -171,4 +167,6 @@ public class FirebaseUserRepository {
     public MutableLiveData<String> getEmailError() {return emailError;}
 
     public LiveData<Boolean> getDisplayNameExists() {return displayNameExists;}
+
+    public SingleLiveEvent<String> getError() { return error;}
 }

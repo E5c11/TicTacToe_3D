@@ -19,10 +19,13 @@ import com.esc.test.apps.databinding.LoginActivityBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import com.esc.test.apps.modelviews.LoginViewModel;
+import com.esc.test.apps.utils.LetterWatcher;
+import com.google.android.material.snackbar.Snackbar;
 
 @AndroidEntryPoint
 public class Login extends AppCompatActivity {
 
+    private static final String TAG = "myT";
     private LoginViewModel loginViewModel;
     private LoginActivityBinding binding;
 
@@ -49,16 +52,21 @@ public class Login extends AppCompatActivity {
             if (!s) createNewAccount();
             else startActivity(new Intent(Login.this, PlayWithFriend.class));
         });
-        loginViewModel.getDisplayNameExists().observe(this, s -> {
-                if (s) binding.displayName.setError("Display name taken, choose another");
-                else binding.displayName.setError(null);
-                });
-        loginViewModel.getDisplayNameError().observe(this, s -> binding.displayNameInput.setError(s));
         loginViewModel.getPasswordError().observe(this, s -> {
             if (s == null) binding.passConInput.setFocusableInTouchMode(true);
             else binding.password.setError(s);
         });
         loginViewModel.getEmailError().observe(this, s -> binding.email.setError(s));
+        loginViewModel.getError().observe(this, s ->
+                Snackbar.make(binding.getRoot(), s, Snackbar.LENGTH_LONG).show());
+    }
+
+    private void setRegisterObservers() {
+        loginViewModel.getDisplayNameExists().observe(this, s -> {
+            if (s) binding.displayName.setError("Display name taken, choose another");
+            else binding.displayName.setError(null);
+        });
+        loginViewModel.getDisplayNameError().observe(this, s -> binding.displayNameInput.setError(s));
         loginViewModel.getPassConError().observe(this, s -> binding.passConInput.setError(s));
         loginViewModel.getChangePassFocus().observe(this, s -> {
             if (!s) binding.passInput.setFocusable(true);
@@ -73,35 +81,16 @@ public class Login extends AppCompatActivity {
     }
 
     private void setListeners() {
-        binding.loginText.setOnClickListener(v -> enableLogin());
-        binding.emailInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        binding.loginText.setOnClickListener(v -> changeLoginSetup());
+        binding.emailInput.addTextChangedListener(new LetterWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().contains("@") && s.toString().contains("."))
                     loginViewModel.isEmailValid(s.toString());
             }
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-        binding.displayNameInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
-            @Override
-            public void onTextChanged(CharSequence s, int i, int i1, int i2) {
-                loginViewModel.newDisplayName(s);
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {}
         });
         binding.passInput.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
-                loginViewModel.setPassword(binding.passInput.getText().toString().trim());
-            }
-        });
-        binding.passConInput.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
                 loginViewModel.setPassword(binding.passInput.getText().toString().trim());
             }
         });
@@ -123,9 +112,37 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    private void enableLogin() {
-        binding.displayNameInput.setVisibility(View.GONE);
-        binding.passConInput.setVisibility(View.GONE);
-        binding.submit.setText(getResources().getString(R.string.login));
+    private void setRegisterListeners() {
+        binding.displayNameInput.addTextChangedListener(new LetterWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                loginViewModel.newDisplayName(s);
+            }
+        });
+        binding.passConInput.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                loginViewModel.setPassword(binding.passInput.getText().toString().trim());
+            }
+        });
+    }
+
+    private void changeLoginSetup() {
+        String btnText = binding.submit.getText().toString();
+        if (btnText.equals(getResources().getString(R.string.login))) {
+            binding.submit.setText(getResources().getString(R.string.register));
+            registerViewVisibility(View.VISIBLE);
+            loginViewModel.setLogin(false);
+            setRegisterListeners();
+            setRegisterObservers();
+        } else {
+            binding.submit.setText(getResources().getString(R.string.login));
+            registerViewVisibility(View.GONE);
+            loginViewModel.setLogin(true);
+        }
+    }
+    private void registerViewVisibility(int vis) {
+        binding.displayName.setVisibility(vis);
+        binding.passCon.setVisibility(vis);
+        binding.regWelTwo.setVisibility(vis);
     }
 }

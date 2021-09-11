@@ -1,4 +1,4 @@
-package com.esc.test.apps.gamestuff;
+package com.esc.test.apps.pojos;
 
 public class CubeID {
 

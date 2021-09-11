@@ -3,7 +3,7 @@ package com.esc.test.apps.modelviews;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.esc.test.apps.other.SingleLiveEvent;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.pojos.UserInfo;
 import com.esc.test.apps.repositories.FirebaseGameRepository;
 

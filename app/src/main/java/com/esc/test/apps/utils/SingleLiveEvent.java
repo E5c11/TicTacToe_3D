@@ -1,4 +1,4 @@
-package com.esc.test.apps.other;
+package com.esc.test.apps.utils;
 
 import android.util.Log;
 

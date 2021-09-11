@@ -6,14 +6,13 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
-import com.esc.test.apps.other.SingleLiveEvent;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.pojos.UserInfo;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;

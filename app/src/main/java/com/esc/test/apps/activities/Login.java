@@ -59,18 +59,19 @@ public class Login extends AppCompatActivity {
         loginViewModel.getEmailError().observe(this, s -> binding.email.setError(s));
         loginViewModel.getError().observe(this, s ->
                 Snackbar.make(binding.getRoot(), s, Snackbar.LENGTH_LONG).show());
+        loginViewModel.getNetwork().observe(this, s -> {
+            if (s != null) {
+                if (s)
+                    Snackbar.make(binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
+                else
+                    Snackbar.make(binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
+            }
+        });
     }
 
     private void setRegisterObservers() {
-        loginViewModel.getDisplayNameExists().observe(this, s -> {
-            if (s) binding.displayName.setError("Display name taken, choose another");
-            else binding.displayName.setError(null);
-        });
-        loginViewModel.getDisplayNameError().observe(this, s -> binding.displayNameInput.setError(s));
-        loginViewModel.getPassConError().observe(this, s -> binding.passConInput.setError(s));
-        loginViewModel.getChangePassFocus().observe(this, s -> {
-            if (!s) binding.passInput.setFocusable(true);
-        });
+        loginViewModel.getDisplayNameExists().observe(this, s -> binding.displayName.setError(s));
+        loginViewModel.getPassConError().observe(this, s -> binding.passCon.setError(s));
     }
 
     private void createNewAccount() {
@@ -99,13 +100,12 @@ public class Login extends AppCompatActivity {
             if (binding.submit.getText().equals(getResources().getString(R.string.register))) {
                 loginViewModel.setDisplayName(binding.displayNameInput.getText().toString().trim());
                 loginViewModel.setEmail(email);
-                loginViewModel.setPassCon(binding.passConInput.getText().toString().trim());
                 loginViewModel.submitNewUser();
             } else {
                 if (binding.password.getError() == null) {
                     String pass = binding.passInput.getText().toString().trim();
                     loginViewModel.setPassword(pass);
-                    loginViewModel.getUserDetails(email, pass);
+                    loginViewModel.loginUser();
                     setProgressBar();
                 }
             }
@@ -119,9 +119,10 @@ public class Login extends AppCompatActivity {
                 loginViewModel.newDisplayName(s);
             }
         });
-        binding.passConInput.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                loginViewModel.setPassword(binding.passInput.getText().toString().trim());
+        binding.passConInput.addTextChangedListener(new LetterWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                loginViewModel.setPassCon(binding.passConInput.getText().toString().trim());
             }
         });
     }

@@ -1,5 +1,6 @@
 package com.esc.test.apps.modelviews;
 
+import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -8,7 +9,8 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.other.SingleLiveEvent;
+import com.esc.test.apps.network.ConnectionLiveData;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
 
 import java.util.regex.Matcher;
@@ -23,9 +25,8 @@ public class LoginViewModel extends ViewModel {
 
     private final SingleLiveEvent<Boolean> loggedIn;
     private final SingleLiveEvent<String> error;
-    private final MutableLiveData<Boolean> changePassFocus = new MutableLiveData<>();
-    private final LiveData<Boolean> displayNameExists;
-    private final MutableLiveData<String> displayNameError = new MutableLiveData<>();
+    private final LiveData<Boolean> network;
+    private final MutableLiveData<String> displayNameExists;
     private final MutableLiveData<String> passwordError = new MutableLiveData<>();
     private final MutableLiveData<String> emailError;
     private final MutableLiveData<String> passConError = new MutableLiveData<>();
@@ -33,17 +34,18 @@ public class LoginViewModel extends ViewModel {
     private String passCon;
     private String password;
     private String email;
-    private boolean login = true;
+    private boolean login = true, netState = true;
     private final UserDetails userDetails;
     private final FirebaseUserRepository fbUserRepo;
     private static final String TAG = "myT";
 
     @Inject
-    public LoginViewModel(UserDetails userDetails, FirebaseUserRepository fbUserRepo) {
+    public LoginViewModel(UserDetails userDetails, FirebaseUserRepository fbUserRepo, Application app) {
         this.userDetails = userDetails;
         this.fbUserRepo = fbUserRepo;
         loggedIn = fbUserRepo.getLoggedIn();
         error = fbUserRepo.getError();
+        network = new ConnectionLiveData(app);
         emailError = fbUserRepo.getEmailError();
         displayNameExists = fbUserRepo.getDisplayNameExists();
         logUserIn();
@@ -58,7 +60,7 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    public void getUserDetails(String email, String password) {
+    public void getUserDetails() {
         userDetails.clearPrefs();
         fbUserRepo.connectLogin(email, password);
     }
@@ -84,22 +86,23 @@ public class LoginViewModel extends ViewModel {
         else fbUserRepo.createUser(email, password, displayName);
     }
 
+    public void loginUser() {
+        if (!validateEmail() | !validatePassCon()) return;
+        else if (login) getUserDetails();
+    }
+
     private boolean validDisplayName() {
-        if (displayName.isEmpty()) {
-            displayNameError.setValue("Enter a display name");
+        String checkDN = displayNameExists.getValue();
+        if (displayName == null || displayName.isEmpty()) {
+            displayNameExists.setValue("Enter a display name");
             return false;
-        } else if (displayNameExists.getValue()) return false;
-        else {
-            displayNameError.setValue(null);
-            return true;
-        }
+        } else return !checkDN.equals("Display name already exists");
     }
 
     private boolean validateEmail() {
-        Log.d("myT", "validating email");
         String errorCheck = emailError.getValue();
-        if (email.isEmpty()) {
-            emailError.setValue("Email can not be empty");
+        if (email == null || email.isEmpty()) {
+            emailError.setValue("Email cannot be empty");
             return false;
         } else if (errorCheck.equals("Enter a valid email")) return false;
         else if (errorCheck.isEmpty()) return true;
@@ -110,36 +113,32 @@ public class LoginViewModel extends ViewModel {
     }
 
     private boolean validatePassCon() {
-        Log.d("myT", "passCon is: " + passCon);
-        if (passCon.equals(password)) {
-            Log.d("myT", "passwords match");
-            passConError.setValue(null);
-            return true;
-        } else {
-            passConError.setValue("Passwords do not match");
+        if (passCon == null || passCon.isEmpty()) {
+            passConError.setValue("Enter a confirmation password");
             return false;
+        } else if (!passCon.equals(password)) {
+            passConError.setValue("Passwords do not match");
+            Log.d(TAG, "validatePassCon: don't match");
+            return false;
+        } else {
+            passConError.setValue("");
+            return true;
         }
     }
 
     private void validatePassword() {
-        if (password.isEmpty()) {
+        if (password == null || password.isEmpty()) {
             passwordError.setValue("Password cannot be empty");
-            changePassFocus.setValue(false);
         } else if (password.equals(password.toLowerCase()) && !password.matches(".*\\d.*")) {
             passwordError.setValue("Password must contain an uppercase and number");
-            changePassFocus.setValue(false);
         } else if (password.equals(password.toLowerCase())) {
             passwordError.setValue("Password must contain an uppercase");
-            changePassFocus.setValue(false);
-        }else if (!password.matches(".*\\d.*")) {
+        } else if (!password.matches(".*\\d.*")) {
             passwordError.setValue("Password must contain a number");
-            changePassFocus.setValue(false);
-        }else if (!(password.length() >= 6)) {
+        } else if (!(password.length() >= 6)) {
             passwordError.setValue("Password must contain at least 6 characters");
-            changePassFocus.setValue(false);
         } else {
-            passwordError.setValue(null);
-            changePassFocus.setValue(true);
+            passwordError.setValue("");
         }
     }
 
@@ -148,11 +147,14 @@ public class LoginViewModel extends ViewModel {
         validatePassword();
     }
 
+    public void setPassCon(String viewPassCon) {
+        passCon = viewPassCon;
+        validatePassCon();
+    }
+
     public void setLogin(boolean loginPage) { login = loginPage;}
 
     public void setEmail(String viewEmail) { email = viewEmail; }
-
-    public void setPassCon(String viewPassCon) {passCon = viewPassCon;}
 
     public void setDisplayName(String viewDisplayName) {displayName = viewDisplayName;}
 
@@ -168,6 +170,7 @@ public class LoginViewModel extends ViewModel {
                 case "This email does not exist":
                     return login ? msg : "";
                 case "Enter a valid email":
+                case "Email cannot be empty":
                     return msg;
                 default:
                     return "an error has occurred, try again";
@@ -175,12 +178,20 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
-    public LiveData<Boolean> getChangePassFocus() {return changePassFocus;}
-
-    public LiveData<Boolean> getDisplayNameExists() {return displayNameExists;}
-
-    public LiveData<String> getDisplayNameError() {return displayNameError;}
+    public LiveData<String> getDisplayNameExists() { return displayNameExists; }
 
     public LiveData<String> getError() { return error; }
+
+    public LiveData<Boolean> getNetwork() {
+        return network;
+//        return Transformations.map(network, n -> {
+//            Log.d(TAG, "getNetwork: " + n);
+//            if (n != netState) {
+//                Log.d("myT", "checkValidNetworks: " + n + " : " + netState);
+//                netState = n;
+//                return n;
+//            } else return null;
+//        });
+    }
 
 }

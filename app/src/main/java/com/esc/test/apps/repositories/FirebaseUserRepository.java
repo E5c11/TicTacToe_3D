@@ -9,7 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.other.SingleLiveEvent;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,7 +29,7 @@ public class FirebaseUserRepository {
     private final Application app;
     private final SingleLiveEvent<Boolean> loggedIn = new SingleLiveEvent<>();
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
-    private final MutableLiveData<Boolean> displayNameExists = new MutableLiveData<>();
+    private final MutableLiveData<String> displayNameExists = new MutableLiveData<>();
     private final MutableLiveData<String> emailError = new MutableLiveData<>();
     private static final String TAG = "myT";
     private static final String STATUS = "status";
@@ -143,12 +143,12 @@ public class FirebaseUserRepository {
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() == null) displayNameExists.setValue(false);
+                if (snapshot.getValue() == null) displayNameExists.setValue("");
                 else {
                     for(DataSnapshot snap: snapshot.getChildren()) {
                         String tempDisplay = (String) snap.child(DISPLAY_NAME).getValue();
                         if (tempDisplay.equals(ds.toString())) {
-                            displayNameExists.setValue(true);
+                            displayNameExists.setValue("Display name already exists");
                         }
                     }
                 }
@@ -166,7 +166,7 @@ public class FirebaseUserRepository {
 
     public MutableLiveData<String> getEmailError() {return emailError;}
 
-    public LiveData<Boolean> getDisplayNameExists() {return displayNameExists;}
+    public MutableLiveData<String> getDisplayNameExists() {return displayNameExists;}
 
     public SingleLiveEvent<String> getError() { return error;}
 }

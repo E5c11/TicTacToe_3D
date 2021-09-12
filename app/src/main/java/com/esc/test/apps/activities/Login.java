@@ -101,9 +101,10 @@ public class Login extends AppCompatActivity {
                 loginViewModel.setEmail(email);
                 loginViewModel.submitNewUser();
             } else {
-                if (binding.password.getError() == null) {
-                    String pass = binding.passInput.getText().toString().trim();
-                    loginViewModel.setPassword(pass);
+                Log.d(TAG, "setListeners: " + binding.password.getError());
+                if (binding.password.getError() == null || binding.password.getError().equals("")) {
+                    loginViewModel.setEmail(email);
+                    loginViewModel.setPassword(binding.passInput.getText().toString().trim());
                     loginViewModel.loginUser();
                     setProgressBar();
                 }

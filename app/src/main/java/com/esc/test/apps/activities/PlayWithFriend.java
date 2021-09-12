@@ -42,7 +42,7 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
         Log.d("myT", "FriendsActivity");
 
         friendsModelView = new ViewModelProvider(this).get(FriendsModelView.class);
-        activeAdapter = new ActiveFriendsAdapter(getApplication(), this, ref);
+        activeAdapter = new ActiveFriendsAdapter(getApplication(), this);
         requestAdapter = new FriendRequestAdapter(getApplication(),this);
         setViews();
         setObservers();

@@ -35,7 +35,7 @@ public class LoginViewModel extends ViewModel {
     private String passCon;
     private String password;
     private String email;
-    private boolean login = true;
+    private boolean login = true, validEmail = false;
     private final UserDetails userDetails;
     private final FirebaseUserRepository fbUserRepo;
     private static final String TAG = "myT";
@@ -63,6 +63,7 @@ public class LoginViewModel extends ViewModel {
 
     public void getUserDetails() {
         userDetails.clearPrefs();
+        Log.d(TAG, "getUserDetails: ");
         fbUserRepo.connectLogin(email, password);
     }
 
@@ -83,8 +84,16 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void loginUser() {
-        if (!validateEmail() | !validatePassCon()) return;
-        else getUserDetails();
+        Log.d(TAG, "loginUser: " + !password.isEmpty());
+        if (!validateEmail() | password.isEmpty()) {
+
+            Log.d(TAG, "loginUser: no " + !password.isEmpty() + " " + !validateEmail());
+            return;
+        }
+        else {
+            Log.d(TAG, "loginUser: yes");
+            getUserDetails();
+        }
     }
 
     private boolean validDisplayName() {
@@ -97,14 +106,17 @@ public class LoginViewModel extends ViewModel {
 
     private boolean validateEmail() {
         String errorCheck = emailError.getValue();
+        Log.d(TAG, "validateEmail: " + email + " " + errorCheck + " " + login);
         if (email == null || email.isEmpty()) {
             emailError.setValue("Email cannot be empty");
             return false;
-        } else if (errorCheck.equals("Enter a valid email")) return false;
-        else if (errorCheck.isEmpty()) return true;
+        } else if (errorCheck.equals("This email already exists") && login) {
+            Log.d(TAG, "validateEmail: " + true);
+            return true;
+        }
         else {
-            isEmailValid(email);
-            return false;
+            Log.d(TAG, "validateEmail: " + false);
+            return errorCheck.equals("This email does not exist") && !login;
         }
     }
 
@@ -126,6 +138,7 @@ public class LoginViewModel extends ViewModel {
     public void setPassword(String viewPassword) {
         password = viewPassword;
         validatePassword();
+        Log.d(TAG, "setPassword: " + viewPassword);
     }
 
     public void setPassCon(String viewPassCon) {

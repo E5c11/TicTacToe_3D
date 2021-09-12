@@ -28,7 +28,7 @@ public class FriendRequestAdapter extends
     @Override
     public RequestHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FriendListBinding binding = FriendListBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new RequestHolder(binding, listener, app);
+        return new RequestHolder(binding, listener);
     }
 
     @Override

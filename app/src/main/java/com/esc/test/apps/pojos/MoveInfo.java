@@ -10,14 +10,17 @@ public class MoveInfo {
     private String coordinates;
     @SerializedName("position")
     private String position;
-    //@SerializedName("move_id")
-    //private String moveID;
+    @SerializedName("move_id")
+    private String moveID;
+    @SerializedName("uid")
+    private String uid;
 
-    public MoveInfo(String piece_played, String coordinates, String position) {
+    public MoveInfo(String piece_played, String coordinates, String position, int moveId, String uid) {
         this.piece_played = piece_played;
         this.coordinates = coordinates;
         this.position = position;
         //this.moveID = moveID;
+        this.uid = uid;
     }
 
     public MoveInfo() {}

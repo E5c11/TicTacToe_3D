@@ -5,8 +5,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.esc.test.apps.datastore.GameState;
+import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.other.MovesFactory;
+import com.esc.test.apps.pojos.MoveInfo;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,14 +22,16 @@ public class FirebaseMoveRepository {
 
     private final DatabaseReference ref;
     private final GameState gameState;
+    private final UserDetails user;
     private static final String TAG = "myT";
     private static final String MOVES = "moves";
     private static final String GAMES = "games";
 
     @Inject
-    public FirebaseMoveRepository (DatabaseReference ref, GameState gameState) {
+    public FirebaseMoveRepository (DatabaseReference ref, GameState gameState, UserDetails user) {
         this.gameState = gameState;
         this.ref = ref.child(GAMES);
+        this.user = user;
     }
 
     public void addMove(Move move) {
@@ -45,7 +49,8 @@ public class FirebaseMoveRepository {
                     id = (int) snapshot.getChildrenCount();
                 } else id = 0;
                 Log.d(TAG, "onDataChange: move id " + id);
-                Move moveInfo = new Move(cood, pos, piecePlayed);
+                MoveInfo moveInfo =
+                        new MoveInfo(cood, pos, piecePlayed, id, getFriendUid(gameState.getGameSetID()));
                 ref.child(gameState.getGameSetID()).child(gameState.getGameID()).child(MOVES)
                         .child(String.valueOf(id)).setValue(moveInfo).addOnCompleteListener(task ->
                             Log.d(TAG, "Move " + pos + " uploaded"));
@@ -55,5 +60,10 @@ public class FirebaseMoveRepository {
 
             }
         });
+    }
+
+    private String getFriendUid(String gameSetId) {
+        String[] uids = gameSetId.split("-");
+        return uids[0].equals(user.getUid()) ? uids[1] : uids[1];
     }
 }

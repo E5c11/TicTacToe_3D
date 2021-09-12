@@ -24,27 +24,24 @@ public class ActiveFriendsAdapter extends
     private final Application app;
     private final OnClickListener listener;
     public static final String ACTIVE_LIST = "active";
-    private final  DatabaseReference ref;
 
-    public ActiveFriendsAdapter(Application app, OnClickListener listener, DatabaseReference ref) {
+    public ActiveFriendsAdapter(Application app, OnClickListener listener) {
         super(diffCallback);
         this.app = app;
         this.listener = listener;
-        this.ref = ref;
     }
 
     @NonNull
     @Override
     public RequestHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FriendListBinding binding = FriendListBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new RequestHolder(binding, listener, app, ref);
+        return new RequestHolder(binding, listener);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RequestHolder holder, int pos) {
         UserInfo user = getItem(pos);
         holder.bind(user, ACTIVE_LIST);
-        holder.bindStatus(user.getUid());
         if (user.getActive_game() != null)
             holder.bindButton(app.getResources().getString(R.string.start));
         else if (user.getGame_request())
@@ -83,46 +80,17 @@ class RequestHolder extends RecyclerView.ViewHolder {
 
     private final FriendListBinding binding;
     private final ActiveFriendsAdapter.OnClickListener listener;
-    private final Application app;
-    private DatabaseReference ref;
 
-    public RequestHolder(FriendListBinding binding, ActiveFriendsAdapter.OnClickListener listener,
-                         Application app, DatabaseReference ref) {
+    public RequestHolder(FriendListBinding binding, ActiveFriendsAdapter.OnClickListener listener) {
         super(binding.getRoot());
         this.binding = binding;
         this.listener = listener;
-        this.app = app;
-        this.ref = ref;
-    }
-    public RequestHolder(FriendListBinding binding, ActiveFriendsAdapter.OnClickListener listener,
-                         Application app) {
-        super(binding.getRoot());
-        this.binding = binding;
-        this.listener = listener;
-        this.app = app;
     }
     void bind(UserInfo user, String list) {
         binding.friendName.setText(user.getDisplay_name());
         binding.inviteButton.setOnClickListener(v ->
                 listener.onItemClick(user, list, binding.inviteButton.getText().toString()) );
-
-    }
-    void bindStatus(String uid) {
-        ref.child(uid).child("status").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() != null) {
-                    String status;
-                    if (snapshot.getValue().equals(app.getString(R.string.online)))
-                        status = app.getString(R.string.online);
-                    else status = app.getString(R.string.offline);
-                    binding.friendActive.setText(status);
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+        if (user.getStatus() != null) binding.friendActive.setText(user.getStatus());
     }
     void bindButton(String text) {
         binding.inviteButton.setText(text);

@@ -10,7 +10,10 @@ import androidx.lifecycle.MutableLiveData;
 import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.utils.SingleLiveEvent;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -72,7 +75,9 @@ public class FirebaseUserRepository {
                 userDetails.setEmail(email);
                 userDetails.setPassword(password);
                 getDisplayNameFromDB(uid);
-                Log.d("myT", "uid is: " + userDetails.getUid());
+                task.getResult().getUser().getIdToken(true).addOnCompleteListener(task1 -> {
+                    Log.d("myT", "uid is: " + task1.getResult().getToken());
+                });
                 setUserOnline(uid);
                 loggedIn.setValue(true);
             }else {
@@ -113,8 +118,8 @@ public class FirebaseUserRepository {
                     String uid = task.getResult().getUser().getUid();
                     //Log.d("myTag", "User created " + task.getResult().getUser().getUid());
                     users.child(uid).child(DISPLAY_NAME).setValue(displayName);
-                    task.getResult().getUser().getIdToken(true).addOnCompleteListener(task1 ->
-                            users.child(uid).child(TOKEN).setValue(task1.getResult().getToken()));
+//                    task.getResult().getUser().getIdToken(true).addOnCompleteListener(task1 ->
+//                            users.child(uid).child(TOKEN).setValue(task1.getResult().getToken()));
                     setUserOnline(uid);
                     userDetails.setUid(uid);
                     userDetails.setEmail(email);
@@ -169,4 +174,6 @@ public class FirebaseUserRepository {
     public MutableLiveData<String> getDisplayNameExists() {return displayNameExists;}
 
     public SingleLiveEvent<String> getError() { return error;}
+
+    public void setToken(String s) { users.child(userDetails.getUid()).child(TOKEN).setValue(s); }
 }

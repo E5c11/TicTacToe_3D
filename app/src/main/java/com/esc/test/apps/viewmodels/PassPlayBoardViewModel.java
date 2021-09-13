@@ -211,7 +211,8 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     public LiveData<String> getWinner() {
         return Transformations.map(winner, winResult -> {
-            if (!winResult.equals("in progress") && gameState.isWinner() != null) return winResult;
+            if (winResult != null && !winResult.equals("in progress") && gameState.isWinner() != null)
+                return winResult;
             else return null;
         });
     }

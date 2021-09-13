@@ -162,12 +162,12 @@ public class PlayFriendBoardViewModel extends ViewModel {
 
     public void endGame(String winner) {
         if (winner == null) winner = friendUID;
+        gameRef.child(gameState.getGameSetID()).child(gameState.getGameID()).child(GAME_ACTIVE).setValue(false);
         userRef.child(userDetails.getUid()).child(FRIENDS).child(friendUID).child(ACTIVE_GAME).removeValue();
         userRef.child(friendUID).child(FRIENDS).child(userDetails.getUid()).child(ACTIVE_GAME).removeValue();
         userRef.child(userDetails.getUid()).child(FRIENDS).child(friendUID).child(STARTER).removeValue();
         userRef.child(friendUID).child(FRIENDS).child(userDetails.getUid()).child(STARTER).removeValue();
         gameRef.child(gameSetID).child(gameState.getGameID()).child(WINNER).setValue(winner);
-        gameRef.child(gameState.getGameSetID()).child(gameState.getGameID()).child(GAME_ACTIVE).setValue(false);
     }
 
     public void friendGamePiece(boolean friendStarts) {

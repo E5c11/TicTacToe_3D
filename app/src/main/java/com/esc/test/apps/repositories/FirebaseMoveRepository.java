@@ -63,7 +63,7 @@ public class FirebaseMoveRepository {
     }
 
     private String getFriendUid(String gameSetId) {
-        String[] uids = gameSetId.split("-");
-        return uids[0].equals(user.getUid()) ? uids[1] : uids[1];
+        String[] uids = gameSetId.split("_");
+        return uids[0].equals(user.getUid()) ? uids[1] : uids[0];
     }
 }

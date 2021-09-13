@@ -51,7 +51,12 @@ public class UserDetails {
         return pref.getString("user password", null);
     }
 
+    public void setToken(String token) { editor.putString("user_token", token).commit(); }
+    public String getToken() { return pref.getString("user_token", null); }
+
     public void clearPrefs() {
+        String token = getToken();
         editor.clear().apply();
+        setToken(token);
     }
 }

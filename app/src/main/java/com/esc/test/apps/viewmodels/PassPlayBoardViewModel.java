@@ -16,6 +16,7 @@ import com.esc.test.apps.entities.Game;
 import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.other.MovesFactory;
+import com.esc.test.apps.pojos.MoveInfo;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
 

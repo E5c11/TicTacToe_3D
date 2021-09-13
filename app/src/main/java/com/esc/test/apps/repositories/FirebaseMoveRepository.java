@@ -50,7 +50,7 @@ public class FirebaseMoveRepository {
                 } else id = 0;
                 Log.d(TAG, "onDataChange: move id " + id);
                 MoveInfo moveInfo =
-                        new MoveInfo(cood, pos, piecePlayed, id, getFriendUid(gameState.getGameSetID()));
+                        new MoveInfo(cood, pos, piecePlayed, String.valueOf(id), getFriendUid(gameState.getGameSetID()));
                 ref.child(gameState.getGameSetID()).child(gameState.getGameID()).child(MOVES)
                         .child(String.valueOf(id)).setValue(moveInfo).addOnCompleteListener(task ->
                             Log.d(TAG, "Move " + pos + " uploaded"));

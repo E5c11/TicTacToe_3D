@@ -18,6 +18,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
+
 public class ActiveFriendsAdapter extends
         ListAdapter<UserInfo, RequestHolder> {
 
@@ -66,12 +68,12 @@ public class ActiveFriendsAdapter extends
     public static final DiffUtil.ItemCallback<UserInfo> diffCallback = new DiffUtil.ItemCallback<UserInfo>() {
         @Override
         public boolean areItemsTheSame(@NonNull UserInfo oldItem, @NonNull UserInfo newItem) {
-            return oldItem == newItem;
+            return Objects.equals(oldItem.getStatus(), newItem.getStatus());
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull UserInfo oldItem, @NonNull UserInfo newItem) {
-            return oldItem.getActive_game().equals(newItem.getActive_game());
+            return Objects.equals(oldItem, newItem);
         }
     };
 }

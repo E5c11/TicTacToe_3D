@@ -15,6 +15,7 @@ import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
+import com.esc.test.apps.pojos.MoveInfo;
 import com.esc.test.apps.pojos.Turn;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
@@ -34,7 +35,7 @@ import io.reactivex.schedulers.Schedulers;
 @HiltViewModel
 public class PlayFriendBoardViewModel extends ViewModel {
 
-    private final MutableLiveData<List<Move>>existingMoves = new MutableLiveData<>();
+    private final MutableLiveData<List<Move>> existingMoves = new MutableLiveData<>();
     private final LiveData<String> turn;
     private String gameSetID;
     private String friendUID;
@@ -86,11 +87,12 @@ public class PlayFriendBoardViewModel extends ViewModel {
 
     private void getMoves(DataSnapshot dataSnapshot) {
         tempItems.clear();
-        Move msg;
+        MoveInfo msg;
         Log.d(TAG, "New move downloaded: " + dataSnapshot.getChildrenCount());
         for(DataSnapshot snap : dataSnapshot.getChildren()){
-            msg = snap.getValue(Move.class);
-            tempItems.add(msg);
+            msg = snap.getValue(MoveInfo.class);
+            if (msg != null) tempItems
+                    .add(new Move(msg.getCoordinates(), msg.getPosition(), msg.getPiece_played()));
         }
     }
 

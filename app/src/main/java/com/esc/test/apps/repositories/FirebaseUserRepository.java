@@ -75,9 +75,7 @@ public class FirebaseUserRepository {
                 userDetails.setEmail(email);
                 userDetails.setPassword(password);
                 getDisplayNameFromDB(uid);
-                task.getResult().getUser().getIdToken(true).addOnCompleteListener(task1 -> {
-                    Log.d("myT", "uid is: " + task1.getResult().getToken());
-                });
+                setToken(userDetails.getToken());
                 setUserOnline(uid);
                 loggedIn.setValue(true);
             }else {
@@ -175,5 +173,7 @@ public class FirebaseUserRepository {
 
     public SingleLiveEvent<String> getError() { return error;}
 
-    public void setToken(String s) { users.child(userDetails.getUid()).child(TOKEN).setValue(s); }
+    public void setToken(String s) { users.child(userDetails.getUid()).child(TOKEN).setValue(s).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) Log.d(TAG, "setToken: ");});
+    }
 }

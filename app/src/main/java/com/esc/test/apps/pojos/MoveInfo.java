@@ -15,11 +15,11 @@ public class MoveInfo {
     @SerializedName("uid")
     private String uid;
 
-    public MoveInfo(String piece_played, String coordinates, String position, int moveId, String uid) {
+    public MoveInfo(String coordinates, String position, String piece_played, String moveId, String uid) {
         this.piece_played = piece_played;
         this.coordinates = coordinates;
         this.position = position;
-        //this.moveID = moveID;
+        this.moveID = moveId;
         this.uid = uid;
     }
 
@@ -31,7 +31,9 @@ public class MoveInfo {
 
     public String getPosition() {return position;}
 
-    //public String getMoveID() {return moveID;}
+    public String getMoveID() {return moveID;}
+
+    public String getUid() { return uid; }
 
     public void setPiece_played(String piece_played) {
         this.piece_played = piece_played;
@@ -44,4 +46,8 @@ public class MoveInfo {
     public void setPosition(String position) {
         this.position = position;
     }
+
+    public void setMoveID(String moveID) { this.moveID = moveID; }
+
+    public void setUid(String uid) { this.uid = uid; }
 }

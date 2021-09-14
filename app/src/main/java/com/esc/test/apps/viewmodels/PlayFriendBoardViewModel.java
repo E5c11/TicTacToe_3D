@@ -17,6 +17,8 @@ import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
 import com.esc.test.apps.pojos.MoveInfo;
 import com.esc.test.apps.pojos.Turn;
+import com.esc.test.apps.repositories.FirebaseGameRepository;
+import com.esc.test.apps.repositories.FirebaseMoveRepository;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.google.firebase.database.DataSnapshot;
@@ -35,104 +37,41 @@ import io.reactivex.schedulers.Schedulers;
 @HiltViewModel
 public class PlayFriendBoardViewModel extends ViewModel {
 
-    private final MutableLiveData<List<Move>> existingMoves = new MutableLiveData<>();
+    private final LiveData<List<Move>> existingMoves;
     private final LiveData<String> turn;
-    private String gameSetID;
-    private String friendUID;
+    private LiveData<Move> moveInfo;
     private String friendGamePiece;
-    private final List<Move> tempItems = new ArrayList<>();
-    private ValueEventListener playerUIDsListener;
-    private DatabaseReference movesRef;
-    private final DatabaseReference userRef;
-    private final DatabaseReference gameRef;
     private final UserDetails userDetails;
     private final GameState gameState;
     private final Application app;
     private final MoveRepository moveRepository;
+    private final FirebaseGameRepository fbGameRepo;
+    private final FirebaseMoveRepository fbMoveRepo;
     public static final String TAG = "myT";
-    private static final String USERS = "users";
-    private static final String FRIENDS = "friends";
-    private static final String GAMES = "games";
-    private static final String MOVES = "moves";
-    private static final String ACTIVE_GAME = "active_game";
-    private static final String STARTER = "starter";
-    private static final String WINNER = "winner";
-    private static final String GAME_ACTIVE = "game_active";
 
     @Inject
     public PlayFriendBoardViewModel(GameState gameState, MoveRepository moveRepository,
                                     GameRepository gameRepository, Application app,
-                                    DatabaseReference db, UserDetails userDetails
+                                    UserDetails userDetails, FirebaseGameRepository fbGameRepo,
+                                    FirebaseMoveRepository fbMoveRepo
     ) {
         this.app = app;
         this.moveRepository = moveRepository;
         this.gameState = gameState;
         this.userDetails = userDetails;
+        this.fbGameRepo = fbGameRepo;
+        this.fbMoveRepo = fbMoveRepo;
+        existingMoves = fbMoveRepo.getExistingMoves();
         turn = LiveDataReactiveStreams.fromPublisher(gameRepository.getTurn().subscribeOn(Schedulers.io()));
-        userRef = db.child(USERS);
-        gameRef = db.child(GAMES);
-        setEventListener();
     }
 
-    public LiveData<Move> getMoveInfo() {
-        FirebaseQueryLiveData moveLiveData = new FirebaseQueryLiveData(movesRef);
-        return Transformations.map(moveLiveData, dataSnapshot -> {
-            getMoves(dataSnapshot);
-            if (tempItems.isEmpty()) return null;
-            else if (tempItems.get(tempItems.size()-1).getPiece_played().equals(friendGamePiece))
-                return tempItems.get(tempItems.size()-1);
-            else return null;
-        });
+    public void getGameUids(String uids, boolean friendStarts) {
+        friendGamePiece = friendGamePiece(friendStarts);
+        fbGameRepo.getGameUID(uids, friendGamePiece);
     }
 
-    private void getMoves(DataSnapshot dataSnapshot) {
-        tempItems.clear();
-        MoveInfo msg;
-        Log.d(TAG, "New move downloaded: " + dataSnapshot.getChildrenCount());
-        for(DataSnapshot snap : dataSnapshot.getChildren()){
-            msg = snap.getValue(MoveInfo.class);
-            if (msg != null) tempItems
-                    .add(new Move(msg.getCoordinates(), msg.getPosition(), msg.getPiece_played()));
-        }
-    }
-
-    public MutableLiveData<List<Move>> getExistingMoves() {return existingMoves;}
-
-    public void getGameUID(String uids, boolean friendStarts) {
-        gameSetID = uids;
-        gameState.setGameSetID(uids);
-        String[] players = uids.split("_");
-        if (players[0].equals(userDetails.getUid())) {
-            userRef.child(players[1]).child(FRIENDS).child(players[0])
-                    .child(ACTIVE_GAME).addListenerForSingleValueEvent(playerUIDsListener);
-            friendUID = players[1];
-        }
-        else {
-           userRef.child(players[0]).child(FRIENDS).child(players[1])
-                    .child(ACTIVE_GAME).addListenerForSingleValueEvent(playerUIDsListener);
-            friendUID = players[0];
-        }
-        friendGamePiece(friendStarts);
-    }
-
-    private void setEventListener() {
-        playerUIDsListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() != null) {
-                    String ref = snapshot.getValue().toString();
-                    movesRef = gameRef.child(gameSetID).child(ref).child(MOVES);
-                    //movesRef = db.child(rp.getString(R.string.moves)).child(ref);
-                    checkCurrentGameMoves(movesRef);
-                    Log.d(TAG, "onDataChange: " + ref);
-                    gameState.setGameID(ref);
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
+    public String friendGamePiece(boolean friendStarts) {
+        return friendStarts ? app.getString(R.string.cross) : app.getString(R.string.circle);
     }
 
     public void addExistingMoves(List<Move> previousMoves) {
@@ -140,41 +79,12 @@ public class PlayFriendBoardViewModel extends ViewModel {
         moveRepository.insertMultipleMoves(previousMoves.toArray(moves));
     }
 
-    private void checkCurrentGameMoves(DatabaseReference ref) {
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                getMoves(snapshot);
-                existingMoves.setValue(tempItems);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
+    public void quitGame() { fbGameRepo.endGame(null);}
 
     public void uploadWinner() {
         if (friendGamePiece != null) {
-            String gameID = gameState.getGameID();
-            Log.d(TAG, "uploadWinner: gamesetid: " + gameSetID + " gameid: " + gameID);
-            endGame(userDetails.getUid());
+            fbGameRepo.endGame(userDetails.getUid());
         }
-    }
-
-    public void endGame(String winner) {
-        if (winner == null) winner = friendUID;
-        gameRef.child(gameState.getGameSetID()).child(gameState.getGameID()).child(GAME_ACTIVE).setValue(false);
-        userRef.child(userDetails.getUid()).child(FRIENDS).child(friendUID).child(ACTIVE_GAME).removeValue();
-        userRef.child(friendUID).child(FRIENDS).child(userDetails.getUid()).child(ACTIVE_GAME).removeValue();
-        userRef.child(userDetails.getUid()).child(FRIENDS).child(friendUID).child(STARTER).removeValue();
-        userRef.child(friendUID).child(FRIENDS).child(userDetails.getUid()).child(STARTER).removeValue();
-        gameRef.child(gameSetID).child(gameState.getGameID()).child(WINNER).setValue(winner);
-    }
-
-    public void friendGamePiece(boolean friendStarts) {
-        if (friendStarts) friendGamePiece = app.getString(R.string.cross);
-        else friendGamePiece = app.getString(R.string.circle);
     }
 
     public LiveData<Turn> getTurn() {
@@ -186,6 +96,10 @@ public class PlayFriendBoardViewModel extends ViewModel {
             else return null;
         });
     }
+
+    public LiveData<Move> getMoveInfo() { return fbMoveRepo.getMoveInfo();}
+
+    public LiveData<List<Move>> getExistingMoves() { return existingMoves; }
 }
 
 

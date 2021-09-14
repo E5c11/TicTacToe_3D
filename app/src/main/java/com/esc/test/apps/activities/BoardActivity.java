@@ -74,11 +74,11 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             Log.d(TAG, "friend's starting piece is: " + extra);
             String uids = (String) extras.get("game_set_id");
             if (extra.equals(getResources().getString(R.string.opponent))) {
-                playWithFriendViewModel.getGameUID(uids, true);
+                playWithFriendViewModel.getGameUids(uids, true);
                 changeGridOnClick(false);
                 Log.d(TAG, "disable click: ");
             } else {
-                playWithFriendViewModel.getGameUID(uids, false);
+                playWithFriendViewModel.getGameUids(uids, false);
                 changeGridOnClick(true);
                 Log.d(TAG, "enable click: ");
             }
@@ -137,7 +137,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             changeGridOnClick(true);
             setPieceClickEnabled();
         } else if (view == binding.quit) {
-            playWithFriendViewModel.endGame(null);
+            playWithFriendViewModel.quitGame();
         }
     }
 

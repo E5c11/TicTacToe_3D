@@ -51,7 +51,6 @@ public class ConnectionLiveData extends SingleLiveEvent<Boolean> {
                 Log.d(TAG, "checkValidNetworks: " + e.getMessage());
             }
         } else netValid = false;
-        Log.d(TAG, "checkValidNetworks: " + netValid + " " + networkState);
         if (netValid != networkState) {
             networkState = netValid;
             postValue(netValid);

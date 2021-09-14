@@ -150,7 +150,6 @@ public class PassPlayBoardViewModel extends ViewModel {
                 gameState.setStarter(t);
                 gameRepository.setStarter(t);
             }
-            Log.d(TAG, "newMove 2: " + t);
             moves.createMoves(cubeID.getCoordinates(), t);
             dispose();
         }).subscribe();

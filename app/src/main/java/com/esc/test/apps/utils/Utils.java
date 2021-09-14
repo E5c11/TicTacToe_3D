@@ -11,6 +11,7 @@ public class Utils {
     public static final int TEXT_INPUT = 1;
     public static final int PASSWORD_INPUT = 81;
     public static final int EMAIL_INPUT = 21;
+    public static final String lookUp = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     public static void setMargins (View v, int l, int t, int r, int b) {
         if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
@@ -36,5 +37,21 @@ public class Utils {
         else if (!(password.length() >= 6)) return "Password must contain at least 6 characters";
         else return "";
     }
+
+
+    public static String getGameUID() {
+        return Long.toString(System.currentTimeMillis());
+    }
+
+    public static String getGameSetUID(String one, String two, int... i) {
+        int index = i[0];
+        if (Integer.compare(getLookUpIndex(Character.toUpperCase(one.charAt(index))), getLookUpIndex(Character.toUpperCase(two.charAt(index)))) == -1)
+            return one + "_" + two;
+        else if(Integer.compare(getLookUpIndex(Character.toUpperCase(one.charAt(index))), getLookUpIndex(Character.toUpperCase(two.charAt(index)))) == 1)
+            return two + "_" + one;
+        else return getGameSetUID(one, two, index++);
+    }
+
+    private static int getLookUpIndex(char firstChar) { return lookUp.indexOf(firstChar); }
 
 }

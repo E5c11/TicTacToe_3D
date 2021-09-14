@@ -39,7 +39,6 @@ public class PlayFriendBoardViewModel extends ViewModel {
 
     private final LiveData<List<Move>> existingMoves;
     private final LiveData<String> turn;
-    private LiveData<Move> moveInfo;
     private String friendGamePiece;
     private final UserDetails userDetails;
     private final GameState gameState;

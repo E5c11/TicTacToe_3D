@@ -1,6 +1,7 @@
 package com.esc.test.apps.adapters;
 
 import android.app.Application;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -54,7 +55,7 @@ public class ActiveFriendsAdapter extends
         else if (user.getGame_invite())
             holder.bindButton(app.getResources().getString(R.string.cancel));
         if (user.getStarter() != null) {
-            if (user.getStarter().equals(app.getResources().getString(R.string.opponent)))
+            if (!user.getStarter())
                 holder.bindStarter(app.getResources().getString(R.string.their_turn));
             else
                 holder.bindStarter(app.getResources().getString(R.string.your_turn));
@@ -92,7 +93,10 @@ class RequestHolder extends RecyclerView.ViewHolder {
         binding.friendName.setText(user.getDisplay_name());
         binding.inviteButton.setOnClickListener(v ->
                 listener.onItemClick(user, list, binding.inviteButton.getText().toString()) );
-        if (user.getStatus() != null) binding.friendActive.setText(user.getStatus());
+        if (user.getStatus() != null) {
+            if (user.getStatus().equals("online")) binding.friendActive.setTextColor(Color.BLUE);
+            binding.friendActive.setText(user.getStatus());
+        }
     }
     void bindButton(String text) {
         binding.inviteButton.setText(text);

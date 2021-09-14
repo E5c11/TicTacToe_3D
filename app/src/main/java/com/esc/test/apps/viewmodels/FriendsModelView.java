@@ -44,10 +44,6 @@ public class FriendsModelView extends ViewModel {
         fbGameRepo.startGame(user, firstPlayer);
     }
 
-    public void changeInviteState(String uid) {
-        fbGameRepo.changeInviteState(uid);
-    }
-
     public void sendGameInvite(UserInfo user, boolean startGame) {
         fbGameRepo.sendGameInvite(user, startGame);
     }

@@ -73,7 +73,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             playWithFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
             Log.d(TAG, "friend's starting piece is: " + extra);
             String uids = (String) extras.get("game_set_id");
-            if (extra.equals(getResources().getString(R.string.opponent))) {
+            if (extra.equals(getResources().getString(R.string.cross))) {
                 playWithFriendViewModel.getGameUids(uids, true);
                 changeGridOnClick(false);
                 Log.d(TAG, "disable click: ");

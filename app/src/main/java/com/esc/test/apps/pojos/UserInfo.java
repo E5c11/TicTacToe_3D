@@ -19,7 +19,7 @@ public class UserInfo {
     @SerializedName("game_request")
     private boolean game_request;
     @SerializedName("starter")
-    private String starter;
+    private Boolean starter;
     @SerializedName("active_game")
     private String active_game;
 
@@ -46,8 +46,8 @@ public class UserInfo {
     public boolean getGame_invite() {return  game_invite;}
     public void setGame_invite(boolean game_invite) {this.game_invite = game_invite;}
 
-    public String getStarter() {return starter;}
-    public void setStarter(String starter) {this.starter = starter;}
+    public Boolean getStarter() {return starter;}
+    public void setStarter(Boolean starter) {this.starter = starter;}
 
     public String getActive_game() {return active_game;}
     public void setActive_game(String active_game) {this.active_game = active_game;}

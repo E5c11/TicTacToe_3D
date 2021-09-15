@@ -68,7 +68,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
 
     public void getGameUids(String uids, boolean friendStarts) {
         friendGamePiece = friendGamePiece(friendStarts);
-        fbGameRepo.getGameUID(uids, friendGamePiece);
+        fbGameRepo.getGameUID(uids);
     }
 
     public String friendGamePiece(boolean friendStarts) {

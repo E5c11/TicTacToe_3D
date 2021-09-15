@@ -140,13 +140,12 @@ public class Moves {
         //Log.d("myT", "pos value " + cubePos);
         numInRow = 1;
         this.playedPiece = playedPiece;
-        Log.d(TAG, "findPos: played piece " + playedPiece);
         moveRepository.insertMove(new Move(tempCube, String.valueOf(cubePos), playedPiece));
         if (myTurn) {
-            Log.d(TAG, "findPos: uploading move " + cubePos);
+//            Log.d(TAG, "findPos: uploading move " + cubePos);
             firebaseMoveRepository.addMove(new MoveInfo(tempCube, String.valueOf(cubePos), playedPiece, moveId, null));
         }
-        Log.d("myT", "co: " + tempCube + " pos: " + cubePos + " piece played: " + playedPiece);
+//        Log.d("myT", "co: " + tempCube + " pos: " + cubePos + " piece played: " + playedPiece);
         lines2check.clear();
         executor.execute(this::UDvalues);
     }

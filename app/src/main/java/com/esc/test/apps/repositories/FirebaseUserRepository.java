@@ -114,11 +114,9 @@ public class FirebaseUserRepository {
                 if (task.isSuccessful()) {
                     attempt = 0;
                     String uid = task.getResult().getUser().getUid();
-                    //Log.d("myTag", "User created " + task.getResult().getUser().getUid());
                     users.child(uid).child(DISPLAY_NAME).setValue(displayName);
-//                    task.getResult().getUser().getIdToken(true).addOnCompleteListener(task1 ->
-//                            users.child(uid).child(TOKEN).setValue(task1.getResult().getToken()));
                     setUserOnline(uid);
+                    setToken(userDetails.getToken());
                     userDetails.setUid(uid);
                     userDetails.setEmail(email);
                     userDetails.setPassword(password);

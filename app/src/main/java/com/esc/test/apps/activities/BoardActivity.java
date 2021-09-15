@@ -44,6 +44,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private void setBoard() {
         setPieceClickEnabled();
+        passPlayViewModel.clearMoves();
         if (layers.isEmpty()) addLayers();
         numLayers = 0;
         layers.forEach(i -> {
@@ -53,7 +54,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             i.setOnItemClickListener((adapterView, view, j, l) -> changeSquareIcon(view));
             numLayers++;
         });
-        passPlayViewModel.clearMoves();
         setObservers();
     }
 
@@ -75,11 +75,9 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             if (extra.equals(getResources().getString(R.string.cross))) {
                 playFriendViewModel.getGameUids(uids, true);
                 changeGridOnClick(false);
-                Log.d(TAG, "disable click: ");
             } else {
                 playFriendViewModel.getGameUids(uids, false);
                 changeGridOnClick(true);
-                Log.d(TAG, "enable click: ");
             }
             setOpponentUIDObserver();
         } else {
@@ -103,18 +101,19 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private void changeSquareIcon(View view) {
         ColorDrawable viewColor = (ColorDrawable) view.getBackground();
+        CubeID cube = (CubeID) view.getTag();
         int confirmColor = ContextCompat.getColor(this, R.color.colorTransBlue);
         if (viewColor == null || viewColor.getColor() != confirmColor) {
             String lastPos = passPlayViewModel.getLastPos();
             if (lastPos != null) removeConfirm(lastPos);
             view.setBackgroundColor(confirmColor);
-            CubeID cube = (CubeID) view.getTag();
             passPlayViewModel.setLastPos(cube.getArrayPos());
         } else {
             passPlayViewModel.setLastPos(null);
-            if (playFriendViewModel != null) playFriendViewModel.newMove((CubeID) view.getTag());
+            passPlayViewModel.updateView(cube);
+            Log.d(TAG, "Item clicked: ");
+            if (playFriendViewModel != null) playFriendViewModel.newMove(cube);
             else passPlayViewModel.newMove((CubeID) view.getTag());
-//            Log.d(TAG, "changeSquareIcon: " + ((CubeID) view.getTag()).getArrayPos());
         }
     }
 
@@ -193,11 +192,9 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             if (turn != null) {
                 if (turn.isFriendsTurn()) {
                     binding.title.setText(getResources().getString(R.string.their_turn));
-//                    Log.d(TAG, "setPlayObservers: friend's turn");
                     changeGridOnClick(false);
                 } else {
                     binding.title.setText(getResources().getString(R.string.your_turn));
-//                    Log.d(TAG, "setPlayObservers: your turn");
                     changeGridOnClick(true);
                 }
             }
@@ -209,29 +206,30 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                     playFriendViewModel.addExistingMoves(s);
                     s.forEach(move -> updateGridView(move.getPosition(), move.getPiece_played()));
                 }
-                getNewMoves();
             }
         });
         playFriendViewModel.getMoveInfo().observe(this, s -> {
             if (s != null) {
                 updateGridView(s.getPosition(), s.getPiece_played());
-                passPlayViewModel.newFriendMove(s);
+                passPlayViewModel.downloadedMove(s);
+                Log.d(TAG, "downloaded move view update: ");
             }
         });
+        getNewMoves();
     }
 
     private void getNewMoves() {
         passPlayViewModel.getLastMove().observe(this, s -> {
-            if (s != null) updateGridView(s.getPosition(), s.getPiece_played());
+            if (s != null) updateGridView(s.getPos(), s.getPiece());
         });
     }
 
     private void updateGridView(String pos, String playedPiece) {
         int[] turnPos = CubeAdapter.getGridAdapter(pos);
-//        Log.d(TAG, "after " + turnPos[0] + " " + turnPos[1]);
         layers.get(turnPos[0]).getChildAt(turnPos[1])
                 .setBackground(getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
+        Log.d(TAG, "updated view " + turnPos[0] + " " + turnPos[1]);
     }
 
     @Override

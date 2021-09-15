@@ -17,8 +17,10 @@ import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.pojos.MoveInfo;
+import com.esc.test.apps.pojos.MoveUpdate;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
 
 import java.util.ArrayList;
@@ -40,9 +42,9 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final MutableLiveData<Integer> xTurn = new MutableLiveData<>();
     private final MutableLiveData<Integer> oTurn = new MutableLiveData<>();
     private final MutableLiveData<List<int[]>> winnerLine = new MutableLiveData<>();
+    private final SingleLiveEvent<MoveUpdate> lastMove = new SingleLiveEvent<>();
     private final LiveData<String> winner;
     private final LiveData<String> starter;
-    private final LiveData<Move> lastMove;
     private final GameState gameState;
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
@@ -70,7 +72,6 @@ public class PassPlayBoardViewModel extends ViewModel {
         setBeforeGame();
         winner = gameRepository.getWinner();
         starter = moveRepository.getFirstMove();
-        lastMove = moveRepository.getLastMove();
     }
 
     private void populateGridLists() {
@@ -160,13 +161,14 @@ public class PassPlayBoardViewModel extends ViewModel {
         }).subscribe();
     }
 
-    public void newFriendMove(MoveInfo move) {
-        Log.d(TAG, "newFriendMove: add move to db " + move.getPiece_played());
-        if (lastMove.getValue() == null) downloadedMove(move);
-        else if (!move.getPosition().equals(lastMove.getValue().getPosition())) downloadedMove(move);
+    public void updateView(CubeID cubeID) {
+        d = gameRepository.getTurn().subscribeOn(Schedulers.io()).doOnNext(t -> {
+            lastMove.postValue(new MoveUpdate(cubeID.getArrayPos(), t));
+            Log.d(TAG, "updateView: set");
+            Utils.dispose(d);
+        }).subscribe();
     }
-
-    private void downloadedMove(MoveInfo move) {
+    public void downloadedMove(MoveInfo move) {
         moves.createMoves(String.valueOf(move.getCoordinates()),
                 String.valueOf(move.getPiece_played()), move.getMoveID(), false);
         if (String.valueOf(move.getPiece_played()).equals(app.getString(R.string.cross)))
@@ -192,7 +194,7 @@ public class PassPlayBoardViewModel extends ViewModel {
         updateTurn(app.getString(R.string.circle));
     }
 
-    public LiveData<Move> getLastMove() {return lastMove;}
+    public LiveData<MoveUpdate> getLastMove() { return lastMove; }
 
     public LiveData<Integer> getxTurn() { return xTurn; }
 
@@ -259,5 +261,4 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     public void clearMoves() { moveRepository.deleteGameMoves(); }
-
 }

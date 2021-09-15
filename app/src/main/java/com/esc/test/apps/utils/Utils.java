@@ -1,5 +1,6 @@
 package com.esc.test.apps.utils;
 
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -68,5 +69,6 @@ public class Utils {
 
     public static void dispose(Disposable d) {
         d.dispose();
+        Log.d("myT", "updateView: after thread");
     }
 }

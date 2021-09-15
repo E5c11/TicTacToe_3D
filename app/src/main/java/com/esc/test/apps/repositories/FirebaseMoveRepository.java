@@ -39,7 +39,6 @@ public class FirebaseMoveRepository {
     private static final String FRIENDS = "friends";
     private static final String USERS = "users";
     private static final String MOVE = "move";
-    private String friendGamePiece;
 
     @Inject
     public FirebaseMoveRepository (DatabaseReference ref, GameState gameState, UserDetails user) {
@@ -50,7 +49,7 @@ public class FirebaseMoveRepository {
 
     public void addMove(MoveInfo move) {
         move.setUid(user.getUid());
-        Log.d(TAG, "addMove: " + gameState.getGameID());
+//        Log.d(TAG, "addMove: " + gameState.getGameID());
         ref.child(GAMES).child(gameState.getGameSetID()).child(gameState.getGameID()).child(MOVES)
                 .child(String.valueOf(move.getMoveID())).setValue(move).addOnCompleteListener(task ->
                 Log.d(TAG, "Move " + move.getPosition() + " uploaded"));
@@ -61,10 +60,9 @@ public class FirebaseMoveRepository {
                 .child(getFriendUid(gameState.getGameSetID())).child(MOVE);
         FirebaseQueryLiveData moveLiveData = new FirebaseQueryLiveData(moveRef);
         return Transformations.map(moveLiveData, snapshot -> {
-            MoveInfo move = snapshot.getValue(MoveInfo.class);
-            if (move != null)
-                Log.d(TAG, "New move downloaded: " + move.getMoveID());
-            return move;
+           MoveInfo move =snapshot.getValue(MoveInfo.class);
+           if (move != null && !move.getUid().equals(user.getUid())) return move;
+           else return null;
         });
     }
 
@@ -77,8 +75,7 @@ public class FirebaseMoveRepository {
         }
     }
 
-    public void checkCurrentGameMoves(DatabaseReference movesRef, String friendPiece) {
-        friendGamePiece = friendPiece;
+    public void checkCurrentGameMoves(DatabaseReference movesRef) {
         movesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

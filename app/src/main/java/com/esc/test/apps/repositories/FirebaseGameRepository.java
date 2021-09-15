@@ -53,7 +53,6 @@ public class FirebaseGameRepository {
     private final FirebaseMoveRepository fbMoveRepo;
     private String gameSetID;
     private String friendUID;
-    private String friendGamePiece;
     private ValueEventListener playerUIDsListener;
     public static final String TAG = "myT";
     private static final String USERS = "users";
@@ -158,9 +157,8 @@ public class FirebaseGameRepository {
         gamesRef.child(gameSetID).child(gameState.getGameID()).child(WINNER).setValue(winner);
     }
 
-    public void getGameUID(String uids, String friendPiece) {
+    public void getGameUID(String uids) {
         setEventListener();
-        friendGamePiece = friendPiece;
         gameSetID = uids;
         gameState.setGameSetID(uids);
         String[] players = uids.split("_");
@@ -183,7 +181,7 @@ public class FirebaseGameRepository {
                 if (snapshot.getValue() != null) {
                     String ref = snapshot.getValue().toString();
                     DatabaseReference movesRef = gamesRef.child(gameSetID).child(ref).child(MOVES);
-                    fbMoveRepo.checkCurrentGameMoves(movesRef, friendGamePiece);
+                    fbMoveRepo.checkCurrentGameMoves(movesRef);
                     gameState.setGameID(ref);
                     Log.d(TAG, "onDataChange: " + ref);
                 }

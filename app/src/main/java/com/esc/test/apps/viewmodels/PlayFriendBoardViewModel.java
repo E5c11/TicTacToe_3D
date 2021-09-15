@@ -87,7 +87,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
         moveRepository.insertMultipleMoves(previousMoves.toArray(moves));
     }
 
-    public void quitGame() { fbGameRepo.endGame(null);}
+    public void quitGame() { fbGameRepo.endGame(null); }
 
     public void uploadWinner() {
         if (friendGamePiece != null) {

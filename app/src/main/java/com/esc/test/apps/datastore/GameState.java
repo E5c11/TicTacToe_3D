@@ -53,7 +53,7 @@ public class GameState {
         setWinner(null);
     }
 
-    public void newGame() {
+    public void newLocalGame() {
         String circle, cross, starter;
         setWinner(null);
         clearWinnerLine();
@@ -70,9 +70,20 @@ public class GameState {
         setStarter(starter);
     }
 
+    public void newOnlineGame() {
+        String gameId, gameSetId;
+        setWinner(null);
+        clearWinnerLine();
+        gameId = getGameID();
+        gameSetId = getGameSetID();
+        editor.clear().commit();
+        setGameID(gameId);
+        setGameSetID(gameSetId);
+    }
+
     public void newSet() {
         editor.clear().commit();
-        newGame();
+        newLocalGame();
     }
 
     public void setStarter(String starter) {editor.putString("starter", starter).commit();}
@@ -85,7 +96,7 @@ public class GameState {
     public String getCrossScore() { return pref.getString("cross_score", "0"); }
 
     public void setGameID(String gameID) { editor.putString("game_id", gameID).commit(); }
-    public String getGameID() { return pref.getString("game_id", null); }
+    public String getGameID() { return pref.getString("game_id", "deleted"); }
 
     public void setGameSetID(String gameSetID) {editor.putString("game_set_id", gameSetID).commit();}
     public String getGameSetID() {return pref.getString("game_set_id", null);}

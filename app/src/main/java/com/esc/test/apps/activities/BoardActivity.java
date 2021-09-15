@@ -85,7 +85,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         } else {
             setPassPlayObserver();
             getNewMoves();
-            passPlayViewModel.clearOnlineGame();
+            passPlayViewModel.clearLocalGame();
         }
     }
 
@@ -126,7 +126,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view == binding.newGame) {
-            passPlayViewModel.clearGame();
+            passPlayViewModel.clearLocalGame();
             changeGridOnClick(true);
             setBoard();
             setPieceClickEnabled();
@@ -137,6 +137,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             setPieceClickEnabled();
         } else if (view == binding.quit) {
             playFriendViewModel.quitGame();
+            onBackPressed();
         }
     }
 

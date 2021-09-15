@@ -114,9 +114,10 @@ public class FirebaseGameRepository {
 
     public void startGame(UserInfo user, boolean firstPlayer) {
         String gameSetRef = Utils.getGameSetUID(userDetails.getUid(), user.getUid(), 0);
+        String gameRef = Utils.getGameUID();
+        gameState.setGameID(gameRef);
+        Log.d(TAG, "startGame: " + gameRef);
         if (firstPlayer) {
-            String gameRef = Utils.getGameUID();
-            gameState.setGameID(gameRef);
             String startPlayer = gameSetup(user.getUid(), gameSetRef, gameRef);
             if (startPlayer.equals(userDetails.getUid()))
                 startInfo(gameSetRef, app.getString(R.string.circle));
@@ -153,6 +154,7 @@ public class FirebaseGameRepository {
 
     public void endGame(String winner) {
         if (winner == null) winner = friendUID;
+        else winner = userDetails.getUid();
         gamesRef.child(gameSetID).child(gameState.getGameID()).child(WINNER).setValue(winner);
     }
 
@@ -183,6 +185,7 @@ public class FirebaseGameRepository {
                     DatabaseReference movesRef = gamesRef.child(gameSetID).child(ref).child(MOVES);
                     fbMoveRepo.checkCurrentGameMoves(movesRef, friendGamePiece);
                     gameState.setGameID(ref);
+                    Log.d(TAG, "onDataChange: " + ref);
                 }
             }
             @Override

@@ -103,18 +103,28 @@ public class PassPlayBoardViewModel extends ViewModel {
         }
     }
 
+    public void setBeforeGame() {
+        clearOnlineGame();
+        circleScore.setValue(gameState.getCircleScore());
+        crossScore.setValue(gameState.getCrossScore());
+    }
+
     public void clearSet() {
         gameState.newSet();
-        clearGame();
+        clearLocalGame();
         circleScore.setValue("0"); crossScore.setValue("0");
     }
 
-    public void clearGame() {
-        gameState.newGame();
+    public void clearOnlineGame() {
+        gameState.newOnlineGame();
         insertNewGame();
-        moveRepository.deleteGameMoves();
+        clearMoves();
         if (gameRepository.getPreviousStarter().toString().equals(app.getString(R.string.circle))) circleTurn();
         else crossTurn();
+    }
+
+    public void clearLocalGame() {
+        gameState.newLocalGame();
     }
 
     private void insertNewGame() {
@@ -135,12 +145,6 @@ public class PassPlayBoardViewModel extends ViewModel {
         gameState.setCrossScore(crossScore.getValue());
     }
     public MutableLiveData<String> getCrossScore() {return crossScore;}
-
-    public void setBeforeGame() {
-        clearGame();
-        circleScore.setValue(gameState.getCircleScore());
-        crossScore.setValue(gameState.getCrossScore());
-    }
 
     public void setLastPos(String tag) { lastPos = tag; }
     public String getLastPos() { return lastPos; }
@@ -252,11 +256,6 @@ public class PassPlayBoardViewModel extends ViewModel {
             circleTurn();
             return crossDrawable;
         }
-    }
-
-    public void clearOnlineGame() {
-        gameState.setGameID(null);
-        gameState.setGameSetID(null);
     }
 
     public void clearMoves() { moveRepository.deleteGameMoves(); }

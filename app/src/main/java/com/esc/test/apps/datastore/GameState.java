@@ -75,7 +75,7 @@ public class GameState {
         newGame();
     }
 
-    public void setStarter(String starter) {editor.putString("starter", starter);}
+    public void setStarter(String starter) {editor.putString("starter", starter).commit();}
     public String getStarter() {return pref.getString("starter", null);}
 
     public void setCircleScore(String circleScore) {editor.putString("circle_score", circleScore).commit();}
@@ -84,8 +84,8 @@ public class GameState {
     public void setCrossScore(String crossScore) { editor.putString("cross_score", crossScore).commit(); }
     public String getCrossScore() { return pref.getString("cross_score", "0"); }
 
-    public void setGameID(String gameID) {editor.putString("game_id", gameID).commit();}
-    public String getGameID() {return pref.getString("game_id", null);}
+    public void setGameID(String gameID) { editor.putString("game_id", gameID).commit(); }
+    public String getGameID() { return pref.getString("game_id", null); }
 
     public void setGameSetID(String gameSetID) {editor.putString("game_set_id", gameSetID).commit();}
     public String getGameSetID() {return pref.getString("game_set_id", null);}

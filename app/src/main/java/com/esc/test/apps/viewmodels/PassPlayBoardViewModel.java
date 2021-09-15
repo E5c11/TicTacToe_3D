@@ -14,11 +14,12 @@ import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.entities.Game;
 import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.other.MovesFactory;
+import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.pojos.MoveInfo;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
+import com.esc.test.apps.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,6 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final MutableLiveData<String> crossScore = new MutableLiveData<>();
     private final MutableLiveData<Integer> xTurn = new MutableLiveData<>();
     private final MutableLiveData<Integer> oTurn = new MutableLiveData<>();
-    private final MutableLiveData<Boolean> ended = new MutableLiveData<>();
     private final MutableLiveData<List<int[]>> winnerLine = new MutableLiveData<>();
     private final LiveData<String> winner;
     private final LiveData<String> starter;
@@ -118,7 +118,8 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     private void insertNewGame() {
-        gameRepository.insertGame(new Game("in progress", "cross", "", "opponent", "not started"));
+        gameRepository.insertGame(new Game(
+                "in progress", "cross", "", "opponent", "not started"));
     }
 
     public void addCircleScore() {
@@ -150,24 +151,22 @@ public class PassPlayBoardViewModel extends ViewModel {
                 gameState.setStarter(t);
                 gameRepository.setStarter(t);
             }
-            moves.createMoves(cubeID.getCoordinates(), t);
-            dispose();
+            moves.createMoves(cubeID.getCoordinates(), t, null, false);
+            Utils.dispose(d);
         }).subscribe();
     }
 
-    private void dispose() {
-        d.dispose();
-    }
-
-    public void newFriendMove(Move move) {
+    public void newFriendMove(MoveInfo move) {
         Log.d(TAG, "newFriendMove: add move to db " + move.getPiece_played());
         if (lastMove.getValue() == null) downloadedMove(move);
         else if (!move.getPosition().equals(lastMove.getValue().getPosition())) downloadedMove(move);
     }
 
-    private void downloadedMove(Move move) {
-        moves.createMoves(String.valueOf(move.getCoordinates()), String.valueOf(move.getPiece_played()));
-        if (String.valueOf(move.getPiece_played()).equals(app.getString(R.string.cross))) circleTurn();
+    private void downloadedMove(MoveInfo move) {
+        moves.createMoves(String.valueOf(move.getCoordinates()),
+                String.valueOf(move.getPiece_played()), move.getMoveID(), false);
+        if (String.valueOf(move.getPiece_played()).equals(app.getString(R.string.cross)))
+            circleTurn();
         else crossTurn();
     }
 
@@ -188,8 +187,6 @@ public class PassPlayBoardViewModel extends ViewModel {
         oTurn.setValue(turnColor);
         updateTurn(app.getString(R.string.circle));
     }
-
-    public void setEnded(boolean end) { ended.setValue(end); }
 
     public LiveData<Move> getLastMove() {return lastMove;}
 
@@ -257,10 +254,11 @@ public class PassPlayBoardViewModel extends ViewModel {
         }
     }
 
-    public void clearMoves() {
-        moveRepository.deleteGameMoves();
+    public void clearOnlineGame() {
         gameState.setGameID(null);
         gameState.setGameSetID(null);
     }
+
+    public void clearMoves() { moveRepository.deleteGameMoves(); }
 
 }

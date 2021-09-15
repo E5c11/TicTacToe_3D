@@ -3,8 +3,13 @@ package com.esc.test.apps.utils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.reactivex.disposables.Disposable;
 
 public class Utils {
 
@@ -12,6 +17,7 @@ public class Utils {
     public static final int PASSWORD_INPUT = 81;
     public static final int EMAIL_INPUT = 21;
     public static final String lookUp = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-d");
 
     public static void setMargins (View v, int l, int t, int r, int b) {
         if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
@@ -54,4 +60,13 @@ public class Utils {
 
     private static int getLookUpIndex(char firstChar) { return lookUp.indexOf(firstChar); }
 
+    public static String getDaysAgo(String pastDate) {
+        LocalDate now = LocalDate.now();
+        LocalDate past = LocalDate.parse(pastDate, formatter);
+        return String.valueOf(ChronoUnit.DAYS.between(past, now));
+    }
+
+    public static void dispose(Disposable d) {
+        d.dispose();
+    }
 }

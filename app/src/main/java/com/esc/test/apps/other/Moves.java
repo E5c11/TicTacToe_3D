@@ -2,17 +2,16 @@ package com.esc.test.apps.other;
 
 import android.util.Log;
 
-import com.esc.test.apps.R;
+import com.esc.test.apps.datastore.GameState;
+import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.pojos.MoveInfo;
+import com.esc.test.apps.repositories.FirebaseMoveRepository;
+import com.esc.test.apps.repositories.GameRepository;
+import com.esc.test.apps.repositories.MoveRepository;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.repositories.FirebaseMoveRepository;
-import com.esc.test.apps.repositories.GameRepository;
-import com.esc.test.apps.repositories.MoveRepository;
 
 public class Moves {
 
@@ -31,13 +30,13 @@ public class Moves {
 
     public Moves(GameState gameState, GameRepository gameRepository,
                  MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository,
-                 String coordinates, String playedPiece
+                 String coordinates, String playedPiece, String moveId, boolean myTurn
     ) {
         this.gameState = gameState;
         this.gameRepository = gameRepository;
         this.moveRepository = moveRepository;
         this.firebaseMoveRepository = firebaseMoveRepository;
-        executor.execute(() -> findPos(coordinates, playedPiece));
+        executor.execute(() -> findPos(coordinates, playedPiece, moveId, myTurn));
     }
 
     private String getPosType(String linePos) { return moveRepository.getOccupiedWith(linePos);}
@@ -133,7 +132,7 @@ public class Moves {
         return values2Check;
     }
 
-    public void findPos(String tempCube, String playedPiece) {
+    public void findPos(String tempCube, String playedPiece, String moveId, boolean myTurn) {
         Log.d(TAG, tempCube + " " + tempCube.length());
         String[] cube = {String.valueOf(tempCube.charAt(0)), String.valueOf(tempCube.charAt(1)), String.valueOf(tempCube.charAt(2))};
         numValue(cube);
@@ -143,9 +142,9 @@ public class Moves {
         this.playedPiece = playedPiece;
         Log.d(TAG, "findPos: played piece " + playedPiece);
         moveRepository.insertMove(new Move(tempCube, String.valueOf(cubePos), playedPiece));
-        if (gameState.getGameID() != null) {
+        if (myTurn) {
             Log.d(TAG, "findPos: uploading move " + cubePos);
-            firebaseMoveRepository.addMove(new Move(tempCube, String.valueOf(cubePos), playedPiece));
+            firebaseMoveRepository.addMove(new MoveInfo(tempCube, String.valueOf(cubePos), playedPiece, moveId, null));
         }
         Log.d("myT", "co: " + tempCube + " pos: " + cubePos + " piece played: " + playedPiece);
         lines2check.clear();

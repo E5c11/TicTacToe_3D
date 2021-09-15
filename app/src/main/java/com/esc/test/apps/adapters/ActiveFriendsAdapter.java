@@ -12,12 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.FriendListBinding;
-
+import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.pojos.UserInfo;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
+import com.esc.test.apps.utils.Utils;
 
 import java.util.Objects;
 
@@ -26,12 +23,14 @@ public class ActiveFriendsAdapter extends
 
     private final Application app;
     private final OnClickListener listener;
+    private final UserDetails userInfo;
     public static final String ACTIVE_LIST = "active";
 
-    public ActiveFriendsAdapter(Application app, OnClickListener listener) {
+    public ActiveFriendsAdapter(Application app, OnClickListener listener, UserDetails userInfo) {
         super(diffCallback);
         this.app = app;
         this.listener = listener;
+        this.userInfo = userInfo;
     }
 
     @NonNull
@@ -55,10 +54,15 @@ public class ActiveFriendsAdapter extends
         else if (user.getGame_invite())
             holder.bindButton(app.getResources().getString(R.string.cancel));
         if (user.getStarter() != null) {
-            if (!user.getStarter())
+            if (user.getStarter())
                 holder.bindStarter(app.getResources().getString(R.string.their_turn));
             else
                 holder.bindStarter(app.getResources().getString(R.string.your_turn));
+        } else if (user.getMove() != null) {
+            if (user.getMove().getUid().equals(userInfo.getUid()))
+                holder.bindStarter(app.getResources().getString(R.string.your_turn));
+            else
+                holder.bindStarter(app.getResources().getString(R.string.their_turn));
         }
     }
 
@@ -96,6 +100,9 @@ class RequestHolder extends RecyclerView.ViewHolder {
         if (user.getStatus() != null) {
             if (user.getStatus().equals("online")) binding.friendActive.setTextColor(Color.BLUE);
             binding.friendActive.setText(user.getStatus());
+        } else if (user.getInvite_date() != null){
+            String days = Utils.getDaysAgo(user.getInvite_date());
+            binding.friendActive.setText(days + " ago");
         }
     }
     void bindButton(String text) {

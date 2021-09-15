@@ -17,6 +17,8 @@ import com.esc.test.apps.databinding.FriendsActivityBinding;
 
 import com.esc.test.apps.adapters.ActiveFriendsAdapter;
 import dagger.hilt.android.AndroidEntryPoint;
+
+import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.viewmodels.FriendsModelView;
 import com.esc.test.apps.pojos.UserInfo;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +35,7 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
     private ActiveFriendsAdapter activeAdapter;
     private FriendRequestAdapter requestAdapter;
     @Inject DatabaseReference ref;
+    @Inject UserDetails user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,7 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
         Log.d("myT", "FriendsActivity");
 
         friendsModelView = new ViewModelProvider(this).get(FriendsModelView.class);
-        activeAdapter = new ActiveFriendsAdapter(getApplication(), this);
+        activeAdapter = new ActiveFriendsAdapter(getApplication(), this, user);
         requestAdapter = new FriendRequestAdapter(getApplication(),this);
         setViews();
         setObservers();

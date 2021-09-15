@@ -26,7 +26,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private final ArrayList<GridView> layers = new ArrayList<>();
     private PassPlayBoardViewModel passPlayViewModel;
-    private PlayFriendBoardViewModel playWithFriendViewModel;
+    private PlayFriendBoardViewModel playFriendViewModel;
     private static final String TAG = "myT";
     private int numLayers;
     private BoardActivityBinding binding;
@@ -53,7 +53,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             i.setOnItemClickListener((adapterView, view, j, l) -> changeSquareIcon(view));
             numLayers++;
         });
-        passPlayViewModel.setEnded(false);
         passPlayViewModel.clearMoves();
         setObservers();
     }
@@ -70,15 +69,15 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         if (extras != null) {
             gameButtonsVis();
             String extra = (String) extras.get("friend_game_piece");
-            playWithFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
+            playFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
             Log.d(TAG, "friend's starting piece is: " + extra);
             String uids = (String) extras.get("game_set_id");
             if (extra.equals(getResources().getString(R.string.cross))) {
-                playWithFriendViewModel.getGameUids(uids, true);
+                playFriendViewModel.getGameUids(uids, true);
                 changeGridOnClick(false);
                 Log.d(TAG, "disable click: ");
             } else {
-                playWithFriendViewModel.getGameUids(uids, false);
+                playFriendViewModel.getGameUids(uids, false);
                 changeGridOnClick(true);
                 Log.d(TAG, "enable click: ");
             }
@@ -86,6 +85,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         } else {
             setPassPlayObserver();
             getNewMoves();
+            passPlayViewModel.clearOnlineGame();
         }
     }
 
@@ -112,8 +112,9 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             passPlayViewModel.setLastPos(cube.getArrayPos());
         } else {
             passPlayViewModel.setLastPos(null);
-            passPlayViewModel.newMove((CubeID) view.getTag());
-            Log.d(TAG, "changeSquareIcon: " + ((CubeID) view.getTag()).getArrayPos());
+            if (playFriendViewModel != null) playFriendViewModel.newMove((CubeID) view.getTag());
+            else passPlayViewModel.newMove((CubeID) view.getTag());
+//            Log.d(TAG, "changeSquareIcon: " + ((CubeID) view.getTag()).getArrayPos());
         }
     }
 
@@ -125,19 +126,17 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View view) {
         if (view == binding.newGame) {
-            passPlayViewModel.setEnded(false);
             passPlayViewModel.clearGame();
             changeGridOnClick(true);
             setBoard();
             setPieceClickEnabled();
         } else if (view == binding.newSet) {
-            passPlayViewModel.setEnded(false);
             passPlayViewModel.clearSet();
             setBoard();
             changeGridOnClick(true);
             setPieceClickEnabled();
         } else if (view == binding.quit) {
-            playWithFriendViewModel.quitGame();
+            playFriendViewModel.quitGame();
         }
     }
 
@@ -169,7 +168,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                 passPlayViewModel.updateScore(winner);
                 binding.title.setText(winner + getResources().getString(R.string.game_won));
                 changeGridOnClick(false);
-                if (playWithFriendViewModel != null) playWithFriendViewModel.uploadWinner();
+                if (playFriendViewModel != null) playFriendViewModel.uploadWinner();
             }
         });
         passPlayViewModel.getWinnerLine().observe(this, winnerLine -> {
@@ -189,28 +188,33 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void setOpponentUIDObserver() {
-        playWithFriendViewModel.getTurn().observe(this, turn -> {
+        playFriendViewModel.getTurn().observe(this, turn -> {
             if (turn != null) {
                 if (turn.isFriendsTurn()) {
                     binding.title.setText(getResources().getString(R.string.their_turn));
-                    Log.d(TAG, "setPlayObservers: friend's turn");
+//                    Log.d(TAG, "setPlayObservers: friend's turn");
                     changeGridOnClick(false);
                 } else {
                     binding.title.setText(getResources().getString(R.string.your_turn));
-                    Log.d(TAG, "setPlayObservers: your turn");
+//                    Log.d(TAG, "setPlayObservers: your turn");
                     changeGridOnClick(true);
                 }
             }
         });
-        playWithFriendViewModel.getExistingMoves().observe(this, s -> {
-            Log.d(TAG, "setOpponentUIDObserver: get moves");
+        playFriendViewModel.getExistingMoves().observe(this, s -> {
+//            Log.d(TAG, "setOpponentUIDObserver: get moves");
             if (s != null) {
                 if (!s.isEmpty()) {
-                    playWithFriendViewModel.addExistingMoves(s);
+                    playFriendViewModel.addExistingMoves(s);
                     s.forEach(move -> updateGridView(move.getPosition(), move.getPiece_played()));
                 }
                 getNewMoves();
-                setPlayFriendObservers();
+            }
+        });
+        playFriendViewModel.getMoveInfo().observe(this, s -> {
+            if (s != null) {
+                updateGridView(s.getPosition(), s.getPiece_played());
+                passPlayViewModel.newFriendMove(s);
             }
         });
     }
@@ -221,16 +225,11 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
-    private void setPlayFriendObservers() {
-        playWithFriendViewModel.getMoveInfo().observe(this, s -> {
-            if (s != null) passPlayViewModel.newFriendMove(s);
-        });
-    }
-
     private void updateGridView(String pos, String playedPiece) {
         int[] turnPos = CubeAdapter.getGridAdapter(pos);
-        Log.d(TAG, "after " + turnPos[0] + " " + turnPos[1]);
-        layers.get(turnPos[0]).getChildAt(turnPos[1]).setBackground(getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
+//        Log.d(TAG, "after " + turnPos[0] + " " + turnPos[1]);
+        layers.get(turnPos[0]).getChildAt(turnPos[1])
+                .setBackground(getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
     }
 

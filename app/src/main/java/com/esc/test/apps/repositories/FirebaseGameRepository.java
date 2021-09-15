@@ -63,11 +63,9 @@ public class FirebaseGameRepository {
     private static final String FRIENDS = "friends";
     private static final String ACTIVE_GAME = "active_game";
     private static final String STARTER = "starter";
-    private static final String GAME_INVITE = "game_invite";
     private static final String GAME_REQUEST = "game_request";
     private static final String FRIEND_INVITE = "friend_invites";
     private static final String FRIEND_REQUEST = "friend_requests";
-    private static final String INVITE_TIME = "invite_time";
     private static final String WINNER = "winner";
 
     @Inject
@@ -86,8 +84,7 @@ public class FirebaseGameRepository {
     }
 
     public void findFriend(String friend_name) {
-        Query findFriend = usersRef.orderByChild(app.getString(R.string.display_name)).equalTo(friend_name);
-        Log.d(TAG, "findFriend: ");
+        Query findFriend = usersRef.orderByChild(DISPLAY_NAME).equalTo(friend_name);
         findFriend.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -111,12 +108,8 @@ public class FirebaseGameRepository {
     public SingleLiveEvent<UserInfo> getNewFriend() { return newFriend; }
 
     public void acceptInvite(UserInfo user) {
-        usersRef.child(user.getUid()).child(FRIENDS).child(userDetails.getUid())
-                .child(DISPLAY_NAME).setValue(userDetails.getDisplayName());
-        usersRef.child(userDetails.getUid()).child(FRIENDS).child(user.getUid())
-                .child(DISPLAY_NAME).setValue(user.getDisplay_name());
-        usersRef.child(user.getUid()).child(FRIEND_INVITE).child(userDetails.getUid()).removeValue();
-        usersRef.child(userDetails.getUid()).child(FRIEND_REQUEST).child(user.getUid()).removeValue();
+        usersRef.child(userDetails.getUid()).child(FRIENDS).child(user.getUid()).child(DISPLAY_NAME)
+                .setValue(user.getDisplay_name());
     }
 
     public void startGame(UserInfo user, boolean firstPlayer) {
@@ -125,9 +118,20 @@ public class FirebaseGameRepository {
             String gameRef = Utils.getGameUID();
             gameState.setGameID(gameRef);
             String startPlayer = gameSetup(user.getUid(), gameSetRef, gameRef);
-            if (startPlayer.equals(userDetails.getUid())) startGame.setValue(new String[] {gameSetRef, app.getString(R.string.cross)});
-            else startGame.setValue(new String[] {gameSetRef, app.getString(R.string.circle)});
-        } else startGame.setValue(new String[] {gameSetRef, friendStart(user.getStarter())});
+            if (startPlayer.equals(userDetails.getUid()))
+                startInfo(gameSetRef, app.getString(R.string.circle));
+            else startInfo(gameSetRef, app.getString(R.string.cross));
+        } else startInfo(gameSetRef, friendStart(user.getStarter()));
+    }
+
+    private String gameSetup(String uid, String gameSetRef, String gameRef) {
+        String startPlayer = new Random().nextBoolean() ? uid : userDetails.getUid();
+        gamesRef.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer);
+        return startPlayer;
+    }
+
+    private void startInfo(String gameSetRef, String friendGamePiece) {
+        startGame.setValue(new String[] {gameSetRef, friendGamePiece});
     }
 
     private String friendStart(boolean friendStart) {
@@ -137,39 +141,14 @@ public class FirebaseGameRepository {
     public SingleLiveEvent<String[]> getStartGame() { return startGame; }
 
     public void sendGameInvite(UserInfo user, boolean startGame) {
-        usersRef.child(user.getUid()).child(FRIENDS).child(userDetails.getUid()).child(GAME_REQUEST).setValue(startGame);
-        receiveGameInvite(user.getUid(), startGame);
-    }
-    private void receiveGameInvite(String uid, boolean startGame) {
-        usersRef.child(userDetails.getUid()).child(FRIENDS).child(uid).child(GAME_INVITE).setValue(startGame);
-    }
-
-    private String gameSetup(String uid, String gameSetRef, String gameRef) {
-        String startPlayer = new Random().nextBoolean() ? uid : userDetails.getUid();
-        Log.d(TAG, "start player: " + startPlayer);
-        gamesRef.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer);
-        return startPlayer;
+        usersRef.child(user.getUid()).child(FRIENDS).child(userDetails.getUid())
+                .child(GAME_REQUEST).setValue(startGame);
     }
 
     public void inviteNewFriend() {
         UserInfo userInfo = getNewFriend().getValue();
-        Map<String, Object> invite = new HashMap<>();
-        String date = getDate();
-        invite.put(INVITE_TIME, date);
-        invite.put(DISPLAY_NAME, userInfo.getDisplay_name());
         usersRef.child(userDetails.getUid()).child(FRIEND_INVITE)
-                .child(userInfo.getUid()).setValue(invite).addOnCompleteListener(task -> {
-                    invite.put(DISPLAY_NAME, userDetails.getDisplayName());
-                    usersRef.child(userInfo.getUid()).child(FRIEND_REQUEST)
-                            .child(userDetails.getUid()).setValue(invite);
-        });
-    }
-
-    private String getDate() {return LocalDate.now().toString();}
-
-    private String getDaysAgo(LocalDate pastDate) {
-        LocalDate timeNow = LocalDate.now();
-        return String.valueOf(ChronoUnit.DAYS.between(pastDate, timeNow));
+                .child(userInfo.getUid()).child(DISPLAY_NAME).setValue(userInfo.getDisplay_name());
     }
 
     public void endGame(String winner) {
@@ -223,14 +202,14 @@ public class FirebaseGameRepository {
 
     private List<UserInfo> getFriends(DataSnapshot dataSnapshot) {
         List<UserInfo> friendsList = new ArrayList<>();
-        UserInfo user;
         Log.d(TAG, "Active friend downloaded: " + dataSnapshot.getChildrenCount());
         for(DataSnapshot snap : dataSnapshot.getChildren()){
-            user = snap.getValue(UserInfo.class);
-            user.setUid(snap.getKey());
-            friendsList.add(user);
+            UserInfo user = snap.getValue(UserInfo.class);
+            if (user != null) {
+                user.setUid(snap.getKey());
+                friendsList.add(user);
+            }
         }
         return friendsList;
     }
-
 }

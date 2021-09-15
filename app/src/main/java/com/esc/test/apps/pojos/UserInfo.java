@@ -22,6 +22,10 @@ public class UserInfo {
     private Boolean starter;
     @SerializedName("active_game")
     private String active_game;
+    @SerializedName("invite_date")
+    private String invite_date;
+    @SerializedName("move")
+    private MoveInfo move;
 
     public UserInfo() {}
 
@@ -51,4 +55,16 @@ public class UserInfo {
 
     public String getActive_game() {return active_game;}
     public void setActive_game(String active_game) {this.active_game = active_game;}
+
+    public String getInvite_date() { return invite_date; }
+
+    public void setInvite_date(String invite_date) { this.invite_date = invite_date; }
+
+    public MoveInfo getMove() {
+        return move;
+    }
+
+    public void setMove(MoveInfo move) {
+        this.move = move;
+    }
 }

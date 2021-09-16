@@ -86,7 +86,6 @@ public class FirebaseUserRepository {
                         setUserOnline(uid);
                         loggedIn.postValue(true);
                         Log.d(TAG, "after set token: " + loggedIn.getValue());
-                        executor.shutdown();
                     } else {
                         Log.d("myT", "user not logged in: " + task.getException().getMessage());
                         if (attempt < 3) {
@@ -132,7 +131,6 @@ public class FirebaseUserRepository {
                         userDetails.setDisplayName(displayName);
                         setToken(userDetails.getToken());
                         loggedIn.postValue(true);
-                        executor.shutdown();
                     } else if (attempt < 3) {
                         attempt++;
                         createUser(email, password, displayName);

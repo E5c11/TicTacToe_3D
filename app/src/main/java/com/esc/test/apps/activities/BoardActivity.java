@@ -16,6 +16,7 @@ import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.viewmodels.PassPlayBoardViewModel;
 import com.esc.test.apps.viewmodels.PlayFriendBoardViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -134,7 +135,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             changeGridOnClick(true);
             setPieceClickEnabled();
         } else if (view == binding.quit) {
-            playFriendViewModel.quitGame();
+            if (playFriendViewModel != null) playFriendViewModel.quitGame();
             onBackPressed();
         }
     }
@@ -215,7 +216,17 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             }
         });
         playFriendViewModel.getNetwork().observe(this, s -> {
-            if (s != null) changeGridOnClick(s);
+            if (s != null)
+                if (s) {
+                    changeGridOnClick(true);
+                    Snackbar.make(
+                            binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
+                } else {
+                    changeGridOnClick(false);
+                    Snackbar.make(
+                        binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
+                }
+
         });
         getNewMoves();
     }
@@ -239,5 +250,10 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         super.onDestroy();
         passPlayViewModel.clearMoves();
         Log.d("myT", "destroy");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }

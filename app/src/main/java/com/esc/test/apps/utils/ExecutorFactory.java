@@ -5,12 +5,22 @@ import java.util.concurrent.Executors;
 
 public class ExecutorFactory {
 
-    private static ExecutorService executor;
+    private static final ExecutorService singleExecutor = Executors.newSingleThreadExecutor();
+    private static final ExecutorService fixedSizeExecutor = Executors.newFixedThreadPool(3);
 
     public static ExecutorService getSingleExecutor() {
-        return Executors.newSingleThreadExecutor();
+        return singleExecutor;
     }
     public static ExecutorService getFixedSizeExecutor() {
-        return Executors.newFixedThreadPool(3);
+        return fixedSizeExecutor;
     }
+
+    public static void killSingleExecutor() {
+        singleExecutor.shutdownNow();
+    }
+
+    public static void killFixedSizeExecutor() {
+        fixedSizeExecutor.shutdownNow();
+    }
+
 }

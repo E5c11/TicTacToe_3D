@@ -28,7 +28,7 @@ public class LoginViewModel extends ViewModel {
 
     private final SingleLiveEvent<Boolean> loggedIn;
     private final SingleLiveEvent<String> error;
-    private final LiveData<Boolean> network;
+    private final ConnectionLiveData network;
     private final MutableLiveData<String> displayNameExists;
     private final MutableLiveData<String> passwordError = new MutableLiveData<>();
     private final MutableLiveData<String> emailError;
@@ -43,12 +43,14 @@ public class LoginViewModel extends ViewModel {
     private static final String TAG = "myT";
 
     @Inject
-    public LoginViewModel(UserDetails userDetails, FirebaseUserRepository fbUserRepo, Application app) {
+    public LoginViewModel(UserDetails userDetails, FirebaseUserRepository fbUserRepo,
+                          ConnectionLiveData network
+    ) {
         this.userDetails = userDetails;
         this.fbUserRepo = fbUserRepo;
+        this.network = network;
         loggedIn = fbUserRepo.getLoggedIn();
         error = fbUserRepo.getError();
-        network = new ConnectionLiveData(app);
         emailError = fbUserRepo.getEmailError();
         displayNameExists = fbUserRepo.getDisplayNameExists();
         logUserIn();

@@ -36,9 +36,12 @@ public class Home extends AppCompatActivity {
             startActivity(new Intent(this, BoardActivity.class));
         });
         binding.playFriend.setOnClickListener(v -> {
+            v.startAnimation(an1);
             startActivity(new Intent(this, Login.class));
         });
-        binding.manageProfile.setOnClickListener(v -> 
-                startActivity(new Intent(this, ProfileManagement.class)));
+        binding.manageProfile.setOnClickListener(v -> {
+            v.startAnimation(an1);
+            startActivity(new Intent(this, ProfileManagement.class));
+        });
     }
 }

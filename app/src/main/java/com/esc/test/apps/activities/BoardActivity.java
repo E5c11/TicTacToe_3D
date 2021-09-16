@@ -214,6 +214,9 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                 Log.d(TAG, "downloaded move view update: ");
             }
         });
+        playFriendViewModel.getNetwork().observe(this, s -> {
+            if (s != null) changeGridOnClick(s);
+        });
         getNewMoves();
     }
 

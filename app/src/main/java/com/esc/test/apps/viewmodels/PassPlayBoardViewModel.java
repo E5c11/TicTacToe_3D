@@ -14,6 +14,7 @@ import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.entities.Game;
 import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.pojos.MoveInfo;
@@ -56,8 +57,9 @@ public class PassPlayBoardViewModel extends ViewModel {
     private Disposable d, f;
 
     @Inject
-    public PassPlayBoardViewModel(MovesFactory moves, GameState gameState, MoveRepository moveRepository,
-                                  GameRepository gameRepository, Application app
+    public PassPlayBoardViewModel(MovesFactory moves, GameState gameState,
+                                  MoveRepository moveRepository, GameRepository gameRepository,
+                                  Application app
     ) {
         populateGridLists();
         turnColor = R.color.colorAccent;

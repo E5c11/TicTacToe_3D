@@ -11,6 +11,7 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.pojos.MoveInfo;
@@ -45,13 +46,15 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private final MovesFactory moves;
     private final FirebaseGameRepository fbGameRepo;
     private final FirebaseMoveRepository fbMoveRepo;
+    private final ConnectionLiveData network;
     public static final String TAG = "myT";
 
     @Inject
     public PlayFriendBoardViewModel(GameState gameState, MoveRepository moveRepository,
                                     GameRepository gameRepository, Application app,
                                     UserDetails userDetails, FirebaseGameRepository fbGameRepo,
-                                    FirebaseMoveRepository fbMoveRepo, MovesFactory moves
+                                    FirebaseMoveRepository fbMoveRepo, MovesFactory moves,
+                                    ConnectionLiveData network
     ) {
         this.app = app;
         this.moveRepository = moveRepository;
@@ -61,6 +64,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
         this.fbGameRepo = fbGameRepo;
         this.fbMoveRepo = fbMoveRepo;
         this.moves = moves;
+        this.network = network;
         existingMoves = fbMoveRepo.getExistingMoves();
         turn = LiveDataReactiveStreams.fromPublisher(gameRepository.getTurn()
                 .subscribeOn(Schedulers.io()));
@@ -113,6 +117,8 @@ public class PlayFriendBoardViewModel extends ViewModel {
         });}
 
     public LiveData<List<MoveInfo>> getExistingMoves() { return existingMoves; }
+
+    public LiveData<Boolean> getNetwork() { return network; }
 }
 
 

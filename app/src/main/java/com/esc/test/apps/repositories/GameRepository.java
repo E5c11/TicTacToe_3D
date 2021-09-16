@@ -9,11 +9,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import com.esc.test.apps.entities.Game;
 
 import com.esc.test.apps.gamestuff.GamesDao;
+import com.esc.test.apps.utils.ExecutorFactory;
+
 import io.reactivex.Flowable;
 
 @Singleton
@@ -24,7 +27,7 @@ public class GameRepository {
     private final LiveData<String> winner;
     private final LiveData<String> starter;
     private static final String TAG = "myT";
-    private final ExecutorService service;
+    private final ExecutorService service = ExecutorFactory.getFixedSizeExecutor();
 
     @Inject
     public GameRepository(GamesDao gamesDao) {
@@ -33,7 +36,6 @@ public class GameRepository {
         turn = gamesDao.getTurn();
         winner = gamesDao.getWinner();
         starter = gamesDao.getPreviousStarter();
-        service = Executors.newFixedThreadPool(2);
     }
 
     public void insertGame(Game game) {

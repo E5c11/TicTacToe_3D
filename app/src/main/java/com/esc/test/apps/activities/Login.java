@@ -45,8 +45,14 @@ public class Login extends AppCompatActivity {
         binding.registerProgress.setAnimation(an);
     }
 
+    private void killProgressBar() {
+        binding.registerProgress.setAnimation(null);
+        binding.registerProgress.setVisibility(View.GONE);
+    }
+
     private void setObservers() {
         loginViewModel.getLoggedIn().observe(this, s -> {
+            Log.d(TAG, "setObservers: ");
             if (!s) createNewAccount();
             else startActivity(new Intent(Login.this, PlayWithFriend.class));
         });
@@ -55,8 +61,11 @@ public class Login extends AppCompatActivity {
             else binding.password.setError(s);
         });
         loginViewModel.getEmailError().observe(this, s -> binding.email.setError(s));
-        loginViewModel.getError().observe(this, s ->
-                Snackbar.make(binding.getRoot(), s, Snackbar.LENGTH_LONG).show());
+        loginViewModel.getError().observe(this, s -> {
+            killProgressBar();
+            if (!s.equals("kill login"))
+                Snackbar.make(binding.getRoot(), s, Snackbar.LENGTH_LONG).show();
+        });
         loginViewModel.getNetwork().observe(this, s -> {
             if (s != null) {
                 if (s) Snackbar.make(
@@ -100,14 +109,12 @@ public class Login extends AppCompatActivity {
                 loginViewModel.setDisplayName(binding.displayNameInput.getText().toString().trim());
                 loginViewModel.setEmail(email);
                 loginViewModel.submitNewUser();
-            } else {
-                Log.d(TAG, "setListeners: " + binding.password.getError());
-                if (binding.password.getError() == null || binding.password.getError().equals("")) {
-                    loginViewModel.setEmail(email);
-                    loginViewModel.setPassword(binding.passInput.getText().toString().trim());
-                    loginViewModel.loginUser();
-                    setProgressBar();
-                }
+                setProgressBar();
+            } else if (binding.submit.getText().equals(getString(R.string.login))) {
+                loginViewModel.setEmail(email);
+                loginViewModel.setPassword(binding.passInput.getText().toString().trim());
+                loginViewModel.loginUser();
+                setProgressBar();
             }
         });
     }

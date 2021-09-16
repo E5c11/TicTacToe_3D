@@ -7,11 +7,15 @@ import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.repositories.FirebaseMoveRepository;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
+import com.esc.test.apps.utils.ExecutorFactory;
+
+import java.util.concurrent.ExecutorService;
 
 @Singleton
 public class MovesFactory {
 
     private final GameState gameState;
+    private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
     private final FirebaseMoveRepository firebaseMoveRepository;
@@ -27,7 +31,7 @@ public class MovesFactory {
     }
 
     public void createMoves(String coordinates, String playedPiece, String moveId, boolean myTurn) {
-        new Moves(gameState, gameRepository, moveRepository, firebaseMoveRepository,
+        new Moves(gameState, gameRepository, executor, moveRepository, firebaseMoveRepository,
                 coordinates, playedPiece, moveId, myTurn);
     }
 }

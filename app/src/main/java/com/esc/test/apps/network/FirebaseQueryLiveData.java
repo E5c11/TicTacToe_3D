@@ -40,7 +40,7 @@ public class FirebaseQueryLiveData extends LiveData<DataSnapshot> {
 
     private class EventListener implements ValueEventListener {
         @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) { setValue(dataSnapshot); }
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) { postValue(dataSnapshot); }
         @Override
         public void onCancelled(@NonNull DatabaseError databaseError) { }
     }

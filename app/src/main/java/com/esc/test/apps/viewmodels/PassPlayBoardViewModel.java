@@ -53,7 +53,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final int turnColor, notTurnColor;
     private final int crossDrawable, circleDrawable;
     private final Application app;
-    private Disposable d;
+    private Disposable d, f;
 
     @Inject
     public PassPlayBoardViewModel(MovesFactory moves, GameState gameState, MoveRepository moveRepository,
@@ -162,10 +162,9 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     public void updateView(CubeID cubeID) {
-        d = gameRepository.getTurn().subscribeOn(Schedulers.io()).doOnNext(t -> {
+        f = gameRepository.getTurn().subscribeOn(Schedulers.io()).doOnNext(t -> {
             lastMove.postValue(new MoveUpdate(cubeID.getArrayPos(), t));
-            Log.d(TAG, "updateView: set");
-            Utils.dispose(d);
+            Utils.dispose(f);
         }).subscribe();
     }
     public void downloadedMove(MoveInfo move) {

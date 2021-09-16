@@ -14,22 +14,23 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.gamestuff.GameMovesDao;
+import com.esc.test.apps.utils.ExecutorFactory;
 
 @Singleton
 public class MoveRepository {
     private final GameMovesDao gameMovesDao;
     private final LiveData<List<Move>> allMoves;
-    private final ExecutorService service;
+    private final ExecutorService service  = ExecutorFactory.getFixedSizeExecutor();
 
     @Inject
     public MoveRepository(GameMovesDao gameMovesDao) {
         this.gameMovesDao = gameMovesDao;
         allMoves = gameMovesDao.getAllMoves();
-        service = Executors.newFixedThreadPool(2);
     }
 
     public void insertMove(Move move) {

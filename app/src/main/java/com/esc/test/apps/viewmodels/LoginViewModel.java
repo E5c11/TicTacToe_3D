@@ -14,6 +14,8 @@ import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
 import com.esc.test.apps.utils.Utils;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +37,7 @@ public class LoginViewModel extends ViewModel {
     private String passCon;
     private String password;
     private String email;
-    private boolean login = true, validEmail = false;
+    private boolean login = true;
     private final UserDetails userDetails;
     private final FirebaseUserRepository fbUserRepo;
     private static final String TAG = "myT";
@@ -79,15 +81,16 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void submitNewUser() {
-        if (!validDisplayName() | !validateEmail() | !validatePassCon()) return;
-        else fbUserRepo.createUser(email, password, displayName);
+        if (!validDisplayName() | !validateEmail() | !validatePassCon()) {
+            error.setValue("kill login");
+            return;
+        } else fbUserRepo.createUser(email, password, displayName);
     }
 
     public void loginUser() {
         Log.d(TAG, "loginUser: " + !password.isEmpty());
         if (!validateEmail() | password.isEmpty()) {
-
-            Log.d(TAG, "loginUser: no " + !password.isEmpty() + " " + !validateEmail());
+            error.setValue("kill login");
             return;
         }
         else {
@@ -144,6 +147,7 @@ public class LoginViewModel extends ViewModel {
     public void setPassCon(String viewPassCon) {
         passCon = viewPassCon;
         validatePassCon();
+        Log.d(TAG, "setPassCon: ");
     }
 
     public void setLogin(boolean loginPage) { login = loginPage;}
@@ -172,7 +176,12 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
-    public LiveData<Boolean> getLoggedIn() { return loggedIn; }
+    public LiveData<Boolean> getLoggedIn() {
+        return Transformations.map(loggedIn, s -> {
+            Log.d(TAG, "getLoggedIn: " + s);
+            return s;
+        });
+    }
 
     public LiveData<String> getDisplayNameExists() { return displayNameExists; }
 

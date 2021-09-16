@@ -39,6 +39,12 @@ public class SingleLiveEvent<T> extends MutableLiveData<T> {
         super.setValue(t);
     }
 
+    @Override
+    public void postValue(T value) {
+        pending.set(true);
+        super.postValue(value);
+    }
+
     /**
      * Used for cases where T is Void, to make calls cleaner.
      */

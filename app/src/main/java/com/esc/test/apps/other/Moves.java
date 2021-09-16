@@ -26,14 +26,15 @@ public class Moves {
     private String playedPiece;
     private int numInRow;
     private static final String TAG = "myT";
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor;
 
-    public Moves(GameState gameState, GameRepository gameRepository,
+    public Moves(GameState gameState, GameRepository gameRepository, ExecutorService executor,
                  MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository,
                  String coordinates, String playedPiece, String moveId, boolean myTurn
     ) {
         this.gameState = gameState;
         this.gameRepository = gameRepository;
+        this.executor = executor;
         this.moveRepository = moveRepository;
         this.firebaseMoveRepository = firebaseMoveRepository;
         executor.execute(() -> findPos(coordinates, playedPiece, moveId, myTurn));

@@ -4,15 +4,13 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
-import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.MoveInfo;
+import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -21,6 +19,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,6 +33,7 @@ public class FirebaseMoveRepository {
     private final UserDetails user;
     private final SingleLiveEvent<List<MoveInfo>> existingMoves = new SingleLiveEvent<>();
     private final List<MoveInfo> tempItems = new ArrayList<>();
+    private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private static final String TAG = "myT";
     private static final String MOVES = "moves";
     private static final String GAMES = "games";
@@ -41,7 +42,9 @@ public class FirebaseMoveRepository {
     private static final String MOVE = "move";
 
     @Inject
-    public FirebaseMoveRepository (DatabaseReference ref, GameState gameState, UserDetails user) {
+    public FirebaseMoveRepository (DatabaseReference ref, GameState gameState,
+                                   UserDetails user
+    ) {
         this.gameState = gameState;
         this.ref = ref;
         this.user = user;
@@ -49,7 +52,6 @@ public class FirebaseMoveRepository {
 
     public void addMove(MoveInfo move) {
         move.setUid(user.getUid());
-//        Log.d(TAG, "addMove: " + gameState.getGameID());
         ref.child(GAMES).child(gameState.getGameSetID()).child(gameState.getGameID()).child(MOVES)
                 .child(String.valueOf(move.getMoveID())).setValue(move).addOnCompleteListener(task ->
                 Log.d(TAG, "Move " + move.getPosition() + " uploaded"));
@@ -60,19 +62,21 @@ public class FirebaseMoveRepository {
                 .child(getFriendUid(gameState.getGameSetID())).child(MOVE);
         FirebaseQueryLiveData moveLiveData = new FirebaseQueryLiveData(moveRef);
         return Transformations.map(moveLiveData, snapshot -> {
-           MoveInfo move =snapshot.getValue(MoveInfo.class);
+           MoveInfo move = snapshot.getValue(MoveInfo.class);
            if (move != null && !move.getUid().equals(user.getUid())) return move;
            else return null;
         });
     }
 
     private void getMoves(DataSnapshot dataSnapshot) {
-        tempItems.clear();
-
-        for(DataSnapshot snap : dataSnapshot.getChildren()){
-            MoveInfo msg = snap.getValue(MoveInfo.class);
-            if (msg != null) tempItems.add(msg);
-        }
+        executor.execute(() -> {
+            tempItems.clear();
+            for(DataSnapshot snap : dataSnapshot.getChildren()){
+                MoveInfo msg = snap.getValue(MoveInfo.class);
+                if (msg != null) tempItems.add(msg);
+            }
+            existingMoves.postValue(tempItems);
+        });
     }
 
     public void checkCurrentGameMoves(DatabaseReference movesRef) {
@@ -80,7 +84,6 @@ public class FirebaseMoveRepository {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 getMoves(snapshot);
-                existingMoves.setValue(tempItems);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

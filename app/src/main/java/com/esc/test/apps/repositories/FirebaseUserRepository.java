@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.UserDetails;
+import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,6 +20,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,6 +38,7 @@ public class FirebaseUserRepository {
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
     private final MutableLiveData<String> displayNameExists = new MutableLiveData<>();
     private final MutableLiveData<String> emailError = new MutableLiveData<>();
+    private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private static final String TAG = "myT";
     private static final String STATUS = "status";
     private static final String DISPLAY_NAME = "display_name";
@@ -56,36 +61,41 @@ public class FirebaseUserRepository {
             if (task.isSuccessful()) {
                 attempt = 0;
                 if (task.getResult().getSignInMethods().isEmpty())
-                    emailError.setValue("This email does not exist");
-                else emailError.setValue("This email already exists");
+                    emailError.postValue("This email does not exist");
+                else emailError.postValue("This email already exists");
             } else {
                 if (attempt < 3) {
                     attempt ++;
                     isEmailValid(viewEmail);
-                } else error.setValue("An error has occurred, check network");
+                } else error.postValue("An error has occurred, check network");
             }
         });
     }
 
     public void connectLogin(String email, String password) {
-        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                String uid = task.getResult().getUser().getUid();
-                userDetails.setUid(uid);
-                userDetails.setEmail(email);
-                userDetails.setPassword(password);
-                getDisplayNameFromDB(uid);
-                setToken(userDetails.getToken());
-                setUserOnline(uid);
-                loggedIn.setValue(true);
-            }else {
-                Log.d("myT", "user not logged in: " + task.getException().getMessage());
-                if (attempt < 3) {
-                    attempt ++;
-                    connectLogin(email, password);
-                } else error.setValue("User not logged in");
-            }
-        });
+            firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                executor.execute(() -> {
+                    if (task.isSuccessful()) {
+                        String uid = task.getResult().getUser().getUid();
+                        userDetails.setUid(uid);
+                        userDetails.setEmail(email);
+                        userDetails.setPassword(password);
+                        Log.d(TAG, "connectUser: " + Thread.currentThread().getName());
+                        getDisplayNameFromDB(uid);
+                        setToken(userDetails.getToken());
+                        setUserOnline(uid);
+                        loggedIn.postValue(true);
+                        Log.d(TAG, "after set token: " + loggedIn.getValue());
+                        executor.shutdown();
+                    } else {
+                        Log.d("myT", "user not logged in: " + task.getException().getMessage());
+                        if (attempt < 3) {
+                            attempt++;
+                            connectLogin(email, password);
+                        } else error.postValue("User not logged in");
+                    }
+                });
+            });
     }
 
     private void getDisplayNameFromDB(String uid) {
@@ -102,68 +112,72 @@ public class FirebaseUserRepository {
                 if (attempt < 3) {
                     attempt ++;
                     getDisplayNameFromDB(uid);
-                } else error.setValue("An error occurred, check the network");
+                } else error.postValue("An error occurred, check the network");
             }
         });
     }
 
     public void createUser(String email, String password, String displayName) {
-        Log.d("myT", "creating user");
         if (email != null && password != null)
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    attempt = 0;
-                    String uid = task.getResult().getUser().getUid();
-                    users.child(uid).child(DISPLAY_NAME).setValue(displayName);
-                    setUserOnline(uid);
-                    setToken(userDetails.getToken());
-                    userDetails.setUid(uid);
-                    userDetails.setEmail(email);
-                    userDetails.setPassword(password);
-                    userDetails.setDisplayName(displayName);
-                    loggedIn.setValue(true);
-                } else if (attempt < 3){
-                    attempt ++;
-                    createUser(email, password, displayName);
-                } else error.setValue("An error occurred, check the network");
+                executor.execute(() -> {
+                    if (task.isSuccessful()) {
+                        attempt = 0;
+                        String uid = task.getResult().getUser().getUid();
+                        users.child(uid).child(DISPLAY_NAME).setValue(displayName);
+                        setUserOnline(uid);
+                        userDetails.setUid(uid);
+                        userDetails.setEmail(email);
+                        userDetails.setPassword(password);
+                        userDetails.setDisplayName(displayName);
+                        setToken(userDetails.getToken());
+                        loggedIn.postValue(true);
+                        executor.shutdown();
+                    } else if (attempt < 3) {
+                        attempt++;
+                        createUser(email, password, displayName);
+                    } else error.postValue("An error occurred, check the network");
+                });
             }).addOnCanceledListener(() -> {
                 if (attempt < 3) {
-                    attempt ++;
+                    attempt++;
                     createUser(email, password, displayName);
-                } else error.setValue("An error occurred, check the network");
+                } else error.postValue("An error occurred, check the network");
             });
     }
 
     private void setUserOnline(String uid) {
-        users.child(uid).child(STATUS).setValue(app.getString(R.string.online));
+        users.child(uid).child(STATUS).setValue(app.getString(R.string.online)).addOnCompleteListener(task -> {
+            Log.d(TAG, "setUserOnline: ");
+        });
         users.child(uid).child(STATUS).onDisconnect().setValue(app.getString(R.string.offline));
     }
 
     public void checkDisplayNameExist(CharSequence ds) {
-        Query query = users.orderByChild(DISPLAY_NAME).equalTo(ds.toString());
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.getValue() == null) displayNameExists.setValue("");
-                else {
-                    for(DataSnapshot snap: snapshot.getChildren()) {
-                        String tempDisplay = (String) snap.child(DISPLAY_NAME).getValue();
-                        if (tempDisplay.equals(ds.toString())) {
-                            displayNameExists.setValue("Display name already exists");
-                        }
+            Query query = users.orderByChild(DISPLAY_NAME).equalTo(ds.toString());
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.getValue() == null) displayNameExists.setValue("");
+                    else {
+                        executor.execute(() -> {
+                            for(DataSnapshot snap: snapshot.getChildren()) {
+                                String tempDisplay = (String) snap.child(DISPLAY_NAME).getValue();
+                                if (tempDisplay.equals(ds.toString())) {
+                                    displayNameExists.postValue("Display name already exists");
+                                }
+                            }
+                        });
                     }
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError e) {
-                error.setValue("An error occurred, check the network");
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError e) {
+                    error.postValue("An error occurred, check the network");
+                }
+            });
     }
 
-    public SingleLiveEvent<Boolean> getLoggedIn() {
-        return loggedIn;
-    }
+    public SingleLiveEvent<Boolean> getLoggedIn() { return loggedIn; }
 
     public MutableLiveData<String> getEmailError() {return emailError;}
 
@@ -171,7 +185,8 @@ public class FirebaseUserRepository {
 
     public SingleLiveEvent<String> getError() { return error;}
 
-    public void setToken(String s) { users.child(userDetails.getUid()).child(TOKEN).setValue(s).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) Log.d(TAG, "setToken: ");});
+    public void setToken(String s) {
+        users.child(userDetails.getUid()).child(TOKEN).setValue(s).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) Log.d(TAG, "setToken: " + Thread.currentThread().getName());});
     }
 }

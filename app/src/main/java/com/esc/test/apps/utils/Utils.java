@@ -69,6 +69,6 @@ public class Utils {
 
     public static void dispose(Disposable d) {
         d.dispose();
-        Log.d("myT", "updateView: after thread");
+        Log.d("myT", "after thread ");
     }
 }

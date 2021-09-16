@@ -1,22 +1,22 @@
 package com.esc.test.apps.repositories;
 
 import android.app.Application;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
-import com.esc.test.apps.pojos.MoveInfo;
-import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.utils.ExecutorFactory;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -27,13 +27,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -51,6 +48,7 @@ public class FirebaseGameRepository {
     private final FirebaseQueryLiveData friends;
     private final FirebaseQueryLiveData requests;
     private final FirebaseMoveRepository fbMoveRepo;
+    private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private String gameSetID;
     private String friendUID;
     private ValueEventListener playerUIDsListener;
@@ -91,7 +89,7 @@ public class FirebaseGameRepository {
                     Log.d(TAG, "onChildAdded: " + snapshot.getValue(UserInfo.class));
                     UserInfo userInfo = snapshot.getValue(UserInfo.class);
                     userInfo.setUid(snapshot.getKey());
-                    newFriend.setValue(userInfo);
+                    newFriend.postValue(userInfo);
                 }
             }
             @Override
@@ -107,31 +105,37 @@ public class FirebaseGameRepository {
     public SingleLiveEvent<UserInfo> getNewFriend() { return newFriend; }
 
     public void acceptInvite(UserInfo user) {
-        usersRef.child(userDetails.getUid()).child(FRIENDS).child(user.getUid()).child(DISPLAY_NAME)
-                .setValue(user.getDisplay_name());
+                usersRef.child(userDetails.getUid()).child(FRIENDS)
+                    .child(user.getUid()).child(DISPLAY_NAME).setValue(user.getDisplay_name());
+
     }
 
     public void startGame(UserInfo user, boolean firstPlayer) {
-        String gameSetRef = Utils.getGameSetUID(userDetails.getUid(), user.getUid(), 0);
-        String gameRef = Utils.getGameUID();
-        gameState.setGameID(gameRef);
-        Log.d(TAG, "startGame: " + gameRef);
-        if (firstPlayer) {
-            String startPlayer = gameSetup(user.getUid(), gameSetRef, gameRef);
-            if (startPlayer.equals(userDetails.getUid()))
-                startInfo(gameSetRef, app.getString(R.string.circle));
-            else startInfo(gameSetRef, app.getString(R.string.cross));
-        } else startInfo(gameSetRef, friendStart(user.getStarter()));
+        executor.execute(() -> {
+            String gameSetRef = Utils.getGameSetUID(userDetails.getUid(), user.getUid(), 0);
+            String gameRef = Utils.getGameUID();
+            gameState.setGameID(gameRef);
+            Log.d(TAG, "startGame: " + gameRef);
+            if (firstPlayer) {
+                String startPlayer = gameSetup(user.getUid(), gameSetRef, gameRef);
+                if (startPlayer.equals(userDetails.getUid()))
+                    startInfo(gameSetRef, app.getString(R.string.circle));
+                else startInfo(gameSetRef, app.getString(R.string.cross));
+            } else startInfo(gameSetRef, friendStart(user.getStarter()));
+        });
     }
 
     private String gameSetup(String uid, String gameSetRef, String gameRef) {
         String startPlayer = new Random().nextBoolean() ? uid : userDetails.getUid();
-        gamesRef.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer);
+        Log.d(TAG, "gameSetup: ");
+        gamesRef.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer).addOnCompleteListener(task -> {
+            Log.d(TAG, "gameSetup: game details sent");
+        });
         return startPlayer;
     }
 
     private void startInfo(String gameSetRef, String friendGamePiece) {
-        startGame.setValue(new String[] {gameSetRef, friendGamePiece});
+        startGame.postValue(new String[] {gameSetRef, friendGamePiece});
     }
 
     private String friendStart(boolean friendStart) {
@@ -183,7 +187,7 @@ public class FirebaseGameRepository {
                     DatabaseReference movesRef = gamesRef.child(gameSetID).child(ref).child(MOVES);
                     fbMoveRepo.checkCurrentGameMoves(movesRef);
                     gameState.setGameID(ref);
-                    Log.d(TAG, "onDataChange: " + ref);
+                    Log.d(TAG, "onDataChange: " + Thread.currentThread());
                 }
             }
             @Override

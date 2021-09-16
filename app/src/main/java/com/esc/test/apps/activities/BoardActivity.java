@@ -69,9 +69,9 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         if (extras != null) {
             gameButtonsVis();
             String extra = (String) extras.get("friend_game_piece");
+            String uids = (String) extras.get("game_set_id");
             playFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
             Log.d(TAG, "friend's starting piece is: " + extra);
-            String uids = (String) extras.get("game_set_id");
             if (extra.equals(getResources().getString(R.string.cross))) {
                 playFriendViewModel.getGameUids(uids, true);
                 changeGridOnClick(false);
@@ -111,7 +111,6 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         } else {
             passPlayViewModel.setLastPos(null);
             passPlayViewModel.updateView(cube);
-            Log.d(TAG, "Item clicked: ");
             if (playFriendViewModel != null) playFriendViewModel.newMove(cube);
             else passPlayViewModel.newMove((CubeID) view.getTag());
         }

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -19,6 +20,7 @@ import javax.inject.Singleton;
 
 import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.gamestuff.GameMovesDao;
+import com.esc.test.apps.pojos.MoveInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
 
 @Singleton
@@ -37,8 +39,18 @@ public class MoveRepository {
         service.submit(() -> gameMovesDao.insert(move));
     }
 
-    public void insertMultipleMoves(Move ...moves) {
-        service.submit(() -> gameMovesDao.insertMoves(moves));
+    public void insertMultipleMoves(MoveInfo...moves) {
+        service.submit(() -> {
+            Move[] changed = new Move[moves.length];
+            int i = 0;
+            for (MoveInfo move : moves) {
+
+                changed[i] =
+                        new Move(move.getCoordinates(), move.getPosition(), move.getPiece_played());
+                i++;
+            }
+            gameMovesDao.insertMoves(changed);
+        });
     }
 
     public void deleteGameMoves() {

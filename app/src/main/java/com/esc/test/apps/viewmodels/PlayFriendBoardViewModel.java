@@ -83,7 +83,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     }
 
     public void addExistingMoves(List<MoveInfo> previousMoves) {
-        Move[] moves = new Move[previousMoves.size()];
+        MoveInfo[] moves = new MoveInfo[previousMoves.size()];
         moveRepository.insertMultipleMoves(previousMoves.toArray(moves));
     }
 

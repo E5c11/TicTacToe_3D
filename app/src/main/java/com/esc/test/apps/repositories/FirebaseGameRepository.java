@@ -1,8 +1,18 @@
 package com.esc.test.apps.repositories;
 
+import static com.esc.test.apps.utils.DatabaseConstants.ACTIVE_GAME;
+import static com.esc.test.apps.utils.DatabaseConstants.DISPLAY_NAME;
+import static com.esc.test.apps.utils.DatabaseConstants.FRIENDS;
+import static com.esc.test.apps.utils.DatabaseConstants.FRIEND_INVITE;
+import static com.esc.test.apps.utils.DatabaseConstants.FRIEND_REQUEST;
+import static com.esc.test.apps.utils.DatabaseConstants.GAMES;
+import static com.esc.test.apps.utils.DatabaseConstants.GAME_REQUEST;
+import static com.esc.test.apps.utils.DatabaseConstants.MOVES;
+import static com.esc.test.apps.utils.DatabaseConstants.STARTER;
+import static com.esc.test.apps.utils.DatabaseConstants.USERS;
+import static com.esc.test.apps.utils.DatabaseConstants.WINNER;
+
 import android.app.Application;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -18,8 +28,6 @@ import com.esc.test.apps.pojos.UserInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -53,17 +61,6 @@ public class FirebaseGameRepository {
     private String friendUID;
     private ValueEventListener playerUIDsListener;
     public static final String TAG = "myT";
-    private static final String USERS = "users";
-    private static final String DISPLAY_NAME = "display_name";
-    private static final String GAMES = "games";
-    private static final String MOVES = "moves";
-    private static final String FRIENDS = "friends";
-    private static final String ACTIVE_GAME = "active_game";
-    private static final String STARTER = "starter";
-    private static final String GAME_REQUEST = "game_request";
-    private static final String FRIEND_INVITE = "friend_invites";
-    private static final String FRIEND_REQUEST = "friend_requests";
-    private static final String WINNER = "winner";
 
     @Inject
     public FirebaseGameRepository (GameState gameState, Application app,

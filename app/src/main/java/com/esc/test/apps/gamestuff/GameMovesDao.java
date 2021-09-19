@@ -9,6 +9,8 @@ import java.util.List;
 
 import com.esc.test.apps.entities.Move;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface GameMovesDao {
 
@@ -28,10 +30,10 @@ public interface GameMovesDao {
     String getPiece_played(String position);
 
     @Query("SELECT * FROM game_moves_table ORDER BY position ASC")
-    LiveData<List<Move>> getAllMoves();
+    List<Move> getAllMoves();
 
     @Query("SELECT * FROM game_moves_table ORDER BY id DESC LIMIT 1")
-    LiveData<Move> getMove();
+    Flowable<Move> getMove();
 
     @Query("SELECT piece_played FROM game_moves_table WHERE id = 1")
     LiveData<String> getFirstMove();

@@ -1,4 +1,4 @@
-package com.esc.test.apps.viewmodels;
+package com.esc.test.apps.viewmodels.board;
 
 import android.app.Application;
 

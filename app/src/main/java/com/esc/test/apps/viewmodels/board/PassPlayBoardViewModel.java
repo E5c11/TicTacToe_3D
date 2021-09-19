@@ -1,4 +1,6 @@
-package com.esc.test.apps.viewmodels;
+package com.esc.test.apps.viewmodels.board;
+
+import static com.esc.test.apps.other.MoveUtils.getCubeIds;
 
 import android.app.Application;
 import android.util.Log;
@@ -87,24 +89,9 @@ public class PassPlayBoardViewModel extends ViewModel {
         layerIDs.add(backCubes);
     }
 
-    public ArrayList<CubeID[]> getLayerIDs() {return layerIDs;}
+    public ArrayList<CubeID[]> getLayerIDs() { return layerIDs; }
 
-    public void setCubes(int z) {
-        int x = 0, y = 0;
-        CubeID[] cubes = layerIDs.get(z);
-        for (int i = 0; i < cubes.length; i++) {
-            String cubeName = x + "" + y + "" + z;
-            String cubePos = String.valueOf((x * 4) + y + (z * 16));
-            if (y == 0 || y == 1 || y == 2) {
-                y++;
-                cubes[i] = new CubeID(cubeName, cubePos);
-            } else {
-                cubes[i] = new CubeID(cubeName, cubePos);
-                x++;
-                y = 0;
-            }
-        }
-    }
+    public void setCubes(int z) { getCubeIds(layerIDs.get(z), z); }
 
     public void setBeforeGame() {
         clearOnlineGame();

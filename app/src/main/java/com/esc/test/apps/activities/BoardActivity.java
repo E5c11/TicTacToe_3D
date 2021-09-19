@@ -14,8 +14,9 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.viewmodels.PassPlayBoardViewModel;
-import com.esc.test.apps.viewmodels.PlayFriendBoardViewModel;
+import com.esc.test.apps.viewmodels.board.PassPlayBoardViewModel;
+import com.esc.test.apps.viewmodels.board.PlayAIViewModel;
+import com.esc.test.apps.viewmodels.board.PlayFriendBoardViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     private final ArrayList<GridView> layers = new ArrayList<>();
     private PassPlayBoardViewModel passPlayViewModel;
     private PlayFriendBoardViewModel playFriendViewModel;
+    private PlayAIViewModel playAIViewModel;
     private static final String TAG = "myT";
     private int numLayers;
     private BoardActivityBinding binding;
@@ -113,6 +115,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             passPlayViewModel.setLastPos(null);
             passPlayViewModel.updateView(cube);
             if (playFriendViewModel != null) playFriendViewModel.newMove(cube);
+            else if (playAIViewModel != null) playAIViewModel.newMove(cube);
             else passPlayViewModel.newMove((CubeID) view.getTag());
         }
     }

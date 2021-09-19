@@ -26,7 +26,6 @@ public class Home extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setButton();
-//        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
     }
 
     private void setButton() {
@@ -42,5 +41,13 @@ public class Home extends AppCompatActivity {
             v.startAnimation(an1);
             startActivity(new Intent(this, ProfileManagement.class));
         });
+    }
+
+    @Override
+    public void onBackPressed(){
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
     }
 }

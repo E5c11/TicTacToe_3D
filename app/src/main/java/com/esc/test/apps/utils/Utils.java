@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,11 @@ public class Utils {
             p.setMargins(l, t, r, b);
             v.requestLayout();
         }
+    }
+
+    public static List<int[]> addNonNull(List<int[]> list, int[] line){
+        if (line != null) list.add(line);
+        return list;
     }
 
     public static boolean validEmail(String email) {

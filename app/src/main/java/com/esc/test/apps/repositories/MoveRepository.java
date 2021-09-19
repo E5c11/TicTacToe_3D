@@ -23,16 +23,16 @@ import com.esc.test.apps.gamestuff.GameMovesDao;
 import com.esc.test.apps.pojos.MoveInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
 
+import io.reactivex.Flowable;
+
 @Singleton
 public class MoveRepository {
     private final GameMovesDao gameMovesDao;
-    private final LiveData<List<Move>> allMoves;
     private final ExecutorService service  = ExecutorFactory.getFixedSizeExecutor();
 
     @Inject
     public MoveRepository(GameMovesDao gameMovesDao) {
         this.gameMovesDao = gameMovesDao;
-        allMoves = gameMovesDao.getAllMoves();
     }
 
     public void insertMove(Move move) {
@@ -65,22 +65,35 @@ public class MoveRepository {
         return gameMovesDao.getFirstMove();
     }
 
-    public LiveData<Move> getLastMove() {
+    public Flowable<Move> getLastMove() {
         return gameMovesDao.getMove();
     }
 
     public String getOccupiedWith(String position) {
+        long start = System.nanoTime();
         Future<String> checkPieceAtPos = service.submit(new Task(gameMovesDao, position));
 
-        try {return checkPieceAtPos.get(100, TimeUnit.MILLISECONDS);}
+        try {
+            return checkPieceAtPos.get(100, TimeUnit.MILLISECONDS);
+        }
         catch (InterruptedException | ExecutionException | TimeoutException e) {
             return null;
         }
     }
 
-    public LiveData<List<Move>> getAllMoves() {
-        Log.d("myT", "getAllMoves: ");
-        return allMoves;
+    public List<Move> getAllMoves() {
+        long start = System.nanoTime();
+        Callable<List<Move>> call = gameMovesDao::getAllMoves;
+        Future<List<Move>> checkAllMoves = service.submit(call);
+
+        try {
+            List<Move> list = checkAllMoves.get(100, TimeUnit.MILLISECONDS);
+            Log.d("myT", "getAllMoves: " + (System.nanoTime() - start) + "ns");
+            return list;
+        }
+        catch (InterruptedException | ExecutionException | TimeoutException e) {
+            return null;
+        }
     }
 
     static class Task implements Callable<String> {

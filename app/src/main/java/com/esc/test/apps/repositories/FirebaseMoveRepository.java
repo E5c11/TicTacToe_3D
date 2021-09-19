@@ -1,5 +1,11 @@
 package com.esc.test.apps.repositories;
 
+import static com.esc.test.apps.utils.DatabaseConstants.FRIENDS;
+import static com.esc.test.apps.utils.DatabaseConstants.GAMES;
+import static com.esc.test.apps.utils.DatabaseConstants.MOVE;
+import static com.esc.test.apps.utils.DatabaseConstants.MOVES;
+import static com.esc.test.apps.utils.DatabaseConstants.USERS;
+
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -20,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,11 +40,6 @@ public class FirebaseMoveRepository {
     private final List<MoveInfo> tempItems = new ArrayList<>();
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private static final String TAG = "myT";
-    private static final String MOVES = "moves";
-    private static final String GAMES = "games";
-    private static final String FRIENDS = "friends";
-    private static final String USERS = "users";
-    private static final String MOVE = "move";
 
     @Inject
     public FirebaseMoveRepository (DatabaseReference ref, GameState gameState,

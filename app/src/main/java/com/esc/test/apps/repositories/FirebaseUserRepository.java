@@ -1,20 +1,21 @@
 package com.esc.test.apps.repositories;
 
+import static com.esc.test.apps.utils.DatabaseConstants.DISPLAY_NAME;
+import static com.esc.test.apps.utils.DatabaseConstants.STATUS;
+import static com.esc.test.apps.utils.DatabaseConstants.TOKEN;
+import static com.esc.test.apps.utils.DatabaseConstants.USERS;
+
 import android.app.Application;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,7 +23,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -40,10 +40,6 @@ public class FirebaseUserRepository {
     private final MutableLiveData<String> emailError = new MutableLiveData<>();
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private static final String TAG = "myT";
-    private static final String STATUS = "status";
-    private static final String DISPLAY_NAME = "display_name";
-    private static final String USERS = "users";
-    private static final String TOKEN = "token";
     private int attempt = 0;
 
     @Inject

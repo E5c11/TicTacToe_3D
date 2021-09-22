@@ -76,6 +76,7 @@ public class PassPlayBoardViewModel extends ViewModel {
         setBeforeGame();
         winner = gameRepository.getWinner();
         starter = moveRepository.getFirstMove();
+        Log.d(TAG, "PassPlayBoardViewModel: ");
     }
 
     private void populateGridLists() {

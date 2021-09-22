@@ -14,7 +14,6 @@ import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.concurrent.ExecutorService;
@@ -26,7 +25,6 @@ public class Moves {
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
     private final FirebaseMoveRepository firebaseMoveRepository;
-    private final AIMoves aiMoves;
     private final List<int[]> lines2check = new ArrayList<>();
     private int[] winnerRow = new int[4];
     private int[] numCube;
@@ -34,27 +32,26 @@ public class Moves {
     private int numInRow;
     private int cubePos;
     private long start;
-    private boolean myTurn;
+    private final boolean onlineGame;
     private static final String TAG = "myT";
     private final ExecutorService executor;
 
     public Moves(GameState gameState, GameRepository gameRepository, ExecutorService executor,
                  MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository,
-                 String coordinates, String playedPiece, String moveId, boolean myTurn, AIMoves aiMoves
+                 String coordinates, String playedPiece, String moveId, boolean onlineGame
     ) {
         this.gameState = gameState;
         this.gameRepository = gameRepository;
         this.executor = executor;
         this.moveRepository = moveRepository;
         this.firebaseMoveRepository = firebaseMoveRepository;
-        this.myTurn = myTurn;
-        this.aiMoves = aiMoves;
-        executor.execute(() -> findPos(coordinates, playedPiece, moveId, myTurn));
+        this.onlineGame = onlineGame;
+        executor.execute(() -> findPos(coordinates, playedPiece, moveId));
     }
 
-    private void findPos(String tempCube, String playedPiece, String moveId, boolean myTurn) {
-        Log.d(TAG, tempCube + " " + tempCube.length());
-        start = System.nanoTime();
+    private void findPos(String tempCube, String playedPiece, String moveId) {
+        Log.d(TAG, "moves " +  tempCube);
+//        start = System.nanoTime();
         numCube = numValue(tempCube);
 
         cubePos = getCubePos(numCube);
@@ -62,7 +59,7 @@ public class Moves {
         this.playedPiece = playedPiece;
 
         moveRepository.insertMove(new Move(tempCube, String.valueOf(cubePos), playedPiece));
-        if (myTurn) firebaseMoveRepository.addMove(
+        if (onlineGame) firebaseMoveRepository.addMove(
                 new MoveInfo(tempCube, String.valueOf(cubePos), playedPiece, moveId, null));
 
        executor.execute(this::getLinesToCheck);
@@ -74,10 +71,10 @@ public class Moves {
     }
 
     private void checkOtherCubes() {
-        Log.d(TAG, "before check: " + (System.nanoTime() - start) + " ns");
+//        Log.d(TAG, "before check: " + (System.nanoTime() - start) + " ns");
         List<Move> list = moveRepository.getAllMoves();
         outer : for(int[] line: lines2check) {
-            Log.d(TAG, "checkOtherCubes: " + Arrays.toString(line));
+//            Log.d(TAG, "checkOtherCubes: " + Arrays.toString(line));
             numInRow = 1;
             int i = 0;
             for (int pos : line) {
@@ -91,7 +88,6 @@ public class Moves {
                     if (posType != null) {
                         if (posType.equals(playedPiece)) {
                             numInRow++;
-                            if (numInRow == 3 && myTurn) aiMoves.blockUser(line);
                             if (numInRow == 4) {
                                 winnerRow = line;
                                 executor.execute(this::saveWinnerRow);
@@ -112,7 +108,7 @@ public class Moves {
         ArrayList<String> winners = new ArrayList<>();
         Log.d(TAG, "game won");
         for (int i: winnerRow) winners.add(String.valueOf(i));
-        Log.d(TAG, "time: " + ((System.nanoTime() - start) / 1000000) + "ms");
+//        Log.d(TAG, "time: " + ((System.nanoTime() - start) / 1000000) + "ms");
         gameState.setWinner(playedPiece);
         gameState.setWinnerLine(winners);
         gameRepository.updateWinner(playedPiece);

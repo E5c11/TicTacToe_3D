@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -64,4 +65,8 @@ public class AppModule {
     public ConnectionLiveData provideNetworkReport(Application app) {
         return new ConnectionLiveData(app);
     }
+
+    @Provides
+    @Singleton
+    public Random provideRandomClass() { return new Random(); }
 }

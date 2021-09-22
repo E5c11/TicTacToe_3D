@@ -2,6 +2,8 @@ package com.esc.test.apps.other;
 
 import static com.esc.test.apps.utils.Utils.addNonNull;
 
+import android.util.Log;
+
 import com.esc.test.apps.pojos.CubeID;
 
 import java.util.ArrayList;
@@ -29,15 +31,16 @@ public class MoveUtils {
 
     public static String getStringCoord(int pos) {
         int x, y, z;
-        z = pos % 16;
-        x = (pos - (z * 16)) % 4;
-        y = (pos - (z * 16)) - (x * 4);
+        z = pos / 16;
+        x = ((pos - (z * 16)) / 4);
+        y = (pos - (z * 16)) % 4;
+        Log.d("myT", "getStringCoord: " + x + " " + y + " " + z);
         return x + "" + y + "" + z;
     }
 
     public static int getRandomPos(int... exclude) {
         int pos = new Random().nextInt(64);
-        if (pos == exclude[0]) getRandomPos(exclude);
+        if (exclude.length != 0 && pos == exclude[0]) getRandomPos(exclude);
         return pos;
     }
 

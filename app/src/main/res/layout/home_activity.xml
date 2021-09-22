@@ -39,9 +39,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/home_text"
-        app:layout_constraintBottom_toTopOf="@id/play_friend"
-        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintBottom_toTopOf="@id/play_ai"
+        app:layout_constraintWidth_percent="0.33"
         app:layout_constraintDimensionRatio="1:1"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/play_ai"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        android:src="@drawable/play_bot"
+        android:background="@drawable/circle"
+        android:elevation="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pass_play"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintWidth_percent="0.33"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintBottom_toTopOf="@id/play_friend"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/play_friend"
@@ -52,9 +67,9 @@
         android:elevation="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pass_play"
+        app:layout_constraintTop_toBottomOf="@id/play_ai"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintWidth_percent="0.33"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintBottom_toTopOf="@id/manage_profile"/>
 

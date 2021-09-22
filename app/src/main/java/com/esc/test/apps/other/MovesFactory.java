@@ -30,8 +30,8 @@ public class MovesFactory {
         this.firebaseMoveRepository = firebaseMoveRepository;
     }
 
-    public void createMoves(String coordinates, String playedPiece, String moveId, boolean myTurn) {
+    public void createMoves(String coordinates, String playedPiece, String moveId, boolean onlineGame) {
         new Moves(gameState, gameRepository, executor, moveRepository, firebaseMoveRepository,
-                coordinates, playedPiece, moveId, myTurn);
+                coordinates, playedPiece, moveId, onlineGame);
     }
 }

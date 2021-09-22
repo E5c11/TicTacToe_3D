@@ -69,7 +69,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private void checkExtras() {
         Bundle extras = getIntent().getExtras();
-        if (extras != null) {
+        if (extras.containsKey("game_set_id")) {
             gameButtonsVis();
             String extra = (String) extras.get("friend_game_piece");
             String uids = (String) extras.get("game_set_id");
@@ -83,6 +83,11 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                 changeGridOnClick(true);
             }
             setOpponentUIDObserver();
+        } else if (extras.containsKey("play_ai")) {
+            playAIViewModel = new ViewModelProvider(this).get(PlayAIViewModel.class);
+            passPlayViewModel.clearLocalGame();
+            setPlayAIObserver();
+            getNewMoves();
         } else {
             setPassPlayObserver();
             getNewMoves();
@@ -190,6 +195,15 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
+    private void setPlayAIObserver() {
+        playAIViewModel.getLastMove().observe(this, move -> {
+            if (move != null) {
+                Log.d(TAG, "setPlayAIObserver: " + move.getPosition() + " " + move.getPiece_played());
+                updateGridView(move.getPosition(), move.getPiece_played());
+            }
+        });
+    }
+
     private void setOpponentUIDObserver() {
         playFriendViewModel.getTurn().observe(this, turn -> {
             if (turn != null) {
@@ -242,10 +256,10 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateGridView(String pos, String playedPiece) {
         int[] turnPos = CubeAdapter.getGridAdapter(pos);
+        Log.d(TAG, "updated view " + turnPos[0] + " " + turnPos[1]);
         layers.get(turnPos[0]).getChildAt(turnPos[1])
                 .setBackground(getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
-        Log.d(TAG, "updated view " + turnPos[0] + " " + turnPos[1]);
     }
 
     @Override

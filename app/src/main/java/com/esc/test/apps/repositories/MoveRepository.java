@@ -82,14 +82,12 @@ public class MoveRepository {
     }
 
     public List<Move> getAllMoves() {
-        long start = System.nanoTime();
+//        long start = System.nanoTime();
         Callable<List<Move>> call = gameMovesDao::getAllMoves;
         Future<List<Move>> checkAllMoves = service.submit(call);
 
         try {
-            List<Move> list = checkAllMoves.get(100, TimeUnit.MILLISECONDS);
-            Log.d("myT", "getAllMoves: " + (System.nanoTime() - start) + "ns");
-            return list;
+            return checkAllMoves.get(100, TimeUnit.MILLISECONDS);
         }
         catch (InterruptedException | ExecutionException | TimeoutException e) {
             return null;

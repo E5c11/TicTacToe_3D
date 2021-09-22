@@ -6,8 +6,11 @@ import static com.esc.test.apps.other.MoveUtils.numValue;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
+
 import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.utils.ExecutorFactory;
+import com.esc.test.apps.utils.SingleLiveEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +35,7 @@ public class AIMoves {
     private final List<Integer> aICubes = new ArrayList<>();
     private final List<Integer> userCubes = new ArrayList<>();
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
+    private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
     private final MovesFactory movesFactory;
     private final Random rand;
     private int lastAIMove;
@@ -101,8 +105,11 @@ public class AIMoves {
             for (int i : line) {
                 count++;
                 if (aICubes.contains(i)) break;
-                if (userCubes.contains(i)) cubeInLine++;
-                else if (count > 1 && cubeInLine < 3) break;
+                if (userCubes.contains(i)) {
+                    Log.d(TAG, "blockUser: " + i);
+                    cubeInLine++;
+                }
+//                else if (count > 1 && cubeInLine < 3) break;
                 if (cubeInLine == 3) {
                     lines2block.add(line);
                     break;
@@ -114,10 +121,12 @@ public class AIMoves {
     }
 
     public void newMove() {
-        if (!threeCubeLine.isEmpty()) chooseMove(threeCubeLine);
+        if (!threeCubeLine.isEmpty()) {
+            Log.d(TAG, "newMove: 3");
+            chooseMove(threeCubeLine);
+        }
         else if (!lines2block.isEmpty()) chooseMove(lines2block);
         else {
-            Log.d(TAG, "newMove: 3");
             if (possibleLines.isEmpty()) anywhereMove();
             else {
                 if (!twoCubeLine.isEmpty()) {
@@ -160,6 +169,7 @@ public class AIMoves {
             sendMove(newMove);
             addMoveToLines(newMove);
         }
+//        else error.postValue("no moves");
     }
 
     private void addMoveToLines(int move) {
@@ -227,4 +237,6 @@ public class AIMoves {
         possibleLines.add(line);
         threeCubeLine.add(line);
     }
+
+    public LiveData<String> getError() { return error; }
 }

@@ -203,10 +203,12 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     private void setPlayAIObserver() {
         playAIViewModel.getLastMove().observe(this, move -> {
             if (move != null) {
-                Log.d(TAG, "setPlayAIObserver: " + move.getPosition() + " " + move.getPiece_played());
+//                Log.d(TAG, "setPlayAIObserver: " + move.getPosition() + " " + move.getPiece_played());
                 updateGridView(move.getPosition(), move.getPiece_played());
             }
         });
+        playAIViewModel.getError().observe(this, error -> Snackbar.make(
+                binding.getRoot(), "no move calculated", Snackbar.LENGTH_LONG).show());
     }
 
     private void setOpponentUIDObserver() {
@@ -261,7 +263,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private void updateGridView(String pos, String playedPiece) {
         int[] turnPos = CubeAdapter.getGridAdapter(pos);
-        Log.d(TAG, "updated view " + turnPos[0] + " " + turnPos[1]);
+        Log.d(TAG, "updated view " + turnPos[0] + " " + turnPos[1] + " " + playedPiece);
         layers.get(turnPos[0]).getChildAt(turnPos[1])
                 .setBackground(getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);

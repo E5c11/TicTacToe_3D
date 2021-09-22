@@ -102,11 +102,13 @@ public class PlayAIViewModel extends ViewModel {
 
     public LiveData<Move> getLastMove() {
         return Transformations.map(lastMove, move -> {
-            Log.d(TAG, "getLastMove: " + move.getPiece_played());
+//            Log.d(TAG, "getLastMove: " + move.getPiece_played());
             if (userPiece.equals(move.getPiece_played())) {
                 newAIMove(move);
                 return null;
             } else return move;
         });
     }
+
+    public LiveData<String> getError() { return aiMoves.getError(); }
 }

@@ -35,7 +35,7 @@ public interface GamesDao {
     Flowable<String> getTurn();
 
     @Query("SELECT winner FROM games_table ORDER BY `id` DESC LIMIT 1")
-    LiveData<String> getWinner();
+    Flowable<String> getWinner();
 
     @Query("SELECT * FROM games_table")
     LiveData<List<Game>> getAllGames();

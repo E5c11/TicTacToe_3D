@@ -1,6 +1,7 @@
 package com.esc.test.apps.viewmodels.board;
 
 import static com.esc.test.apps.other.MoveUtils.getCubeIds;
+import static com.esc.test.apps.utils.Utils.dispose;
 
 import android.app.Application;
 import android.util.Log;
@@ -15,8 +16,6 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.entities.Game;
-import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.pojos.MoveInfo;
@@ -74,7 +73,8 @@ public class PassPlayBoardViewModel extends ViewModel {
         this.moveRepository = moveRepository;
         this.app = app;
         setBeforeGame();
-        winner = gameRepository.getWinner();
+        winner = LiveDataReactiveStreams.fromPublisher(
+                gameRepository.getWinner().subscribeOn(Schedulers.io()));
         starter = moveRepository.getFirstMove();
         Log.d(TAG, "PassPlayBoardViewModel: ");
     }
@@ -116,6 +116,7 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     public void clearLocalGame() {
         gameState.newLocalGame();
+        insertNewGame();
     }
 
     private void insertNewGame() {
@@ -147,14 +148,14 @@ public class PassPlayBoardViewModel extends ViewModel {
                 gameRepository.setStarter(t);
             }
             moves.createMoves(cubeID.getCoordinates(), t, null, false);
-            Utils.dispose(d);
+            dispose(d);
         }).subscribe();
     }
 
     public void updateView(CubeID cubeID) {
         f = gameRepository.getTurn().subscribeOn(Schedulers.io()).doOnNext(t -> {
             lastMove.postValue(new MoveUpdate(cubeID.getArrayPos(), t));
-            Utils.dispose(f);
+            dispose(f);
         }).subscribe();
     }
     public void downloadedMove(MoveInfo move) {

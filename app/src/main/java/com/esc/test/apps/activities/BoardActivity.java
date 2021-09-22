@@ -69,26 +69,30 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
 
     private void checkExtras() {
         Bundle extras = getIntent().getExtras();
-        if (extras.containsKey("game_set_id")) {
-            gameButtonsVis();
-            String extra = (String) extras.get("friend_game_piece");
-            String uids = (String) extras.get("game_set_id");
-            playFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
-            Log.d(TAG, "friend's starting piece is: " + extra);
-            if (extra.equals(getResources().getString(R.string.cross))) {
-                playFriendViewModel.getGameUids(uids, true);
-                changeGridOnClick(false);
-            } else {
-                playFriendViewModel.getGameUids(uids, false);
-                changeGridOnClick(true);
+        if (extras != null) {
+            if (extras.containsKey("game_set_id")) {
+                gameButtonsVis();
+                String extra = (String) extras.get("friend_game_piece");
+                String uids = (String) extras.get("game_set_id");
+                playFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
+                Log.d(TAG, "friend's starting piece is: " + extra);
+                if (extra.equals(getResources().getString(R.string.cross))) {
+                    playFriendViewModel.getGameUids(uids, true);
+                    changeGridOnClick(false);
+                } else {
+                    playFriendViewModel.getGameUids(uids, false);
+                    changeGridOnClick(true);
+                }
+                setOpponentUIDObserver();
+            } else if (extras.containsKey("play_ai")) {
+                Log.d(TAG, "checkExtras: ai game");
+                passPlayViewModel.clearLocalGame();
+                playAIViewModel = new ViewModelProvider(this).get(PlayAIViewModel.class);
+                setPlayAIObserver();
+                getNewMoves();
             }
-            setOpponentUIDObserver();
-        } else if (extras.containsKey("play_ai")) {
-            playAIViewModel = new ViewModelProvider(this).get(PlayAIViewModel.class);
-            passPlayViewModel.clearLocalGame();
-            setPlayAIObserver();
-            getNewMoves();
         } else {
+            Log.d(TAG, "checkExtras: local game");
             setPassPlayObserver();
             getNewMoves();
             passPlayViewModel.clearLocalGame();
@@ -134,6 +138,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         if (view == binding.newGame) {
             passPlayViewModel.clearLocalGame();
+            if (playAIViewModel != null) playAIViewModel.newGame();
             changeGridOnClick(true);
             setBoard();
             setPieceClickEnabled();

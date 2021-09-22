@@ -46,6 +46,16 @@ public class AIMoves {
         this.rand = rand;
     }
 
+    public void newGame() {
+        possibleLines.clear();
+        oneCubeLine.clear();
+        twoCubeLine.clear();
+        threeCubeLine.clear();
+        lines2block.clear();
+        aICubes.clear();
+        userCubes.clear();
+    }
+
     public void setFirstMove(int pos, String piece, int count) {
         lastAIMove = pos;
         aIPiece = piece;
@@ -54,8 +64,9 @@ public class AIMoves {
         executor.execute(this::createLines);
     }
 
-    public void setPiece(String piece) {
+    public void setPiece(String piece, int mCount) {
         aIPiece = piece;
+        moveCount = mCount;
     }
 
     public void eliminateLines(Move move) {
@@ -89,58 +100,66 @@ public class AIMoves {
             int count = 0;
             for (int i : line) {
                 count++;
-                if (userCubes.contains(i)) {
-                    cubeInLine++;
-                    Log.d(TAG, "blockUser: " + i + " " + userCubes.toString() + " " + cubeInLine + " " + count);
-                }
-                else if (count > 1 && cubeInLine < 3) {
-                    Log.d(TAG, "blockUser: break " + count + " " + cubeInLine + " " + i);
-                    break;
-                }
+                if (aICubes.contains(i)) break;
+                if (userCubes.contains(i)) cubeInLine++;
+                else if (count > 1 && cubeInLine < 3) break;
                 if (cubeInLine == 3) {
-                    Log.d(TAG, "blockUser: 3" );
                     lines2block.add(line);
                     break;
                 }
             }
 
         });
-//        lines2block.add(line);
         newMove();
     }
 
     public void newMove() {
-        if (lines2block.isEmpty()) {
+        if (!threeCubeLine.isEmpty()) chooseMove(threeCubeLine);
+        else if (!lines2block.isEmpty()) chooseMove(lines2block);
+        else {
+            Log.d(TAG, "newMove: 3");
             if (possibleLines.isEmpty()) anywhereMove();
             else {
-                if (!threeCubeLine.isEmpty()) chooseMove(threeCubeLine, aICubes);
-                else if (!twoCubeLine.isEmpty()) chooseMove(twoCubeLine, aICubes);
-                else chooseMove(oneCubeLine, aICubes);
+                if (!twoCubeLine.isEmpty()) {
+                    Log.d(TAG, "newMove: 2");
+                    chooseMove(twoCubeLine);
+                }
+                else {
+                    Log.d(TAG, "newMove: 1");
+                    chooseMove(oneCubeLine);
+                }
             }
-        } else chooseMove(lines2block, userCubes); //check new lines
+        }
     }
 
     private void anywhereMove() {
+        Log.d(TAG, "anywhereMove: ");
         List<Integer> occupiedCubes = new ArrayList<>();
         occupiedCubes.addAll(aICubes);
         occupiedCubes.addAll(userCubes);
-        sendMove(getRandomCube(occupiedCubes));
+        int newMove = getRandomCube(occupiedCubes);
+        aICubes.add(newMove);
+        sendMove(newMove);
+        addMoveToLines(newMove);
     }
 
-    private void chooseMove(List<int[]> lines, List<Integer> cubes) {
+    private void chooseMove(List<int[]> lines) {
         int randomLine = rand.nextInt(lines.size());
         int[] moveLine = lines.get(randomLine);
         List<Integer> newPos = new ArrayList<>();
         for (int cube : moveLine) {
-            if (!cubes.contains(cube)) {
+            if (!aICubes.contains(cube) && !userCubes.contains(cube))
                 newPos.add(cube);
-            }
-            lines.remove(moveLine);
-        }
-        int newMove = newPos.get(rand.nextInt(newPos.size()));
 
-        sendMove(newMove);
-        addMoveToLines(newMove);
+        }
+        lines.remove(moveLine);
+        Log.d(TAG, "chooseMove: " + newPos.size());
+        if (newPos.size() != 0) {
+            int newMove = newPos.get(rand.nextInt(newPos.size()));
+            aICubes.add(newMove);
+            sendMove(newMove);
+            addMoveToLines(newMove);
+        }
     }
 
     private void addMoveToLines(int move) {
@@ -156,12 +175,13 @@ public class AIMoves {
             else {
                 int i = 0;
                 for (int cube : line) {
-                    if (!aICubes.contains(cube)) {
-                        addOneLine(line);
+                    if (userCubes.contains(cube)) {
+                        i = 0;
                         break;
                     } else if (aICubes.contains(cube)) i++;
                 }
-                if (i == 2) addTwoLine(line);
+                if (i == 1) addOneLine(line);
+                else if (i == 2) addTwoLine(line);
                 else if (i == 3) addThreeLine(line);
             }
         });

@@ -1,6 +1,7 @@
 package com.esc.test.apps.viewmodels.board;
 
 import static com.esc.test.apps.other.MoveUtils.getRandomPos;
+import static com.esc.test.apps.utils.Utils.dispose;
 
 import android.app.Application;
 import android.util.Log;
@@ -15,6 +16,7 @@ import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.other.AIMoves;
 import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.ExecutorFactory;
 
@@ -24,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
@@ -32,10 +35,12 @@ public class PlayAIViewModel extends ViewModel {
     private final MovesFactory movesFactory;
     private final Application app;
     private final MoveRepository moveRepo;
+    private final GameRepository gameRepo;
     private final AIMoves aiMoves;
     private final Random rand;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
+    private Disposable d;
     private int moveCount;
     private int userMovePos;
     private String userPiece;
@@ -43,12 +48,13 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           AIMoves aiMoves, Random rand
+                           GameRepository gameRepo, AIMoves aiMoves, Random rand
 
     ) {
         this.movesFactory = movesFactory;
         this.app = app;
         this.moveRepo = moveRepo;
+        this.gameRepo = gameRepo;
         this.aiMoves = aiMoves;
         this.rand = rand;
         firstMove();
@@ -58,19 +64,21 @@ public class PlayAIViewModel extends ViewModel {
     }
 
     public void firstMove() {
-        boolean firstMove = rand.nextBoolean();
-        moveCount = firstMove ? 0 : 1;
-        int pos = getRandomPos();
-        if (firstMove) {
-         userPiece = app.getString(R.string.circle);
-         aiMoves.setFirstMove(pos, app.getString(R.string.cross), moveCount);
-            Log.d(TAG, "firstMove: ai" + pos);
-        } else {
+//        boolean firstMove = false;
+//        moveCount = firstMove ? 0 : 1;
+//        if (firstMove) {
+//         userPiece = app.getString(R.string.circle);
+//            int pos = getRandomPos();
+//         executor.execute(() -> aiMoves.setFirstMove(pos, app.getString(R.string.cross), moveCount));
+//            Log.d(TAG, "firstMove: ai " + pos);
+//        } else {
          userPiece = app.getString(R.string.cross);
-         aiMoves.setPiece(app.getString(R.string.circle));
-         Log.d(TAG, "firstMove: user" + pos);
-        }
+         aiMoves.setPiece(app.getString(R.string.circle), 1);
+         Log.d(TAG, "firstMove: user ");
+//        }
     }
+
+    public void newGame() { aiMoves.newGame(); }
 
     public void newMove(CubeID cube) {
         moveCount++;
@@ -79,8 +87,11 @@ public class PlayAIViewModel extends ViewModel {
     }
 
     private void newAIMove(Move move) {
-        moveCount++;
-        executor.execute(() -> aiMoves.eliminateLines(move));
+        moveCount++; d = gameRepo.getWinner().subscribeOn(Schedulers.io()).doOnNext(w -> {
+            if (w.equals("in progress"))
+                executor.execute(() -> aiMoves.eliminateLines(move));
+                dispose(d);
+        }).subscribe();
     }
 
     public void catchLastMove() {
@@ -91,6 +102,7 @@ public class PlayAIViewModel extends ViewModel {
 
     public LiveData<Move> getLastMove() {
         return Transformations.map(lastMove, move -> {
+            Log.d(TAG, "getLastMove: " + move.getPiece_played());
             if (userPiece.equals(move.getPiece_played())) {
                 newAIMove(move);
                 return null;

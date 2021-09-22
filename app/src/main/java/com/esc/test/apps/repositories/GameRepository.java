@@ -24,7 +24,7 @@ public class GameRepository {
     private final GamesDao gamesDao;
     private final LiveData<List<Game>> allGames;
     private final Flowable<String> turn;
-    private final LiveData<String> winner;
+    private final Flowable<String> winner;
     private final LiveData<String> starter;
     private static final String TAG = "myT";
     private final ExecutorService service = ExecutorFactory.getFixedSizeExecutor();
@@ -58,7 +58,7 @@ public class GameRepository {
         return turn;
     }
 
-    public LiveData<String> getWinner() {
+    public Flowable<String> getWinner() {
         return winner;
     }
 

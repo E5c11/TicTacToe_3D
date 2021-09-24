@@ -1,6 +1,7 @@
 package com.esc.test.apps.adapters;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,14 @@ import com.esc.test.apps.pojos.CubeID;
 
 public class CubeAdapter extends BaseAdapter {
 
-    private final Application application;
+    private final Context context;
     private final CubeID[] bPosition;
     private final int screenWidth;
 
-    public CubeAdapter(Application application, CubeID[] bPosition) {
-        this.application = application;
+    public CubeAdapter(Context context, CubeID[] bPosition) {
+        this.context = context;
         this.bPosition = bPosition;
-        DisplayMetrics metrics = application.getResources().getDisplayMetrics();
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         screenWidth = metrics.widthPixels;
     }
 
@@ -27,7 +28,7 @@ public class CubeAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         ImageView button;
         if (view == null) {
-            button = new ImageView(application);
+            button = new ImageView(context);
             button.setLayoutParams(new GridView.LayoutParams(screenWidth/10, screenWidth/10));
             button.setBackground(null);
             button.setTag(bPosition[i]);

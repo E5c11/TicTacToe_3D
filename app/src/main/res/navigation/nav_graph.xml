@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/home">
+
+    <fragment
+        android:id="@+id/home"
+        android:name="com.esc.test.apps.ui.fragments.Home"
+        android:label="home_activity"
+        tools:layout="@layout/home_activity" >
+        <action
+            android:id="@+id/action_home_to_profileManagement"
+            app:destination="@id/profileManagement" />
+        <action
+            android:id="@+id/action_home_to_login"
+            app:destination="@id/login" />
+        <action
+            android:id="@+id/action_home_to_boardActivity"
+            app:destination="@id/boardActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/boardActivity"
+        android:name="com.esc.test.apps.ui.fragments.Board"
+        android:label="board_activity"
+        tools:layout="@layout/board_activity" >
+        <argument
+            android:name="game_type"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="game_piece"
+            app:argType="string"
+            app:nullable="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/login"
+        android:name="com.esc.test.apps.ui.fragments.Login"
+        android:label="login_activity"
+        tools:layout="@layout/login_activity" >
+        <action
+            android:id="@+id/action_login_to_playWithFriend"
+            app:destination="@id/playWithFriend" />
+    </fragment>
+    <fragment
+        android:id="@+id/playWithFriend"
+        android:name="com.esc.test.apps.ui.fragments.PlayWithFriend"
+        android:label="friends_activity"
+        tools:layout="@layout/friends_activity" >
+        <action
+            android:id="@+id/action_playWithFriend_to_boardActivity"
+            app:destination="@id/boardActivity" />
+        <action
+            android:id="@+id/action_playWithFriend_to_home"
+            app:destination="@id/home" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileManagement"
+        android:name="com.esc.test.apps.ui.fragments.ProfileManagement"
+        android:label="profile_layout"
+        tools:layout="@layout/profile_layout" >
+    </fragment>
+</navigation>

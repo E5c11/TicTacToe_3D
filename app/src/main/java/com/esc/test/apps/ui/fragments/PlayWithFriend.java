@@ -1,32 +1,36 @@
-package com.esc.test.apps.activities;
+package com.esc.test.apps.ui.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.esc.test.apps.R;
+import com.esc.test.apps.adapters.ActiveFriendsAdapter;
 import com.esc.test.apps.adapters.FriendRequestAdapter;
 import com.esc.test.apps.databinding.FriendListBinding;
 import com.esc.test.apps.databinding.FriendsActivityBinding;
-
-import com.esc.test.apps.adapters.ActiveFriendsAdapter;
-import dagger.hilt.android.AndroidEntryPoint;
-
 import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.viewmodels.FriendsModelView;
 import com.esc.test.apps.pojos.UserInfo;
-import com.google.firebase.database.DatabaseReference;
+import com.esc.test.apps.viewmodels.FriendsModelView;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 @AndroidEntryPoint
-public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAdapter.OnClickListener {
+public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnClickListener {
+
+    public PlayWithFriend() { super(R.layout.friends_activity); }
 
     private FriendsModelView friendsModelView;
     private FriendListBinding friendFound;
@@ -34,19 +38,17 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
     private FriendsActivityBinding binding;
     private ActiveFriendsAdapter activeAdapter;
     private FriendRequestAdapter requestAdapter;
-    @Inject DatabaseReference ref;
     @Inject UserDetails user;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = FriendsActivityBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding = FriendsActivityBinding.bind(view);
         Log.d("myT", "FriendsActivity");
 
         friendsModelView = new ViewModelProvider(this).get(FriendsModelView.class);
-        activeAdapter = new ActiveFriendsAdapter(getApplication(), this, user);
-        requestAdapter = new FriendRequestAdapter(getApplication(),this);
+        activeAdapter = new ActiveFriendsAdapter(requireContext(), this, user);
+        requestAdapter = new FriendRequestAdapter(requireContext(),this);
         setViews();
         setObservers();
         setListeners();
@@ -58,7 +60,7 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
         friendFound = binding.inviteFriend;
         friendFound.getRoot().setVisibility(View.GONE);
 
-        binding.friendRequestsList.setLayoutManager(new LinearLayoutManager(this));
+        binding.friendRequestsList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.friendRequestsList.setAdapter(requestAdapter);
     }
 
@@ -72,19 +74,19 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
             foundNewFriend();
             if (s.getDisplay_name() != null) friendFound.friendName.setText(s.getDisplay_name());
             if (s.getStatus() != null) friendFound.friendActive.setText(s.getStatus());
-            if (s.getProfilePicture() != null) Glide.with(this).load(s.getProfilePicture()).into(friendFound.friendPp);
+            if (s.getProfilePicture() != null)
+                Glide.with(this).load(s.getProfilePicture()).into(friendFound.friendPp);
         });
         friendsModelView.getStartGame().observe(this, s -> {
             if (s != null) {
-                Intent intent = new Intent(this, BoardActivity.class);
-                intent.putExtra("friend_game_piece", s[1]);
-                intent.putExtra("game_set_id", s[0]);
-                Log.d(TAG, "sending game intent, game id: " + s[0] + " friend starting piece: " + s[1]);
-                startActivity(intent);
+                NavDirections action =
+                        PlayWithFriendDirections.actionPlayWithFriendToBoardActivity(s[0], s[1]);
+                NavHostFragment.findNavController(this).navigate(action);
+                Log.d(TAG, "setObservers: ");
             }
         });
-        friendsModelView.getActiveFriends().observe(this, activeAdapter::submitList);
-        friendsModelView.getFriendRequests().observe(this, requestAdapter::submitList);
+        friendsModelView.getActiveFriends().observe(getViewLifecycleOwner(), activeAdapter::submitList);
+        friendsModelView.getFriendRequests().observe(getViewLifecycleOwner(), requestAdapter::submitList);
     }
 
     private void setListeners() {
@@ -93,15 +95,16 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
             Log.d(TAG, "setListeners: " + input);
             friendsModelView.findFriend(input);
         });
+        onBackPressed();
     }
 
     private void activeFriends() {
-        binding.activeFriendsList.setLayoutManager(new LinearLayoutManager(this));
+        binding.activeFriendsList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.activeFriendsList.setAdapter(activeAdapter);
     }
 
     private void friendRequests() {
-        binding.friendRequestsList.setLayoutManager(new LinearLayoutManager(this));
+        binding.friendRequestsList.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.friendRequestsList.setAdapter(requestAdapter);
     }
 
@@ -109,10 +112,11 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
     public void onItemClick(UserInfo user, String fromList, String btnText) {
         if (fromList.equals(ActiveFriendsAdapter.ACTIVE_LIST)) {
             int resourceId = this.getResources().
-                    getIdentifier(btnText, "string", this.getPackageName());
+                    getIdentifier(btnText, "string", requireContext().getPackageName());
             switch (resourceId) {
                 case R.string.start:
                     friendsModelView.startGame(user, false);
+                    Log.d(TAG, "onItemClick: ");
                     break;
                 case R.string.accept:
                     friendsModelView.startGame(user, true);
@@ -125,10 +129,14 @@ public class PlayWithFriend extends AppCompatActivity implements ActiveFriendsAd
             }
         } else friendsModelView.acceptInvite(user);
     }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(this, Home.class));
+    private void onBackPressed() {
+        requireActivity().getOnBackPressedDispatcher()
+            .addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    NavDirections action = PlayWithFriendDirections.actionPlayWithFriendToHome();
+                    NavHostFragment.findNavController(PlayWithFriend.this).navigate(action);
+                }
+            });
     }
 }

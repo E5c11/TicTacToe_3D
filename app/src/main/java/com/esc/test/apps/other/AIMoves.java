@@ -169,7 +169,7 @@ public class AIMoves {
             sendMove(newMove);
             addMoveToLines(newMove);
         }
-//        else error.postValue("no moves");
+        else error.postValue("no moves");
     }
 
     private void addMoveToLines(int move) {

@@ -1,6 +1,5 @@
-package com.esc.test.apps.activities;
+package com.esc.test.apps.ui.fragments;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,39 +8,45 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.LoginActivityBinding;
-
-import dagger.hilt.android.AndroidEntryPoint;
-import com.esc.test.apps.viewmodels.LoginViewModel;
 import com.esc.test.apps.utils.LetterWatcher;
+import com.esc.test.apps.viewmodels.LoginViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 @AndroidEntryPoint
-public class Login extends AppCompatActivity {
+public class Login extends Fragment {
+
+    public Login() { super(R.layout.login_activity); }
 
     private static final String TAG = "myT";
     private LoginViewModel loginViewModel;
     private LoginActivityBinding binding;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = LoginActivityBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding = LoginActivityBinding.bind(view);
         Log.d("myT", "LoginActivity");
         setProgressBar();
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+        requireActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         setObservers();
     }
 
     private void setProgressBar() {
-        final Animation an = AnimationUtils.loadAnimation(this, R.anim.rotate_fast);
+        final Animation an = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate_fast);
         binding.registerProgress.setAnimation(an);
     }
 
@@ -51,22 +56,26 @@ public class Login extends AppCompatActivity {
     }
 
     private void setObservers() {
-        loginViewModel.getLoggedIn().observe(this, s -> {
+        loginViewModel.getLoggedIn().observe(getViewLifecycleOwner(), s -> {
             Log.d(TAG, "setObservers: ");
             if (!s) createNewAccount();
-            else startActivity(new Intent(Login.this, PlayWithFriend.class));
+            else {
+                requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                NavDirections action = LoginDirections.actionLoginToPlayWithFriend();
+                NavHostFragment.findNavController(this).navigate(action);
+            }
         });
-        loginViewModel.getPasswordError().observe(this, s -> {
+        loginViewModel.getPasswordError().observe(getViewLifecycleOwner(), s -> {
             if (s == null) binding.passConInput.setFocusableInTouchMode(true);
             else binding.password.setError(s);
         });
-        loginViewModel.getEmailError().observe(this, s -> binding.email.setError(s));
-        loginViewModel.getError().observe(this, s -> {
+        loginViewModel.getEmailError().observe(getViewLifecycleOwner(), s -> binding.email.setError(s));
+        loginViewModel.getError().observe(getViewLifecycleOwner(), s -> {
             killProgressBar();
             if (!s.equals("kill login"))
                 Snackbar.make(binding.getRoot(), s, Snackbar.LENGTH_LONG).show();
         });
-        loginViewModel.getNetwork().observe(this, s -> {
+        loginViewModel.getNetwork().observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
                 if (s) Snackbar.make(
                         binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
@@ -77,13 +86,13 @@ public class Login extends AppCompatActivity {
     }
 
     private void setRegisterObservers() {
-        loginViewModel.getDisplayNameExists().observe(this, s -> binding.displayName.setError(s));
-        loginViewModel.getPassConError().observe(this, s -> binding.passCon.setError(s));
+        loginViewModel.getDisplayNameExists().observe(getViewLifecycleOwner(), s -> binding.displayName.setError(s));
+        loginViewModel.getPassConError().observe(getViewLifecycleOwner(), s -> binding.passCon.setError(s));
     }
 
     private void createNewAccount() {
         binding.registerProgress.setVisibility(View.GONE);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         binding.loginView.setBackgroundColor(Color.WHITE);
         setListeners();
     }

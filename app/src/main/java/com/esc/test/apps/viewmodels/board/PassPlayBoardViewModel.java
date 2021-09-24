@@ -52,8 +52,10 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final MoveRepository moveRepository;
     private final MovesFactory moves;
     private static final String TAG = "myT";
-    private final int turnColor, notTurnColor;
-    private final int crossDrawable, circleDrawable;
+    private int turnColor, notTurnColor;
+    private int crossDrawable, circleDrawable, lastCross, lastCircle;
+    private int[] lastPosition;
+    private int lastPiecePlayed;
     private final Application app;
     private Disposable d, f;
 
@@ -63,10 +65,7 @@ public class PassPlayBoardViewModel extends ViewModel {
                                   Application app
     ) {
         populateGridLists();
-        turnColor = R.color.colorAccent;
-        notTurnColor = R.color.colorPrimary;
-        circleDrawable = R.drawable.baseline_panorama_fish_eye_24;
-        crossDrawable = R.drawable.baseline_close_24;
+        setDrawables();
         this.moves = moves;
         this.gameState = gameState;
         this.gameRepository = gameRepository;
@@ -88,6 +87,15 @@ public class PassPlayBoardViewModel extends ViewModel {
         layerIDs.add(backMCubes);
         CubeID[] backCubes = new CubeID[16];
         layerIDs.add(backCubes);
+    }
+
+    private void setDrawables() {
+        turnColor = R.color.colorAccent;
+        notTurnColor = R.color.colorPrimary;
+        circleDrawable = R.drawable.baseline_panorama_fish_eye_24;
+        crossDrawable = R.drawable.baseline_close_24;
+        lastCircle = R.drawable.baseline_panorama_fish_eye_red;
+        lastCross = R.drawable.baseline_close_red;
     }
 
     public ArrayList<CubeID[]> getLayerIDs() { return layerIDs; }
@@ -115,6 +123,8 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     public void clearLocalGame() {
+        lastPosition = null;
+        lastPiecePlayed = 0;
         gameState.newLocalGame();
         insertNewGame();
     }
@@ -243,12 +253,21 @@ public class PassPlayBoardViewModel extends ViewModel {
     public int setCubeMove(String playedPiece) {
         if (app.getString(R.string.circle).equals(playedPiece)) {
             crossTurn();
-            return circleDrawable;
+            return lastCircle;
         } else{
             circleTurn();
-            return crossDrawable;
+            return lastCross;
         }
     }
+
+    public void setCubePos(int[] lastPosition, String lastPiece) {
+        this.lastPosition = lastPosition;
+        lastPiecePlayed =
+                lastPiece.equals(app.getString(R.string.cross)) ? crossDrawable : circleDrawable;
+    }
+
+    public int[] getLastCube() { return lastPosition; }
+    public int getLastPiecePlayed() { return lastPiecePlayed; }
 
     public void clearMoves() { moveRepository.deleteGameMoves(); }
 }

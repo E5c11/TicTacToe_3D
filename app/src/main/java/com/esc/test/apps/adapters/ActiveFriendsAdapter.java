@@ -1,6 +1,6 @@
 package com.esc.test.apps.adapters;
 
-import android.app.Application;
+import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -21,14 +21,14 @@ import java.util.Objects;
 public class ActiveFriendsAdapter extends
         ListAdapter<UserInfo, RequestHolder> {
 
-    private final Application app;
+    private final Context context;
     private final OnClickListener listener;
     private final UserDetails userInfo;
     public static final String ACTIVE_LIST = "active";
 
-    public ActiveFriendsAdapter(Application app, OnClickListener listener, UserDetails userInfo) {
+    public ActiveFriendsAdapter(Context context, OnClickListener listener, UserDetails userInfo) {
         super(diffCallback);
-        this.app = app;
+        this.context = context;
         this.listener = listener;
         this.userInfo = userInfo;
     }
@@ -45,24 +45,24 @@ public class ActiveFriendsAdapter extends
         UserInfo user = getItem(pos);
         holder.bind(user, ACTIVE_LIST);
         if (user.getActive_game() != null)
-            holder.bindButton(app.getResources().getString(R.string.start));
+            holder.bindButton(context.getResources().getString(R.string.start));
         else if (user.getGame_request())
-            holder.bindButton(app.getResources().getString(R.string.accept));
+            holder.bindButton(context.getResources().getString(R.string.accept));
         else if (!user.getGame_invite() && !user.getGame_request())
-            holder.bindButton(app.getResources().getString(R.string.play));
+            holder.bindButton(context.getResources().getString(R.string.play));
 //        else if (getItem(pos).getActive_game() != null) holder.binding.inviteButton.setText(app.getResources().getString(R.string.continue_game));
         else if (user.getGame_invite())
-            holder.bindButton(app.getResources().getString(R.string.cancel));
+            holder.bindButton(context.getResources().getString(R.string.cancel));
         if (user.getStarter() != null) {
             if (user.getStarter())
-                holder.bindStarter(app.getResources().getString(R.string.their_turn));
+                holder.bindStarter(context.getResources().getString(R.string.their_turn));
             else
-                holder.bindStarter(app.getResources().getString(R.string.your_turn));
+                holder.bindStarter(context.getResources().getString(R.string.your_turn));
         } else if (user.getMove() != null) {
             if (user.getMove().getUid().equals(userInfo.getUid()))
-                holder.bindStarter(app.getResources().getString(R.string.your_turn));
+                holder.bindStarter(context.getResources().getString(R.string.your_turn));
             else
-                holder.bindStarter(app.getResources().getString(R.string.their_turn));
+                holder.bindStarter(context.getResources().getString(R.string.their_turn));
         }
     }
 

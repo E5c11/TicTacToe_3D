@@ -1,6 +1,6 @@
 package com.esc.test.apps.adapters;
 
-import android.app.Application;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -14,13 +14,13 @@ import com.esc.test.apps.pojos.UserInfo;
 public class FriendRequestAdapter extends
         ListAdapter<UserInfo, RequestHolder> {
 
-    private final Application app;
+    private final Context context;
     private final ActiveFriendsAdapter.OnClickListener listener;
     public static final String REQUEST_LIST = "request";
 
-    public FriendRequestAdapter(Application app, ActiveFriendsAdapter.OnClickListener listener) {
+    public FriendRequestAdapter(Context context, ActiveFriendsAdapter.OnClickListener listener) {
         super(ActiveFriendsAdapter.diffCallback);
-        this.app = app;
+        this.context = context;
         this.listener = listener;
     }
 
@@ -35,6 +35,6 @@ public class FriendRequestAdapter extends
     public void onBindViewHolder(@NonNull RequestHolder holder, int pos) {
         UserInfo user = getItem(pos);
         holder.bind(user, REQUEST_LIST);
-        holder.bindButton(app.getString(R.string.accept));
+        holder.bindButton(context.getString(R.string.accept));
     }
 }

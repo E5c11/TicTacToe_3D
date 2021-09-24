@@ -27,9 +27,7 @@ public class ProfileViewModel extends ViewModel {
         editTextError.addSource(fbUserRepo.getEmailError(), editTextError::setValue);
     }
 
-    private void checkDisplayName(CharSequence ds) {
-        fbUserRepo.checkDisplayNameExist(ds);
-    }
+    private void checkDisplayName(CharSequence ds) { fbUserRepo.checkDisplayNameExist(ds); }
 
     private void checkEmail(CharSequence email) {
         if (Utils.validEmail(email.toString())) fbUserRepo.isEmailValid(email.toString());
@@ -53,6 +51,22 @@ public class ProfileViewModel extends ViewModel {
             editTextError.setValue("");
             return true;
         }
+    }
+
+    public void changeDisplayName() {
+
+    }
+
+    public void changeEmail() {
+
+    }
+
+    public void changePassword() {
+
+    }
+
+    public void deleteAccount() {
+
     }
 
     public void checkDetails(CharSequence details) {

@@ -12,6 +12,7 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.entities.Move;
 import com.esc.test.apps.other.AIMoves;
 import com.esc.test.apps.other.MovesFactory;
@@ -35,12 +36,11 @@ public class PlayAIViewModel extends ViewModel {
     private final MovesFactory movesFactory;
     private final Application app;
     private final MoveRepository moveRepo;
-    private final GameRepository gameRepo;
     private final AIMoves aiMoves;
     private final Random rand;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
-    private Disposable d;
+    private final GameState gameState;
     private int moveCount;
     private int userMovePos;
     private String userPiece;
@@ -48,15 +48,15 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           GameRepository gameRepo, AIMoves aiMoves, Random rand
+                           AIMoves aiMoves, Random rand, GameState gameState
 
     ) {
         this.movesFactory = movesFactory;
         this.app = app;
         this.moveRepo = moveRepo;
-        this.gameRepo = gameRepo;
         this.aiMoves = aiMoves;
         this.rand = rand;
+        this.gameState = gameState;
         firstMove();
         catchLastMove();
         lastMove = LiveDataReactiveStreams.fromPublisher(moveRepo.getLastMove()
@@ -87,11 +87,8 @@ public class PlayAIViewModel extends ViewModel {
     }
 
     private void newAIMove(Move move) {
-        moveCount++; d = gameRepo.getWinner().subscribeOn(Schedulers.io()).doOnNext(w -> {
-            if (w.equals("in progress"))
-                executor.execute(() -> aiMoves.eliminateLines(move));
-                dispose(d);
-        }).subscribe();
+        moveCount++;
+        if (gameState.isWinner() == null) executor.execute(() -> aiMoves.eliminateLines(move));
     }
 
     public void catchLastMove() {

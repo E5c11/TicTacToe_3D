@@ -1,4 +1,6 @@
-package com.esc.test.apps.activities;
+package com.esc.test.apps.ui.fragments;
+
+import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -6,8 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.esc.test.apps.R;
@@ -24,7 +28,9 @@ import java.util.ArrayList;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class BoardActivity extends AppCompatActivity implements View.OnClickListener {
+public class Board extends Fragment implements View.OnClickListener {
+
+    public Board() { super(R.layout.board_activity); }
 
     private final ArrayList<GridView> layers = new ArrayList<>();
     private PassPlayBoardViewModel passPlayViewModel;
@@ -35,10 +41,9 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     private BoardActivityBinding binding;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binding = BoardActivityBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding = BoardActivityBinding.bind(view);
         Log.d("myT", "BoardActivity");
         passPlayViewModel = new ViewModelProvider(this).get(PassPlayBoardViewModel.class);
         setBoard();
@@ -52,7 +57,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
         numLayers = 0;
         layers.forEach(i -> {
             passPlayViewModel.setCubes(numLayers);
-            CubeAdapter cubeAdapter = new CubeAdapter(getApplication(), passPlayViewModel.getLayerIDs().get(numLayers));
+            CubeAdapter cubeAdapter = new CubeAdapter(requireContext(), passPlayViewModel.getLayerIDs().get(numLayers));
             i.setAdapter(cubeAdapter);
             i.setOnItemClickListener((adapterView, view, j, l) -> changeSquareIcon(view));
             numLayers++;
@@ -68,12 +73,13 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void checkExtras() {
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            if (extras.containsKey("game_set_id")) {
+        BoardArgs extras = BoardArgs.fromBundle(getArguments());
+
+        if (extras.getGameType() != null) {
+            if (extras.getGamePiece() != null) {
                 gameButtonsVis();
-                String extra = (String) extras.get("friend_game_piece");
-                String uids = (String) extras.get("game_set_id");
+                String extra = (String) extras.getGamePiece();
+                String uids = (String) extras.getGameType();
                 playFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
                 Log.d(TAG, "friend's starting piece is: " + extra);
                 if (extra.equals(getResources().getString(R.string.cross))) {
@@ -84,7 +90,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                     changeGridOnClick(true);
                 }
                 setOpponentUIDObserver();
-            } else if (extras.containsKey("play_ai")) {
+            } else {
                 Log.d(TAG, "checkExtras: ai game");
                 passPlayViewModel.clearLocalGame();
                 playAIViewModel = new ViewModelProvider(this).get(PlayAIViewModel.class);
@@ -114,7 +120,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     private void changeSquareIcon(View view) {
         ColorDrawable viewColor = (ColorDrawable) view.getBackground();
         CubeID cube = (CubeID) view.getTag();
-        int confirmColor = ContextCompat.getColor(this, R.color.colorTransBlue);
+        int confirmColor = ContextCompat.getColor(requireContext(), R.color.colorTransBlue);
         if (viewColor == null || viewColor.getColor() != confirmColor) {
             String lastPos = passPlayViewModel.getLastPos();
             if (lastPos != null) removeConfirm(lastPos);
@@ -130,7 +136,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void removeConfirm(String tag) {
-        int[] turnPos = CubeAdapter.getGridAdapter(tag);
+        int[] turnPos = getGridAdapter(tag);
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setBackground(null);
     }
 
@@ -149,7 +155,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
             setPieceClickEnabled();
         } else if (view == binding.quit) {
             if (playFriendViewModel != null) playFriendViewModel.quitGame();
-            onBackPressed();
+//            onBackPressed();
         }
     }
 
@@ -170,12 +176,17 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void setObservers() {
-        passPlayViewModel.getCircleScore().observe(this, s -> binding.oScore.setText(s));
-        passPlayViewModel.getCrossScore().observe(this, s -> binding.xScore.setText(s));
-        passPlayViewModel.getoTurn().observe(this, color -> binding.oButton.setBackgroundColor(getColor(color)));
-        passPlayViewModel.getxTurn().observe(this, color -> binding.xButton.setBackgroundColor(getColor(color)));
-        passPlayViewModel.getStarter().observe(this, s -> { if (s != null) gameStarted(); });
-        passPlayViewModel.getWinner().observe(this, winner -> {
+        passPlayViewModel.getCircleScore().observe(getViewLifecycleOwner(), s ->
+                binding.oScore.setText(s));
+        passPlayViewModel.getCrossScore().observe(getViewLifecycleOwner(), s ->
+                binding.xScore.setText(s));
+        passPlayViewModel.getoTurn().observe(getViewLifecycleOwner(), color ->
+                binding.oButton.setBackgroundColor(requireContext().getColor(color)));
+        passPlayViewModel.getxTurn().observe(getViewLifecycleOwner(), color ->
+                binding.xButton.setBackgroundColor(requireContext().getColor(color)));
+        passPlayViewModel.getStarter().observe(getViewLifecycleOwner(), s -> {
+            if (s != null) gameStarted(); });
+        passPlayViewModel.getWinner().observe(getViewLifecycleOwner(), winner -> {
             if (winner != null) {
                 Log.d(TAG, "winner : " + winner);
                 passPlayViewModel.updateScore(winner);
@@ -184,35 +195,35 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                 if (playFriendViewModel != null) playFriendViewModel.uploadWinner();
             }
         });
-        passPlayViewModel.getWinnerLine().observe(this, winnerLine -> {
+        passPlayViewModel.getWinnerLine().observe(getViewLifecycleOwner(), winnerLine -> {
             if (winnerLine != null) {
                 for (int[] winPos : winnerLine)
                     layers.get(winPos[0]).getChildAt(winPos[1])
-                            .setBackground(getDrawable(R.drawable.baseline_star_24));
+                            .setBackground(requireContext().getDrawable(R.drawable.baseline_star_24));
                 passPlayViewModel.clearWinnerLine();
             }
         });
     }
 
     private void setPassPlayObserver() {
-        passPlayViewModel.getTurn().observe(this, turn -> {
+        passPlayViewModel.getTurn().observe(getViewLifecycleOwner(), turn -> {
             if (turn != null) binding.title.setText(turn + "\'s turn");
         });
     }
 
     private void setPlayAIObserver() {
-        playAIViewModel.getLastMove().observe(this, move -> {
+        playAIViewModel.getLastMove().observe(getViewLifecycleOwner(), move -> {
             if (move != null) {
 //                Log.d(TAG, "setPlayAIObserver: " + move.getPosition() + " " + move.getPiece_played());
                 updateGridView(move.getPosition(), move.getPiece_played());
             }
         });
-        playAIViewModel.getError().observe(this, error -> Snackbar.make(
+        playAIViewModel.getError().observe(getViewLifecycleOwner(), error -> Snackbar.make(
                 binding.getRoot(), "no move calculated", Snackbar.LENGTH_LONG).show());
     }
 
     private void setOpponentUIDObserver() {
-        playFriendViewModel.getTurn().observe(this, turn -> {
+        playFriendViewModel.getTurn().observe(getViewLifecycleOwner(), turn -> {
             if (turn != null) {
                 if (turn.isFriendsTurn()) {
                     binding.title.setText(getResources().getString(R.string.their_turn));
@@ -223,7 +234,7 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
         });
-        playFriendViewModel.getExistingMoves().observe(this, s -> {
+        playFriendViewModel.getExistingMoves().observe(getViewLifecycleOwner(), s -> {
 //            Log.d(TAG, "setOpponentUIDObserver: get moves");
             if (s != null) {
                 if (!s.isEmpty()) {
@@ -232,14 +243,14 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
                 }
             }
         });
-        playFriendViewModel.getMoveInfo().observe(this, s -> {
+        playFriendViewModel.getMoveInfo().observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
                 updateGridView(s.getPosition(), s.getPiece_played());
                 passPlayViewModel.downloadedMove(s);
                 Log.d(TAG, "downloaded move view update: ");
             }
         });
-        playFriendViewModel.getNetwork().observe(this, s -> {
+        playFriendViewModel.getNetwork().observe(getViewLifecycleOwner(), s -> {
             if (s != null)
                 if (s) {
                     changeGridOnClick(true);
@@ -256,28 +267,28 @@ public class BoardActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void getNewMoves() {
-        passPlayViewModel.getLastMove().observe(this, s -> {
+        passPlayViewModel.getLastMove().observe(getViewLifecycleOwner(), s -> {
             if (s != null) updateGridView(s.getPos(), s.getPiece());
         });
     }
 
     private void updateGridView(String pos, String playedPiece) {
-        int[] turnPos = CubeAdapter.getGridAdapter(pos);
+        int[] turnPos = getGridAdapter(pos), lastTurn = passPlayViewModel.getLastCube();
+        int lastDrawable = passPlayViewModel.getLastPiecePlayed();
+        if (lastDrawable != 0) layers.get(lastTurn[0]).getChildAt(lastTurn[1])
+                                    .setBackground(requireContext().getDrawable(lastDrawable));
         Log.d(TAG, "updated view " + turnPos[0] + " " + turnPos[1] + " " + playedPiece);
         layers.get(turnPos[0]).getChildAt(turnPos[1])
-                .setBackground(getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
+                .setBackground(requireContext().getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
+        passPlayViewModel.setCubePos(turnPos, playedPiece);
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         passPlayViewModel.clearMoves();
         Log.d("myT", "destroy");
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
 }

@@ -13,16 +13,8 @@
         android:roundIcon="@mipmap/app_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.esc.test.apps.activities.BoardActivity"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name="com.esc.test.apps.activities.Login"
-            android:screenOrientation="portrait"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity android:name="com.esc.test.apps.activities.PlayWithFriend" />
-        <activity android:name=".activities.ProfileManagement" />
         <activity
-            android:name="com.esc.test.apps.activities.Home"
+            android:name="com.esc.test.apps.ui.MainActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

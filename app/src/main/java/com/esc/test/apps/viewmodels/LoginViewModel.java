@@ -1,6 +1,5 @@
 package com.esc.test.apps.viewmodels;
 
-import android.app.Application;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -10,14 +9,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.network.ConnectionLiveData;
-import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 

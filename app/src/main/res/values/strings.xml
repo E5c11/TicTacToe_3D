@@ -34,6 +34,7 @@
     <string name="resume">resume</string>
     <string name="start">start</string>
     <string name="quit">quit</string>
+    <string name="confirm">confirm</string>
     <string name="new_set">new set</string>
     <string name="new_game">new game</string>
     <string name="delete">Delete account</string>
@@ -42,6 +43,16 @@
     <string name="cross">cross</string>
     <string name="circle">circle</string>
     <string name="winner">winner</string>
+
+    <string name="change_password">Change password</string>
+    <string name="change_email">Change email</string>
+    <string name="change_display_name">Change display name</string>
+    <string name="delete_account">Delete account</string>
+    <string name="confirm_quit">Quit game</string>
+
+
+    <string name="delete_msg">Are you sure you want to delete your account</string>
+    <string name="quit_msg">Are you sure you want to quit the game</string>
 
     <string name="game_active">game_active</string>
     <string name="coordinates">coordinates</string>

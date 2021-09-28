@@ -33,6 +33,9 @@
             android:name="game_piece"
             app:argType="string"
             app:nullable="true"/>
+        <action
+            android:id="@+id/action_boardActivity_to_alertDialogFragment"
+            app:destination="@id/alertDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/login"
@@ -61,4 +64,19 @@
         android:label="profile_layout"
         tools:layout="@layout/profile_layout" >
     </fragment>
+    <dialog
+        android:id="@+id/alertDialogFragment"
+        android:name="com.esc.test.apps.ui.fragments.AlertDialogFragment"
+        android:label="AlertDialogFragment" >
+        <argument
+            android:name="title"
+            app:argType="string"/>
+        <argument
+            android:name="message"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="type"
+            app:argType="com.esc.test.apps.utils.AlertType" />
+    </dialog>
 </navigation>

@@ -1,6 +1,5 @@
 package com.esc.test.apps.utils;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 

@@ -13,11 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.utils.AlertType;
 import com.esc.test.apps.viewmodels.board.PassPlayBoardViewModel;
 import com.esc.test.apps.viewmodels.board.PlayAIViewModel;
 import com.esc.test.apps.viewmodels.board.PlayFriendBoardViewModel;
@@ -28,7 +30,7 @@ import java.util.ArrayList;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class Board extends Fragment implements View.OnClickListener {
+public class Board extends Fragment {
 
     public Board() { super(R.layout.board_activity); }
 
@@ -140,23 +142,25 @@ public class Board extends Fragment implements View.OnClickListener {
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setBackground(null);
     }
 
-    @Override
-    public void onClick(View view) {
-        if (view == binding.newGame) {
+    public void setGameStates() {
+        binding.newGame.setOnClickListener(v -> {
             passPlayViewModel.clearLocalGame();
             if (playAIViewModel != null) playAIViewModel.newGame();
             changeGridOnClick(true);
             setBoard();
             setPieceClickEnabled();
-        } else if (view == binding.newSet) {
+        });
+        binding.newSet.setOnClickListener(v -> {
             passPlayViewModel.clearSet();
             setBoard();
             changeGridOnClick(true);
             setPieceClickEnabled();
-        } else if (view == binding.quit) {
-            if (playFriendViewModel != null) playFriendViewModel.quitGame();
-//            onBackPressed();
-        }
+        });
+        binding.quit.setOnClickListener(v -> {
+            if (playFriendViewModel != null) NavHostFragment.findNavController(this)
+                    .navigate(BoardDirections.actionBoardActivityToAlertDialogFragment(getString(
+                            R.string.confirm_quit), getString(R.string.quit_msg), AlertType.QUIT));
+        });
     }
 
     private void setPieceClickEnabled() {
@@ -203,6 +207,7 @@ public class Board extends Fragment implements View.OnClickListener {
                 passPlayViewModel.clearWinnerLine();
             }
         });
+        setGameStates();
     }
 
     private void setPassPlayObserver() {

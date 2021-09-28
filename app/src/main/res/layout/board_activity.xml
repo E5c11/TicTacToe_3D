@@ -25,7 +25,6 @@
         android:layout_marginEnd="15dp"
         android:text="@string/quit"
         android:visibility="gone"
-        android:onClick="onClick"
         app:layout_constraintTop_toTopOf="@id/title"
         app:layout_constraintBottom_toBottomOf="@id/title"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -47,7 +46,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/new_game"
-        android:onClick="onClick"
         app:layout_constraintBottom_toTopOf="@id/front_text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/new_set"
@@ -58,7 +56,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/new_set"
-        android:onClick="onClick"
         app:layout_constraintBottom_toTopOf="@id/front_text"
         app:layout_constraintStart_toEndOf="@id/new_game"
         app:layout_constraintEnd_toEndOf="parent"/>

@@ -85,6 +85,4 @@ public class ProfileViewModel extends ViewModel {
 
     public LiveData<String> getEditTextError() { return editTextError; }
 
-    enum Type { DISPLAY_NAME, EMAIL, PASSWORD, DELETE}
-
 }

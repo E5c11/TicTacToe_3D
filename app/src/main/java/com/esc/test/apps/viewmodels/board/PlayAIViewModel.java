@@ -61,6 +61,7 @@ public class PlayAIViewModel extends ViewModel {
         catchLastMove();
         lastMove = LiveDataReactiveStreams.fromPublisher(moveRepo.getLastMove()
                 .subscribeOn(Schedulers.io()));
+        aiMoves.newGame();
     }
 
     public void firstMove() {

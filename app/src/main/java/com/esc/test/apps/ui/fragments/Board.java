@@ -142,7 +142,7 @@ public class Board extends Fragment {
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setBackground(null);
     }
 
-    public void setGameStates() {
+    public void setButtonClicks() {
         binding.newGame.setOnClickListener(v -> {
             passPlayViewModel.clearLocalGame();
             if (playAIViewModel != null) playAIViewModel.newGame();
@@ -157,8 +157,10 @@ public class Board extends Fragment {
             setPieceClickEnabled();
         });
         binding.quit.setOnClickListener(v -> {
-            if (playFriendViewModel != null) NavHostFragment.findNavController(this)
-                    .navigate(BoardDirections.actionBoardActivityToAlertDialogFragment(getString(
+            if (playFriendViewModel != null)
+                NavHostFragment.findNavController(this)
+                    .navigate(BoardDirections.actionBoardActivityToAlertDialogFragment
+                            (getString(
                             R.string.confirm_quit), getString(R.string.quit_msg), AlertType.QUIT));
         });
     }
@@ -207,7 +209,7 @@ public class Board extends Fragment {
                 passPlayViewModel.clearWinnerLine();
             }
         });
-        setGameStates();
+        setButtonClicks();
     }
 
     private void setPassPlayObserver() {

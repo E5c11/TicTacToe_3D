@@ -78,5 +78,5 @@
         <argument
             android:name="type"
             app:argType="com.esc.test.apps.utils.AlertType" />
-    </dialog>
+    </dialog><action android:id="@+id/action_global_alertDialogFragment" app:destination="@id/alertDialogFragment"/>
 </navigation>

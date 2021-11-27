@@ -15,7 +15,12 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -83,11 +88,20 @@ public class FirebaseUserRepository {
                         loggedIn.postValue(true);
                         Log.d(TAG, "after set token: " + loggedIn.getValue());
                     } else {
-                        Log.d("myT", "user not logged in: " + task.getException().getMessage());
-                        if (attempt < 3) {
-                            attempt++;
-                            connectLogin(email, password);
-                        } else error.postValue("User not logged in");
+                        try {
+                            throw task.getException();
+                        } catch (FirebaseAuthInvalidCredentialsException e) {
+                            error.postValue("Password is incorrect");
+                        } catch (FirebaseTooManyRequestsException e) {
+                            error.postValue("Too many requests, please try again later");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.d("myT", "user not logged in: " + task.getException());
+                            if (attempt < 3) {
+                                attempt++;
+                                connectLogin(email, password);
+                            } else error.postValue("User not logged in");
+                        }
                     }
                 });
             });
@@ -169,6 +183,22 @@ public class FirebaseUserRepository {
                     error.postValue("An error occurred, check the network");
                 }
             });
+    }
+
+    public void updateEmail(String email) {
+        getUser().updateEmail(email)
+                .addOnCompleteListener(task -> error.postValue(null))
+                .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
+    }
+
+    public void updatePassword(String password) {
+        getUser().updatePassword(password)
+                .addOnCompleteListener(task -> error.postValue(null))
+                .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
+    }
+
+    private FirebaseUser getUser() {
+        return firebaseAuth.getCurrentUser();
     }
 
     public SingleLiveEvent<Boolean> getLoggedIn() { return loggedIn; }

@@ -15,6 +15,10 @@ import androidx.navigation.Navigation;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.HomeActivityBinding;
+import com.esc.test.apps.datastore.UserDetails;
+import com.google.android.material.snackbar.Snackbar;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -24,6 +28,9 @@ public class Home extends Fragment {
     public Home() { super(R.layout.home_activity); }
 
     private HomeActivityBinding binding;
+
+    @Inject
+    UserDetails user;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -48,9 +55,11 @@ public class Home extends Fragment {
             Navigation.findNavController(v).navigate(action);
         });
         binding.manageProfile.setOnClickListener(v -> {
-            v.startAnimation(an1);
-            NavDirections action = HomeDirections.actionHomeToProfileManagement();
-            Navigation.findNavController(v).navigate(action);
+            if (user.getUid() != null) {
+                v.startAnimation(an1);
+                NavDirections action = HomeDirections.actionHomeToProfileManagement();
+                Navigation.findNavController(v).navigate(action);
+            } else Snackbar.make(binding.getRoot(), "Please login first", Snackbar.LENGTH_SHORT).show();
         });
         onBackPressed();
     }

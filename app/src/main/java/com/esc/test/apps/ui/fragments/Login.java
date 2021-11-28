@@ -58,12 +58,10 @@ public class Login extends Fragment {
     private void setObservers() {
         loginViewModel.getLoggedIn().observe(getViewLifecycleOwner(), s -> {
             Log.d(TAG, "setObservers: ");
+            LoginArgs args = LoginArgs.fromBundle(getArguments());
             if (!s) createNewAccount();
-            else {
-                requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                NavDirections action = LoginDirections.actionLoginToPlayWithFriend();
-                NavHostFragment.findNavController(this).navigate(action);
-            }
+            else if (args.getNavTo() != null) goTo(LoginDirections.actionLoginToProfileManagement());
+            else goTo(LoginDirections.actionLoginToPlayWithFriend());
         });
         loginViewModel.getPasswordError().observe(getViewLifecycleOwner(), s -> {
             if (s == null) binding.passConInput.setFocusableInTouchMode(true);
@@ -83,6 +81,11 @@ public class Login extends Fragment {
                         binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
             }
         });
+    }
+
+    private void goTo(NavDirections action) {
+        requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        NavHostFragment.findNavController(this).navigate(action);
     }
 
     private void setRegisterObservers() {

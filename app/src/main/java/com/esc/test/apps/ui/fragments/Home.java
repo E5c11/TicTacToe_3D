@@ -50,18 +50,23 @@ public class Home extends Fragment {
             NavDirections action = HomeDirections.actionHomeToBoardActivity("play_ai", null);
             Navigation.findNavController(v).navigate(action);
         });
-        binding.playFriend.setOnClickListener(v -> {
-            NavDirections action = HomeDirections.actionHomeToLogin();
-            Navigation.findNavController(v).navigate(action);
-        });
+        binding.playFriend.setOnClickListener(v -> goToLogin(v, null));
         binding.manageProfile.setOnClickListener(v -> {
             if (user.getUid() != null) {
                 v.startAnimation(an1);
                 NavDirections action = HomeDirections.actionHomeToProfileManagement();
                 Navigation.findNavController(v).navigate(action);
-            } else Snackbar.make(binding.getRoot(), "Please login first", Snackbar.LENGTH_SHORT).show();
+            } else {
+                goToLogin(v, "profile");
+                Snackbar.make(binding.getRoot(), "Please login first", Snackbar.LENGTH_SHORT).show();
+            }
         });
         onBackPressed();
+    }
+
+    private void goToLogin(View v, String goTo) {
+        NavDirections action = HomeDirections.actionHomeToLogin(goTo);
+        Navigation.findNavController(v).navigate(action);
     }
 
     private void onBackPressed() {

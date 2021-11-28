@@ -1,9 +1,12 @@
 package com.esc.test.apps.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.repositories.FirebaseGameRepository;
@@ -21,9 +24,8 @@ public class DialogViewModel extends ViewModel {
     private final Application app;
     private final FirebaseUserRepository fbUserRepo;
     private final FirebaseGameRepository fbGameRepo;
-    private final MutableLiveData<String> _error = new MutableLiveData<>();
+    private final MediatorLiveData<String> _error = new MediatorLiveData<>();
     public final LiveData<String> error = _error;
-    public final LiveData<String> remoteError;
     private AlertType type;
     private String input;
 
@@ -34,7 +36,15 @@ public class DialogViewModel extends ViewModel {
         this.app = app;
         this.fbUserRepo = fbUserRepo;
         this.fbGameRepo = fbGameRepo;
-        remoteError = fbUserRepo.getError();
+        addErrorObservers();
+    }
+
+    private void addErrorObservers() {
+        _error.addSource(fbUserRepo.getEmailError(), error -> {
+            if (error.equals("This email does not exist")) _error.postValue("");
+            else _error.postValue(error);
+        });
+        _error.addSource(fbUserRepo.getDisplayNameExists(), _error::postValue);
     }
 
     private void confirmQuit() {
@@ -54,7 +64,7 @@ public class DialogViewModel extends ViewModel {
     }
 
     private void changeDisplayName() {
-
+        fbUserRepo.updateDisplayName(input);
     }
 
     public void checkAction(boolean submit) {
@@ -65,11 +75,14 @@ public class DialogViewModel extends ViewModel {
                 else _error.postValue(result);
                 break;
             case EMAIL:
-                if (submit && Utils.validEmail(input)) changeEmail();
+                boolean validEmail = Utils.validEmail(input);
+                if (submit && validEmail) changeEmail();
+                else if (validEmail) fbUserRepo.isEmailValid(input);
                 else  _error.postValue("Please enter a valid email");
                 break;
             case DISPLAY_NAME:
-                changeDisplayName();
+                if (input.length() > 2) fbUserRepo.checkDisplayNameExist(input);
+                else if (submit) changeDisplayName();
                 break;
             case DELETE:
                 confirmDelete();

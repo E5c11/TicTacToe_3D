@@ -133,12 +133,12 @@ public class FirebaseUserRepository {
                     if (task.isSuccessful()) {
                         attempt = 0;
                         String uid = task.getResult().getUser().getUid();
-                        users.child(uid).child(DISPLAY_NAME).setValue(displayName);
                         setUserOnline(uid);
                         userDetails.setUid(uid);
                         userDetails.setEmail(email);
                         userDetails.setPassword(password);
                         userDetails.setDisplayName(displayName);
+                        updateDisplayName(displayName);
                         setToken(userDetails.getToken());
                         loggedIn.postValue(true);
                     } else if (attempt < 3) {
@@ -159,6 +159,14 @@ public class FirebaseUserRepository {
             Log.d(TAG, "setUserOnline: ");
         });
         users.child(uid).child(STATUS).onDisconnect().setValue(app.getString(R.string.offline));
+    }
+
+    public void deleteAccount() {
+        getUser().delete();
+    }
+
+    public void updateDisplayName(String displayName) {
+        users.child(userDetails.getUid()).child(DISPLAY_NAME).setValue(displayName);
     }
 
     public void checkDisplayNameExist(CharSequence ds) {

@@ -1,5 +1,6 @@
 package com.esc.test.apps.ui.fragments;
 
+import static com.esc.test.apps.utils.AlertType.DELETE;
 import static com.esc.test.apps.utils.AlertType.DISPLAY_NAME;
 import static com.esc.test.apps.utils.AlertType.EMAIL;
 import static com.esc.test.apps.utils.AlertType.PASSWORD;
@@ -58,7 +59,7 @@ public class ProfileManagement extends Fragment {
         binding.delete.setOnClickListener(v -> {
             NavHostFragment.findNavController(this).navigate(
                     ProfileManagementDirections.actionGlobalAlertDialogFragment(
-                    "Delete account", "Are you sure you would like to delete your account?", PASSWORD));
+                    "Delete account", "Are you sure you would like to delete your account?", DELETE));
         });
     }
 

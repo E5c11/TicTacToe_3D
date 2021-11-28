@@ -53,36 +53,5 @@ public class ProfileViewModel extends ViewModel {
         }
     }
 
-    public void changeDisplayName() {
-
-    }
-
-    public void changeEmail() {
-
-    }
-
-    public void changePassword() {
-
-    }
-
-    public void deleteAccount() {
-
-    }
-
-    public void checkDetails(CharSequence details) {
-        switch (type) {
-            case Utils.TEXT_INPUT:
-                checkDisplayName(details);
-                break;
-            case Utils.EMAIL_INPUT:
-                checkEmail(details);
-                break;
-            case Utils.PASSWORD_INPUT:
-                checkPassword(details);
-                break;
-        }
-    }
-
-    public LiveData<String> getEditTextError() { return editTextError; }
 
 }

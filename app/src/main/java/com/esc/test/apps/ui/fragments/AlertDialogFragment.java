@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,33 +49,44 @@ public class AlertDialogFragment extends DialogFragment {
     }
 
     private Dialog dialogSetup(AlertDialogFragmentArgs args) {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext(), R.style.MyDialogTheme);
+        dialogBuilder.setView(binding.getRoot());
+        binding.title.setText(args.getTitle());
         if (Arrays.asList(PASSWORD, EMAIL, DISPLAY_NAME).contains(args.getType())) {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext(), R.style.MyDialogTheme);
-            dialogBuilder.setView(binding.getRoot());
-            binding.title.setText(args.getTitle());
             binding.editText.setHint(args.getMessage());
-            return dialogBuilder.create();
+        } else {
+            binding.confirm.setVisibility(View.VISIBLE);
+            binding.editInput.setVisibility(View.GONE);
+            binding.text.setVisibility(View.VISIBLE);
+            binding.text.setText(args.getMessage());
         }
-        else return new AlertDialog.Builder(requireContext(), R.style.MyDialogTheme)
-                .setTitle(args.getTitle()).setMessage(args.getMessage())
-                .create();
+        return dialogBuilder.create();
     }
 
     private void setListeners() {
         binding.confirm.setOnClickListener(v -> {
             viewModel.checkAction(true);
         });
+        binding.cancel.setOnClickListener(v -> dismiss());
         binding.editInput.addTextChangedListener(new LetterWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                viewModel.checkAction(false);
-                viewModel.setInput(s.toString());
+                if (s.length() < 3) binding.confirm.setVisibility(View.INVISIBLE);
+                else {
+                    viewModel.setInput(s.toString());
+                    viewModel.checkAction(false);
+                }
             }
         });
     }
 
     private void setObservers() {
-        viewModel.error.observe(this, error -> binding.editInput.setError(error));
-        viewModel.remoteError.observe(this, error -> binding.editInput.setError(error));
+        viewModel.error.observe(this, error -> {
+            if (error.isEmpty()) binding.confirm.setVisibility(View.VISIBLE);
+            else {
+                binding.confirm.setVisibility(View.INVISIBLE);
+                binding.editInput.setError(error);
+            }
+        });
     }
 }

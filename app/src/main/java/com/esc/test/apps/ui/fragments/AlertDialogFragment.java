@@ -66,6 +66,7 @@ public class AlertDialogFragment extends DialogFragment {
     private void setListeners() {
         binding.confirm.setOnClickListener(v -> {
             viewModel.checkAction(true);
+            dismiss();
         });
         binding.cancel.setOnClickListener(v -> dismiss());
         binding.editInput.addTextChangedListener(new LetterWatcher() {

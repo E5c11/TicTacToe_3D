@@ -79,14 +79,10 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     private void populateGridLists() {
-        CubeID[] frontCubes = new CubeID[16];
-        layerIDs.add(frontCubes);
-        CubeID[] frontMCubes = new CubeID[16];
-        layerIDs.add(frontMCubes);
-        CubeID[] backMCubes = new CubeID[16];
-        layerIDs.add(backMCubes);
-        CubeID[] backCubes = new CubeID[16];
-        layerIDs.add(backCubes);
+        layerIDs.add(new CubeID[16]);
+        layerIDs.add(new CubeID[16]);
+        layerIDs.add(new CubeID[16]);
+        layerIDs.add(new CubeID[16]);
     }
 
     private void setDrawables() {

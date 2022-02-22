@@ -41,7 +41,6 @@ public class ProfileManagement extends Fragment {
 
     private void setListeners() {
         binding.displayName.setOnClickListener(v -> {
-                        ;
                 NavHostFragment.findNavController(this)
                         .navigate(ProfileManagementDirections.actionGlobalAlertDialogFragment(
                         "Change display name", "Display name", DISPLAY_NAME));

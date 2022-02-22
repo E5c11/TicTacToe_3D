@@ -121,14 +121,12 @@ public class MoveUtils {
         for (int i = 0; i < cubes.length; i++) {
             String cubeName = x + "" + y + "" + z;
             String cubePos = String.valueOf((x * 4) + y + (z * 16));
-            if (y == 0 || y == 1 || y == 2) {
-                y++;
-                cubes[i] = new CubeID(cubeName, cubePos);
-            } else {
-                cubes[i] = new CubeID(cubeName, cubePos);
+            if (y <= 2) y++;
+            else {
                 x++;
                 y = 0;
             }
+            cubes[i] = new CubeID(cubeName, cubePos);
         }
         return cubes;
     }

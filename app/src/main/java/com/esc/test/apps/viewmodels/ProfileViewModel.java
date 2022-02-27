@@ -5,6 +5,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
 import com.esc.test.apps.utils.Utils;
 
@@ -16,13 +17,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class ProfileViewModel extends ViewModel {
 
     private final FirebaseUserRepository fbUserRepo;
+    private final ConnectionLiveData network;
     private final MediatorLiveData<String> editTextError = new MediatorLiveData<>();
     private int type;
     private String password;
 
     @Inject
-    public ProfileViewModel(FirebaseUserRepository fbUserRepo) {
+    public ProfileViewModel(FirebaseUserRepository fbUserRepo, ConnectionLiveData network) {
         this.fbUserRepo = fbUserRepo;
+        this.network = network;
         editTextError.addSource(fbUserRepo.getDisplayNameExists(), editTextError::setValue);
         editTextError.addSource(fbUserRepo.getEmailError(), editTextError::setValue);
     }
@@ -53,5 +56,6 @@ public class ProfileViewModel extends ViewModel {
         }
     }
 
+    public LiveData<Boolean> getNetwork() { return network; }
 
 }

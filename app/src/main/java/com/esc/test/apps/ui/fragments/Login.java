@@ -60,7 +60,7 @@ public class Login extends Fragment {
             Log.d(TAG, "setObservers: ");
             LoginArgs args = LoginArgs.fromBundle(getArguments());
             if (!s) createNewAccount();
-            else if (args.getNavTo() != null) goTo(LoginDirections.actionLoginToProfileManagement());
+            else if (args.getNavTo() != null) goTo(LoginDirections.actionLoginToProfileManagement(null));
             else goTo(LoginDirections.actionLoginToPlayWithFriend());
         });
         loginViewModel.getPasswordError().observe(getViewLifecycleOwner(), s -> {

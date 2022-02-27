@@ -17,6 +17,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.ProfileLayoutBinding;
 import com.esc.test.apps.viewmodels.ProfileViewModel;
+import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -63,7 +64,14 @@ public class ProfileManagement extends Fragment {
     }
 
     private void setObservers() {
-
+        viewModel.getNetwork().observe(getViewLifecycleOwner(), s -> {
+            if (s != null) {
+                if (s) Snackbar.make(
+                        binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
+                else Snackbar.make(
+                        binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
+            }
+        });
     }
 
 }

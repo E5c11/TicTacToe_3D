@@ -8,6 +8,8 @@
         <entry key="app/src/main/res/drawable-xhdpi/baseline_panorama_fish_eye_red.xml" value="0.3776041666666667" />
         <entry key="app/src/main/res/drawable/baseline_close_24.xml" value="0.3776041666666667" />
         <entry key="app/src/main/res/drawable/circle.xml" value="0.3770833333333333" />
+        <entry key="app/src/main/res/drawable/progress_animation.xml" value="0.39794871794871794" />
+        <entry key="app/src/main/res/drawable/progress_bar.xml" value="0.39794871794871794" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3609375" />
         <entry key="app/src/main/res/layout/alert_edit_text_layout.xml" value="0.3614583333333333" />
         <entry key="app/src/main/res/layout/block.xml" value="0.3614583333333333" />
@@ -67,7 +69,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

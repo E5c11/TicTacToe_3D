@@ -70,6 +70,10 @@
         android:name="com.esc.test.apps.ui.fragments.ProfileManagement"
         android:label="profile_layout"
         tools:layout="@layout/profile_layout" >
+        <argument
+            android:name="action"
+            app:argType="com.esc.test.apps.utils.AlertType"
+            app:nullable="true" />
     </fragment>
     <dialog
         android:id="@+id/alertDialogFragment"
@@ -84,6 +88,9 @@
             app:nullable="true"/>
         <argument
             android:name="type"
-            app:argType="com.esc.test.apps.utils.AlertType" />
+            app:argType="com.esc.test.apps.utils.AlertType"/>
+        <action
+            android:id="@+id/action_alertDialogFragment_to_profileManagement"
+            app:destination="@id/profileManagement" />
     </dialog><action android:id="@+id/action_global_alertDialogFragment" app:destination="@id/alertDialogFragment"/>
 </navigation>

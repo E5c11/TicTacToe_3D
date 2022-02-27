@@ -162,11 +162,15 @@ public class FirebaseUserRepository {
     }
 
     public void deleteAccount() {
-        getUser().delete();
+        getUser().delete()
+            .addOnCompleteListener(task -> error.postValue("success"))
+            .addOnFailureListener(fail -> error.postValue(fail.getMessage()));;
     }
 
     public void updateDisplayName(String displayName) {
-        users.child(userDetails.getUid()).child(DISPLAY_NAME).setValue(displayName);
+        users.child(userDetails.getUid()).child(DISPLAY_NAME).setValue(displayName)
+            .addOnCompleteListener(task -> error.postValue("success"))
+            .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 
     public void checkDisplayNameExist(CharSequence ds) {
@@ -195,13 +199,13 @@ public class FirebaseUserRepository {
 
     public void updateEmail(String email) {
         getUser().updateEmail(email)
-                .addOnCompleteListener(task -> error.postValue(null))
+                .addOnCompleteListener(task -> error.postValue("success"))
                 .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 
     public void updatePassword(String password) {
         getUser().updatePassword(password)
-                .addOnCompleteListener(task -> error.postValue(null))
+                .addOnCompleteListener(task -> error.postValue("success"))
                 .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 

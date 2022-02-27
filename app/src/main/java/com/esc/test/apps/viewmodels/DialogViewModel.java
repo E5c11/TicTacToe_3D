@@ -52,7 +52,7 @@ public class DialogViewModel extends ViewModel {
     }
 
     private void confirmDelete() {
-
+        fbUserRepo.deleteAccount();
     }
 
     private void changePassword() {

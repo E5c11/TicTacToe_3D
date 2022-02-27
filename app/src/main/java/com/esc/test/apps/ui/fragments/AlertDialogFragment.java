@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.EditTextBinding;
@@ -66,7 +67,9 @@ public class AlertDialogFragment extends DialogFragment {
     private void setListeners() {
         binding.confirm.setOnClickListener(v -> {
             viewModel.checkAction(true);
-            dismiss();
+            binding.progressbar.setVisibility(View.VISIBLE);
+//            NavHostFragment.findNavController(this).navigate(AlertDialogFragmentDirections
+//                    .actionAlertDialogFragmentToProfileManagement(null));
         });
         binding.cancel.setOnClickListener(v -> dismiss());
         binding.editInput.addTextChangedListener(new LetterWatcher() {
@@ -84,7 +87,10 @@ public class AlertDialogFragment extends DialogFragment {
     private void setObservers() {
         viewModel.error.observe(this, error -> {
             if (error.isEmpty()) binding.confirm.setVisibility(View.VISIBLE);
-            else {
+            else if (error.equals("success")) {
+                binding.progressbar.setVisibility(View.GONE);
+                dismiss();
+            } else {
                 binding.confirm.setVisibility(View.INVISIBLE);
                 binding.editInput.setError(error);
             }

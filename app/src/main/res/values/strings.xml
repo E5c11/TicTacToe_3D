@@ -44,10 +44,6 @@
     <string name="circle">circle</string>
     <string name="winner">winner</string>
 
-    <string name="change_password">Change password</string>
-    <string name="change_email">Change email</string>
-    <string name="change_display_name">Change display name</string>
-    <string name="delete_account">Delete account</string>
     <string name="confirm_quit">Quit game</string>
 
     <!--Network-->
@@ -55,11 +51,23 @@
     <string name="network_error">An error occurred, check the network</string>
     <string name="excessive_requests">Too many requests, please try again later</string>
     <string name="not_logged_in">User not logged in</string>
+    <string name="network_restored">Network connection restored</string>
+    <string name="network_lost">Network connection lost</string>
 
     <!--User-profile-->
     <string name="email_exists">This email already exists</string>
     <string name="email_does_not_exists">This email does not exists</string>
     <string name="display_name_exists">Display name exists</string>
+
+    <!--User-profile changes-->
+    <string name="change_display_name">Change display name</string>
+    <string name="change_password">Change password</string>
+    <string name="change_email">Change email</string>
+    <string name="delete_account">Delete account</string>
+    <string name="change_display_name_message">Change display name</string>
+    <string name="change_password_message">Change password</string>
+    <string name="change_email_message">Change email</string>
+    <string name="delete_account_message">"Are you sure you would like to delete your account?"</string>
 
     <!--Confirmation-->
     <string name="delete_msg">Are you sure you want to delete your account</string>

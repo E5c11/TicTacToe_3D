@@ -3,6 +3,8 @@ package com.esc.test.apps.utils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -71,6 +73,13 @@ public class Utils {
         LocalDate past = LocalDate.parse(pastDate, formatter);
         return String.valueOf(ChronoUnit.DAYS.between(past, now));
     }
+
+//    public static Snackbar showNetworkState(boolean state) {
+//        if (state) return Snackbar.make(
+//                binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
+//        else return Snackbar.make(
+//                binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
+//    }
 
     public static void dispose(Disposable d) {
         d.dispose();

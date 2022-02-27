@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
@@ -62,13 +63,13 @@ public class FirebaseUserRepository {
             if (task.isSuccessful()) {
                 attempt = 0;
                 if (task.getResult().getSignInMethods().isEmpty())
-                    emailError.postValue("This email does not exist");
-                else emailError.postValue("This email already exists");
+                    emailError.postValue(app.getString(R.string.email_does_not_exists));
+                else emailError.postValue(app.getString(R.string.email_exists));
             } else {
                 if (attempt < 3) {
                     attempt ++;
                     isEmailValid(viewEmail);
-                } else error.postValue("An error has occurred, check network");
+                } else error.postValue(app.getString(R.string.network_error));
             }
         });
     }
@@ -89,18 +90,18 @@ public class FirebaseUserRepository {
                         Log.d(TAG, "after set token: " + loggedIn.getValue());
                     } else {
                         try {
-                            throw task.getException();
+                            throw Objects.requireNonNull(task.getException());
                         } catch (FirebaseAuthInvalidCredentialsException e) {
                             error.postValue("Password is incorrect");
                         } catch (FirebaseTooManyRequestsException e) {
-                            error.postValue("Too many requests, please try again later");
+                            error.postValue(app.getString(R.string.excessive_requests));
                         } catch (Exception e) {
                             e.printStackTrace();
                             Log.d("myT", "user not logged in: " + task.getException());
                             if (attempt < 3) {
                                 attempt++;
                                 connectLogin(email, password);
-                            } else error.postValue("User not logged in");
+                            } else error.postValue(app.getString(R.string.not_logged_in));
                         }
                     }
                 });
@@ -121,7 +122,7 @@ public class FirebaseUserRepository {
                 if (attempt < 3) {
                     attempt ++;
                     getDisplayNameFromDB(uid);
-                } else error.postValue("An error occurred, check the network");
+                } else error.postValue(app.getString(R.string.network_error));
             }
         });
     }
@@ -144,13 +145,13 @@ public class FirebaseUserRepository {
                     } else if (attempt < 3) {
                         attempt++;
                         createUser(email, password, displayName);
-                    } else error.postValue("An error occurred, check the network");
+                    } else error.postValue(app.getString(R.string.network_error));
                 });
             }).addOnCanceledListener(() -> {
                 if (attempt < 3) {
                     attempt++;
                     createUser(email, password, displayName);
-                } else error.postValue("An error occurred, check the network");
+                } else error.postValue(app.getString(R.string.network_error));
             });
     }
 
@@ -163,13 +164,13 @@ public class FirebaseUserRepository {
 
     public void deleteAccount() {
         getUser().delete()
-            .addOnCompleteListener(task -> error.postValue("success"))
+            .addOnCompleteListener(task -> error.postValue(app.getString(R.string.network_success)))
             .addOnFailureListener(fail -> error.postValue(fail.getMessage()));;
     }
 
     public void updateDisplayName(String displayName) {
         users.child(userDetails.getUid()).child(DISPLAY_NAME).setValue(displayName)
-            .addOnCompleteListener(task -> error.postValue("success"))
+            .addOnCompleteListener(task -> error.postValue(app.getString(R.string.network_success)))
             .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 
@@ -184,7 +185,7 @@ public class FirebaseUserRepository {
                             for(DataSnapshot snap: snapshot.getChildren()) {
                                 String tempDisplay = (String) snap.child(DISPLAY_NAME).getValue();
                                 if (tempDisplay.equals(ds.toString())) {
-                                    displayNameExists.postValue("Display name already exists");
+                                    displayNameExists.postValue(app.getString(R.string.display_name_exists));
                                 }
                             }
                         });
@@ -192,20 +193,20 @@ public class FirebaseUserRepository {
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError e) {
-                    error.postValue("An error occurred, check the network");
+                    error.postValue(app.getString(R.string.network_error));
                 }
             });
     }
 
     public void updateEmail(String email) {
         getUser().updateEmail(email)
-                .addOnCompleteListener(task -> error.postValue("success"))
+                .addOnCompleteListener(task -> error.postValue(app.getString(R.string.network_success)))
                 .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 
     public void updatePassword(String password) {
         getUser().updatePassword(password)
-                .addOnCompleteListener(task -> error.postValue("success"))
+                .addOnCompleteListener(task -> error.postValue(app.getString(R.string.network_success)))
                 .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 

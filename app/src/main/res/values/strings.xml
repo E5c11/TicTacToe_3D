@@ -50,10 +50,22 @@
     <string name="delete_account">Delete account</string>
     <string name="confirm_quit">Quit game</string>
 
+    <!--Network-->
+    <string name="network_success">success</string>
+    <string name="network_error">An error occurred, check the network</string>
+    <string name="excessive_requests">Too many requests, please try again later</string>
+    <string name="not_logged_in">User not logged in</string>
 
+    <!--User-profile-->
+    <string name="email_exists">This email already exists</string>
+    <string name="email_does_not_exists">This email does not exists</string>
+    <string name="display_name_exists">Display name exists</string>
+
+    <!--Confirmation-->
     <string name="delete_msg">Are you sure you want to delete your account</string>
     <string name="quit_msg">Are you sure you want to quit the game</string>
 
+    <!--Game-->
     <string name="game_active">game_active</string>
     <string name="coordinates">coordinates</string>
     <string name="position">position</string>
@@ -67,12 +79,14 @@
     <string name="your_turn">Your turn</string>
     <string name="their_turn">Their turn</string>
 
+    <!--Registration-->
     <string name="register_welcome">Welcome to Tic Tac Toe \n in 3D</string>
     <string name="register_message">Please enter an Email and Password to register your an account to play with friends</string>
     <string name="login_message">Please enter your Email and Password to login in</string>
     <string name="login_instead">Login</string>
     <string name="new_user_register">New user? Create account</string>
 
+    <!--Login-->
     <string name="register">Register</string>
     <string name="login">Login</string>
     <string name="online">online</string>

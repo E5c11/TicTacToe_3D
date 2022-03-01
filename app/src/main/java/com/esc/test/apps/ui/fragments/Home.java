@@ -16,6 +16,7 @@ import androidx.navigation.Navigation;
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.HomeActivityBinding;
 import com.esc.test.apps.datastore.UserDetails;
+import com.esc.test.apps.utils.AlertType;
 import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
@@ -54,7 +55,7 @@ public class Home extends Fragment {
         binding.manageProfile.setOnClickListener(v -> {
             if (user.getUid() != null) {
                 v.startAnimation(an1);
-                NavDirections action = HomeDirections.actionHomeToProfileManagement();
+                NavDirections action = HomeDirections.actionHomeToProfileManagement(AlertType.DISPLAY_NAME);
                 Navigation.findNavController(v).navigate(action);
             } else {
                 goToLogin(v, "profile");

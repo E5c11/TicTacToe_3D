@@ -18,6 +18,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.LoginActivityBinding;
+import com.esc.test.apps.utils.AlertType;
 import com.esc.test.apps.utils.LetterWatcher;
 import com.esc.test.apps.viewmodels.LoginViewModel;
 import com.google.android.material.snackbar.Snackbar;
@@ -60,7 +61,7 @@ public class Login extends Fragment {
             Log.d(TAG, "setObservers: ");
             LoginArgs args = LoginArgs.fromBundle(getArguments());
             if (!s) createNewAccount();
-            else if (args.getNavTo() != null) goTo(LoginDirections.actionLoginToProfileManagement(null));
+            else if (args.getNavTo() != null) goTo(LoginDirections.actionLoginToProfileManagement(AlertType.DISPLAY_NAME));
             else goTo(LoginDirections.actionLoginToPlayWithFriend());
         });
         loginViewModel.getPasswordError().observe(getViewLifecycleOwner(), s -> {

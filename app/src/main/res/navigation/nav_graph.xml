@@ -72,8 +72,7 @@
         tools:layout="@layout/profile_layout" >
         <argument
             android:name="action"
-            app:argType="com.esc.test.apps.utils.AlertType"
-            app:nullable="true" />
+            app:argType="com.esc.test.apps.utils.AlertType"/>
     </fragment>
     <dialog
         android:id="@+id/alertDialogFragment"

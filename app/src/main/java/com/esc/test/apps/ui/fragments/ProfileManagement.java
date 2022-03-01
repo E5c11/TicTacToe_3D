@@ -37,18 +37,26 @@ public class ProfileManagement extends Fragment {
         binding = ProfileLayoutBinding.bind(view);
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
+        setUi();
         setListeners();
         setObservers();
     }
 
+    private void setUi() {
+        binding.displayName.text.setText(getString(R.string.change_display_name));
+        binding.email.text.setText(getString(R.string.change_email));
+        binding.password.text.setText(getString(R.string.change_password));
+        binding.delete.text.setText(getString(R.string.delete_account));
+    }
+
     private void setListeners() {
-        binding.displayName.setOnClickListener(v -> navigateTo(getString(R.string.change_display_name),
+        binding.displayName.getRoot().setOnClickListener(v -> navigateTo(getString(R.string.change_display_name),
                 getString(R.string.display_name_asterisk), DISPLAY_NAME));
-        binding.email.setOnClickListener(v -> navigateTo(getString(R.string.change_email),
+        binding.email.getRoot().setOnClickListener(v -> navigateTo(getString(R.string.change_email),
                 getString(R.string.email_asterisk), EMAIL));
-        binding.password.setOnClickListener(v -> navigateTo(getString(R.string.change_password),
+        binding.password.getRoot().setOnClickListener(v -> navigateTo(getString(R.string.change_password),
                 getString(R.string.passcon_asterisk), PASSWORD));
-        binding.delete.setOnClickListener(v -> navigateTo(getString(R.string.delete_account),
+        binding.delete.getRoot().setOnClickListener(v -> navigateTo(getString(R.string.delete_account),
                 getString(R.string.delete_account_message), DELETE));
     }
 

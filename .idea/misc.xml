@@ -10,6 +10,7 @@
         <entry key="app/src/main/res/drawable/circle.xml" value="0.3770833333333333" />
         <entry key="app/src/main/res/drawable/progress_animation.xml" value="0.39794871794871794" />
         <entry key="app/src/main/res/drawable/progress_bar.xml" value="0.39794871794871794" />
+        <entry key="app/src/main/res/drawable/splash_screen.xml" value="0.38358974358974357" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3609375" />
         <entry key="app/src/main/res/layout/alert_edit_text_layout.xml" value="0.3614583333333333" />
         <entry key="app/src/main/res/layout/block.xml" value="0.3614583333333333" />
@@ -23,6 +24,7 @@
         <entry key="app/src/main/res/layout/home_activity.xml" value="0.3609375" />
         <entry key="app/src/main/res/layout/login_activity.xml" value="0.19791666666666666" />
         <entry key="app/src/main/res/layout/profile_layout.xml" value="0.3609375" />
+        <entry key="app/src/main/res/menu/levels.xml" value="0.3734375" />
       </map>
     </option>
   </component>

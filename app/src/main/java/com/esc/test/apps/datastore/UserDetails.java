@@ -54,6 +54,9 @@ public class UserDetails {
     public void setToken(String token) { editor.putString("user_token", token).commit(); }
     public String getToken() { return pref.getString("user_token", null); }
 
+    public void setLevel(String level) { editor.putString("user_level", level).commit(); }
+    public String getLevel() { return pref.getString("user_level", "Normal"); }
+
     public void clearPrefs() {
         String token = getToken();
         editor.clear().apply();

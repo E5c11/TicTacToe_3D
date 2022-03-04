@@ -5,11 +5,13 @@ import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -80,8 +82,8 @@ public class Board extends Fragment {
         if (extras.getGameType() != null) {
             if (extras.getGamePiece() != null) {
                 gameButtonsVis();
-                String extra = (String) extras.getGamePiece();
-                String uids = (String) extras.getGameType();
+                String extra = extras.getGamePiece();
+                String uids = extras.getGameType();
                 playFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
                 Log.d(TAG, "friend's starting piece is: " + extra);
                 if (extra.equals(getResources().getString(R.string.cross))) {
@@ -96,6 +98,7 @@ public class Board extends Fragment {
                 Log.d(TAG, "checkExtras: ai game");
                 passPlayViewModel.clearLocalGame();
                 playAIViewModel = new ViewModelProvider(this).get(PlayAIViewModel.class);
+                binding.level.setVisibility(View.VISIBLE);
                 setPlayAIObserver();
                 getNewMoves();
             }
@@ -156,6 +159,7 @@ public class Board extends Fragment {
             changeGridOnClick(true);
             setPieceClickEnabled();
         });
+        binding.level.setOnClickListener(this::levelPopup);
         binding.quit.setOnClickListener(v -> {
             if (playFriendViewModel != null)
                 NavHostFragment.findNavController(this)
@@ -289,6 +293,16 @@ public class Board extends Fragment {
                 .setBackground(requireContext().getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
         passPlayViewModel.setCubePos(turnPos, playedPiece);
+    }
+
+    private void levelPopup(View v) {
+        PopupMenu popup = new PopupMenu(requireContext(), v);
+        popup.getMenuInflater().inflate(R.menu.levels, popup.getMenu());
+        popup.setOnMenuItemClickListener(item -> {
+            playAIViewModel.setLevel(item.getTitle());
+            return true;
+        });
+        popup.show();
     }
 
     @Override

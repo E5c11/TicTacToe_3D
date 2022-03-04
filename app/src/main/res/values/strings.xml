@@ -27,17 +27,22 @@
     <string name="active_game">active_game</string>
     <string name="games">games</string>
 
-    <string name="play">play</string>
-    <string name="accept">accept</string>
-    <string name="invite">invite</string>
-    <string name="cancel">cancel</string>
-    <string name="resume">resume</string>
-    <string name="start">start</string>
-    <string name="quit">quit</string>
-    <string name="confirm">confirm</string>
-    <string name="new_set">new set</string>
-    <string name="new_game">new game</string>
+    <string name="play">Play</string>
+    <string name="accept">Accept</string>
+    <string name="invite">Invite</string>
+    <string name="cancel">Cancel</string>
+    <string name="resume">Resume</string>
+    <string name="start">Start</string>
+    <string name="quit">Quit</string>
+    <string name="level">Level</string>
+    <string name="confirm">Confirm</string>
+    <string name="new_set">New set</string>
+    <string name="new_game">New game</string>
     <string name="delete">Delete account</string>
+
+    <string name="easy">Easy</string>
+    <string name="normal">Normal</string>
+    <string name="difficult">Difficult</string>
 
     <string name="moves">moves</string>
     <string name="cross">cross</string>

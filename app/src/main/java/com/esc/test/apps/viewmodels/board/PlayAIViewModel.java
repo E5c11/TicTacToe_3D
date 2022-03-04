@@ -1,8 +1,5 @@
 package com.esc.test.apps.viewmodels.board;
 
-import static com.esc.test.apps.other.MoveUtils.getRandomPos;
-import static com.esc.test.apps.utils.Utils.dispose;
-
 import android.app.Application;
 import android.util.Log;
 
@@ -13,11 +10,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.GameState;
+import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.other.AIMoves;
+import com.esc.test.apps.other.EasyMoves;
+import com.esc.test.apps.other.NormalMoves;
 import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.ExecutorFactory;
 
@@ -27,7 +25,6 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
@@ -36,11 +33,12 @@ public class PlayAIViewModel extends ViewModel {
     private final MovesFactory movesFactory;
     private final Application app;
     private final MoveRepository moveRepo;
-    private final AIMoves aiMoves;
+    private final NormalMoves normalMoves;
     private final Random rand;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
     private final GameState gameState;
+    private final UserDetails user;
     private int moveCount;
     private int userMovePos;
     private String userPiece;
@@ -48,20 +46,21 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           AIMoves aiMoves, Random rand, GameState gameState
+                           NormalMoves normalMoves, Random rand, GameState gameState, UserDetails user
 
     ) {
         this.movesFactory = movesFactory;
         this.app = app;
         this.moveRepo = moveRepo;
-        this.aiMoves = aiMoves;
+        this.normalMoves = normalMoves;
         this.rand = rand;
         this.gameState = gameState;
+        this.user = user;
         firstMove();
         catchLastMove();
         lastMove = LiveDataReactiveStreams.fromPublisher(moveRepo.getLastMove()
                 .subscribeOn(Schedulers.io()));
-        aiMoves.newGame();
+        normalMoves.newGame();
     }
 
     public void firstMove() {
@@ -74,12 +73,12 @@ public class PlayAIViewModel extends ViewModel {
 //            Log.d(TAG, "firstMove: ai " + pos);
 //        } else {
          userPiece = app.getString(R.string.cross);
-         aiMoves.setPiece(app.getString(R.string.circle), 1);
+         normalMoves.setPiece(app.getString(R.string.circle), 1);
          Log.d(TAG, "firstMove: user ");
 //        }
     }
 
-    public void newGame() { aiMoves.newGame(); }
+    public void newGame() { normalMoves.newGame(); }
 
     public void newMove(CubeID cube) {
         moveCount++;
@@ -89,7 +88,7 @@ public class PlayAIViewModel extends ViewModel {
 
     private void newAIMove(Move move) {
         moveCount++;
-        if (gameState.isWinner() == null) executor.execute(() -> aiMoves.eliminateLines(move));
+        if (gameState.isWinner() == null) executor.execute(() -> normalMoves.eliminateLines(move));
     }
 
     public void catchLastMove() {
@@ -108,5 +107,9 @@ public class PlayAIViewModel extends ViewModel {
         });
     }
 
-    public LiveData<String> getError() { return aiMoves.getError(); }
+    public void setLevel(CharSequence level) {
+        user.setLevel(level.toString());
+    }
+
+    public LiveData<String> getError() { return normalMoves.getError(); }
 }

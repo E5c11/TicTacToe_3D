@@ -230,7 +230,7 @@ public class Board extends Fragment {
             }
         });
         playAIViewModel.getError().observe(getViewLifecycleOwner(), error -> Snackbar.make(
-                binding.getRoot(), "no move calculated", Snackbar.LENGTH_LONG).show());
+                binding.getRoot(), error, Snackbar.LENGTH_LONG).show());
     }
 
     private void setOpponentUIDObserver() {
@@ -272,7 +272,6 @@ public class Board extends Fragment {
                     Snackbar.make(
                         binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
                 }
-
         });
         getNewMoves();
     }
@@ -299,7 +298,9 @@ public class Board extends Fragment {
         PopupMenu popup = new PopupMenu(requireContext(), v);
         popup.getMenuInflater().inflate(R.menu.levels, popup.getMenu());
         popup.setOnMenuItemClickListener(item -> {
-            playAIViewModel.setLevel(item.getTitle());
+            if (!item.getTitle().equals(getString(R.string.difficult))) playAIViewModel.setLevel(item.getTitle());
+            Snackbar.make(binding.getRoot(),
+                    "Difficulty will change when you start a new game", Snackbar.LENGTH_SHORT).show();
             return true;
         });
         popup.show();

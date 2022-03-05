@@ -44,6 +44,7 @@ public class NormalMoves {
     private int lastUserMove;
     private int moveCount;
     private String aIPiece;
+    public static final int NO_MOVES = 100;
     private static final String TAG = "myT";
 
     @Inject
@@ -54,13 +55,8 @@ public class NormalMoves {
     }
 
     public void newGame() {
-        possibleLines.clear();
-        oneCubeLine.clear();
-        twoCubeLine.clear();
-        threeCubeLine.clear();
-        lines2block.clear();
-        aICubes.clear();
-        userCubes.clear();
+        possibleLines.clear(); oneCubeLine.clear(); twoCubeLine.clear(); threeCubeLine.clear();
+        lines2block.clear(); aICubes.clear(); userCubes.clear();
         level = user.getLevel();
         Log.d(TAG, "newGame: " + level);
     }
@@ -95,7 +91,6 @@ public class NormalMoves {
         List<int[]> userLines = addLinesToCheck(lastUserMove, numValue(getStringCoord(lastUserMove)));
         possibleLines.removeAll(userLines);
         oneCubeLine.removeAll(userLines);
-//        Log.d(TAG, "userLines: " + Thread.currentThread().getName());
         blockUser(userLines);
     }
 
@@ -106,21 +101,19 @@ public class NormalMoves {
         userLine.remove(duplicates);
         userLine.forEach(line -> {
             int cubeInLine = 0;
-            int count = 0;
+//            int count = 0;
             for (int i : line) {
-                count++;
+//                count++;
                 if (aICubes.contains(i)) break;
                 if (userCubes.contains(i)) {
                     Log.d(TAG, "blockUser: " + i);
                     cubeInLine++;
                 }
-//                else if (count > 1 && cubeInLine < 3) break;
                 if (cubeInLine == 3) {
                     lines2block.add(line);
                     break;
                 }
             }
-
         });
         newMove();
     }
@@ -131,11 +124,16 @@ public class NormalMoves {
             switch (level) {
                 case "Normal" : chooseMove(threeCubeLine, null);
                     break;
-                case "Easy" : chooseMove(threeCubeLine, lines2block);
+                case "Easy" :
+                    if (threeCubeLine.isEmpty() && lines2block.isEmpty()) checkPossibleMoves();
+                    else if (!threeCubeLine.isEmpty() && threeCubeLine.size() > 1) chooseMove(threeCubeLine, null);
+                    else chooseMove(threeCubeLine, (lines2block.isEmpty() ?
+                                (twoCubeLine.isEmpty() ? possibleLines : twoCubeLine) : lines2block));
                     break;
             }
         }
         else if (!lines2block.isEmpty()) {
+            Log.d(TAG, "newMove: block");
             switch (level) {
                 case "Normal" : chooseMove(lines2block, null);
                     break;
@@ -143,28 +141,30 @@ public class NormalMoves {
                     break;
             }
         }
+        else checkPossibleMoves();
+    }
+
+    private void checkPossibleMoves() {
+        if (possibleLines.isEmpty()) anywhereMove();
         else {
-            if (possibleLines.isEmpty()) anywhereMove();
-            else {
-                if (!twoCubeLine.isEmpty()) {
-                    Log.d(TAG, "newMove: 2");
-                    switch (level) {
-                        case "Normal" : chooseMove(twoCubeLine, null);
-                            break;
-                        case "Easy" : chooseMove(twoCubeLine, oneCubeLine);
-                            break;
-                    }
+            if (!twoCubeLine.isEmpty()) {
+                Log.d(TAG, "newMove: 2");
+                switch (level) {
+                    case "Normal" : chooseMove(twoCubeLine, null);
+                        break;
+                    case "Easy" : chooseMove(twoCubeLine, oneCubeLine);
+                        break;
                 }
-                else {
-                    Log.d(TAG, "newMove: 1 " + level);
-                    switch (level) {
-                        case "Normal" : chooseMove(oneCubeLine, null);
-                            break;
-                        case "Easy" :
-                            if (rand.nextBoolean()) chooseMove(oneCubeLine, null);
-                            else anywhereMove();
-                            break;
-                    }
+            }
+            else {
+                Log.d(TAG, "newMove: 1 ");
+                switch (level) {
+                    case "Normal" : chooseMove(oneCubeLine, null);
+                        break;
+                    case "Easy" :
+                        if (rand.nextBoolean()) chooseMove(oneCubeLine, null);
+                        else anywhereMove();
+                        break;
                 }
             }
         }
@@ -176,6 +176,7 @@ public class NormalMoves {
         occupiedCubes.addAll(aICubes);
         occupiedCubes.addAll(userCubes);
         int newMove = getRandomCube(occupiedCubes);
+        if (newMove == NO_MOVES) error.postValue("No moves available");
         aICubes.add(newMove);
         sendMove(newMove);
         addMoveToLines(newMove);
@@ -198,7 +199,7 @@ public class NormalMoves {
             sendMove(newMove);
             addMoveToLines(newMove);
         }
-        else error.postValue("no moves");
+        else anywhereMove();
     }
 
     private void addMoveToLines(int move) {
@@ -231,6 +232,7 @@ public class NormalMoves {
         int[] range = IntStream.rangeClosed(0, 63).toArray();
         List<Integer> rangeExcluding = Arrays.stream(range).boxed().collect(Collectors.toList());
         rangeExcluding.removeAll(exclude);
+        if (rangeExcluding.isEmpty()) return NO_MOVES;
         return rangeExcluding.get(new Random().nextInt(rangeExcluding.size()));
     }
 
@@ -246,11 +248,6 @@ public class NormalMoves {
         threeCubeLine.removeAll(list);
         twoCubeLine.removeAll(list);
         oneCubeLine.removeAll(list);
-    }
-
-    private List<int[]> chooseRandom(List<int[]> first, List<int[]> second) {
-        if (rand.nextBoolean()) return first;
-        else return second;
     }
 
     private void sendMove(int pos) {

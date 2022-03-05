@@ -12,7 +12,6 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.other.EasyMoves;
 import com.esc.test.apps.other.NormalMoves;
 import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.CubeID;

@@ -25,41 +25,44 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class EasyMoves {
-
+public class DifficultMoves {
+    //AI lines
     private final List<int[]> possibleLines = new ArrayList<>();
     private final List<int[]> oneCubeLine = new ArrayList<>();
     private final List<int[]> twoCubeLine = new ArrayList<>();
     private final List<int[]> threeCubeLine = new ArrayList<>();
-    private final List<int[]> lines2block = new ArrayList<>();
+    //user lines
+    private final List<int[]> twoLinesBlock = new ArrayList<>();
+    private final List<int[]> threeLinesBlock = new ArrayList<>();
+    private final List<int[]> blockMergeLines = new ArrayList<>();
+
     private final List<Integer> aICubes = new ArrayList<>();
     private final List<Integer> userCubes = new ArrayList<>();
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
     private final MovesFactory movesFactory;
     private final Random rand;
+    private final UserDetails user;
     private int lastAIMove;
     private int lastUserMove;
     private int moveCount;
     private String aIPiece;
     private String level;
+    public static final int NO_MOVES = 100;
     private static final String TAG = "myT";
 
     @Inject
-    public EasyMoves(MovesFactory movesFactory, Random rand, UserDetails user) {
+    public DifficultMoves(MovesFactory movesFactory, Random rand, UserDetails user) {
         this.movesFactory = movesFactory;
         this.rand = rand;
-        this.level = user.getLevel();
+        this.user = user;
     }
 
     public void newGame() {
-        possibleLines.clear();
-        oneCubeLine.clear();
-        twoCubeLine.clear();
-        threeCubeLine.clear();
-        lines2block.clear();
-        aICubes.clear();
-        userCubes.clear();
+        possibleLines.clear(); oneCubeLine.clear(); twoCubeLine.clear(); threeCubeLine.clear();
+        threeLinesBlock.clear(); aICubes.clear(); userCubes.clear();
+        level = user.getLevel();
+        Log.d(TAG, "newGame: " + level);
     }
 
     public void setFirstMove(int pos, String piece, int count) {
@@ -92,76 +95,90 @@ public class EasyMoves {
         List<int[]> userLines = addLinesToCheck(lastUserMove, numValue(getStringCoord(lastUserMove)));
         possibleLines.removeAll(userLines);
         oneCubeLine.removeAll(userLines);
-//        Log.d(TAG, "userLines: " + Thread.currentThread().getName());
         blockUser(userLines);
     }
 
     private void blockUser(List<int[]> userLine) {
         List<int[]> duplicates = new ArrayList<>(userLine);
-        duplicates.retainAll(lines2block);
+        duplicates.retainAll(threeLinesBlock);
         //noinspection SuspiciousMethodCalls
         userLine.remove(duplicates);
         userLine.forEach(line -> {
             int cubeInLine = 0;
-            int count = 0;
             for (int i : line) {
-                count++;
                 if (aICubes.contains(i)) break;
                 if (userCubes.contains(i)) {
                     Log.d(TAG, "blockUser: " + i);
                     cubeInLine++;
                 }
-//                else if (count > 1 && cubeInLine < 3) break;
+                if (cubeInLine == 2) twoLinesBlock.add(line);
                 if (cubeInLine == 3) {
-                    lines2block.add(line);
+                    threeLinesBlock.add(line);
+                    twoLinesBlock.remove(line);
                     break;
                 }
             }
-
         });
         newMove();
+    }
+
+    private List<Integer> checkMergeLines(List<int[]> lines2check) {
+        List<Integer> commonCube = new ArrayList<>();
+        int[] previousLine = new int[4];
+        boolean first = true;
+        for(int[] line : lines2check) {
+            if (first) {
+                previousLine = line;
+                first = false;
+                break;
+            }
+            for(int fCube : previousLine) {
+                for (int sCube : line) {
+                    if (fCube == sCube) commonCube.add(fCube);
+                }
+            }
+            previousLine = line;
+        }
+        return commonCube;
     }
 
     private void newMove() {
         if (!threeCubeLine.isEmpty()) {
             Log.d(TAG, "newMove: 3");
-            switch (level) {
-                case "normal" : chooseMove(threeCubeLine);
-                    break;
-                case "easy" : chooseMove(chooseRandom(threeCubeLine, lines2block));
-                    break;
-            }
-        }
-        else if (!lines2block.isEmpty()) {
-            switch (level) {
-                case "normal" : chooseMove(threeCubeLine);
-                    break;
-                case "easy" : chooseMove(chooseRandom(lines2block, twoCubeLine));
-                    break;
-            }
-        }
-        else {
-            if (possibleLines.isEmpty()) anywhereMove();
+            if (level.equals("Normal") || level.equals("Difficult")) chooseMove(threeCubeLine, null);
             else {
-                if (!twoCubeLine.isEmpty()) {
-                    Log.d(TAG, "newMove: 2");
-                    switch (level) {
-                        case "normal" : chooseMove(twoCubeLine);
-                            break;
-                        case "easy" : chooseMove(chooseRandom(twoCubeLine, oneCubeLine));
-                            break;
-                    }
-                }
-                else {
-                    Log.d(TAG, "newMove: 1");
-                    switch (level) {
-                        case "normal" : chooseMove(oneCubeLine);
-                            break;
-                        case "easy" :
-                            if (rand.nextBoolean()) chooseMove(oneCubeLine);
-                            else anywhereMove();
-                            break;
-                    }
+                if (threeCubeLine.isEmpty() && threeLinesBlock.isEmpty()) checkPossibleMoves();
+                else if (!threeCubeLine.isEmpty() && threeCubeLine.size() > 1) chooseMove(threeCubeLine, null);
+                else chooseMove(threeCubeLine, (threeLinesBlock.isEmpty() ?
+                            (twoCubeLine.isEmpty() ? possibleLines : twoCubeLine) : threeLinesBlock));
+            }
+        }
+        else if (!threeLinesBlock.isEmpty()) {
+            Log.d(TAG, "newMove: block");
+            if (level.equals("Normal") || level.equals("Difficult")) chooseMove(threeLinesBlock, null);
+            else chooseMove(threeLinesBlock, twoCubeLine.isEmpty() ? possibleLines : twoCubeLine);
+        }
+        else checkPossibleMoves();
+    }
+
+    private void checkPossibleMoves() {
+        if (possibleLines.isEmpty()) anywhereMove();
+        else {
+            if (!twoCubeLine.isEmpty()) {
+                Log.d(TAG, "newMove: 2");
+                    if (level.equals("Normal")) chooseMove(twoCubeLine, null);
+                    else if (level.equals("Difficult")) playMergeCube(checkMergeLines(twoLinesBlock));
+                    else chooseMove(twoCubeLine, oneCubeLine.isEmpty() ? possibleLines : oneCubeLine);
+            }
+            else {
+                Log.d(TAG, "newMove: 1 ");
+                switch (level) {
+                    case "Normal" : chooseMove(oneCubeLine, null);
+                        break;
+                    case "Easy" :
+                        if (rand.nextBoolean()) chooseMove(oneCubeLine, null);
+                        else anywhereMove();
+                        break;
                 }
             }
         }
@@ -173,29 +190,36 @@ public class EasyMoves {
         occupiedCubes.addAll(aICubes);
         occupiedCubes.addAll(userCubes);
         int newMove = getRandomCube(occupiedCubes);
+        if (newMove == NO_MOVES) error.postValue("No moves available");
         aICubes.add(newMove);
         sendMove(newMove);
         addMoveToLines(newMove);
     }
 
-    private void chooseMove(List<int[]> lines) {
-        int randomLine = rand.nextInt(lines.size());
-        int[] moveLine = lines.get(randomLine);
+    private void chooseMove(List<int[]> first, List<int[]> second) {
+        if (level.equals("Easy") && second != null) first.addAll(second);
+        int randomLine = rand.nextInt(first.size());
+        int[] moveLine = first.get(randomLine);
         List<Integer> newPos = new ArrayList<>();
         for (int cube : moveLine) {
             if (!aICubes.contains(cube) && !userCubes.contains(cube))
                 newPos.add(cube);
-
         }
-        lines.remove(moveLine);
+        first.remove(moveLine);
         Log.d(TAG, "chooseMove: " + newPos.size());
         if (newPos.size() != 0) {
-            int newMove = newPos.get(rand.nextInt(newPos.size()));
+            int newMove = newPos.get(rand.nextInt(newPos.size()-1));
             aICubes.add(newMove);
             sendMove(newMove);
             addMoveToLines(newMove);
         }
-        else error.postValue("no moves");
+        else anywhereMove();
+    }
+
+    private void playMergeCube(List<Integer> commonCube) {
+        if (commonCube.isEmpty() && !threeLinesBlock.isEmpty()) chooseMove(twoCubeLine, null);
+        else if (commonCube.size() == 1) sendMove(commonCube.get(0));
+        else sendMove(commonCube.get(rand.nextInt(commonCube.size()-1)));
     }
 
     private void addMoveToLines(int move) {
@@ -228,6 +252,7 @@ public class EasyMoves {
         int[] range = IntStream.rangeClosed(0, 63).toArray();
         List<Integer> rangeExcluding = Arrays.stream(range).boxed().collect(Collectors.toList());
         rangeExcluding.removeAll(exclude);
+        if (rangeExcluding.isEmpty()) return NO_MOVES;
         return rangeExcluding.get(new Random().nextInt(rangeExcluding.size()));
     }
 
@@ -243,11 +268,6 @@ public class EasyMoves {
         threeCubeLine.removeAll(list);
         twoCubeLine.removeAll(list);
         oneCubeLine.removeAll(list);
-    }
-
-    private List<int[]> chooseRandom(List<int[]> first, List<int[]> second) {
-        if (rand.nextBoolean()) return first;
-        else return second;
     }
 
     private void sendMove(int pos) {

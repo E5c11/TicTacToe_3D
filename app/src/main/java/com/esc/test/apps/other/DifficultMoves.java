@@ -226,14 +226,17 @@ public class DifficultMoves {
     }
 
     private void createMergeLines() {
-        List<Integer> possibleCubes = checkAnyMergeCubes(twoCubeLine, aICubes, oneCubeLine, null);
-        if (possibleCubes.isEmpty()) checkAnyMergeCubes(twoCubeLine, aICubes, openLines, null);
-        Log.d(TAG, "createMergeLines: two:" + twoCubeLine.size() + " one: " + oneCubeLine.size() + " open: " + openLines.size() + " possible: " + possibleCubes.size());
+        boolean oneInLine = true;
+        List<Integer> possibleCubes = checkAnyMergeCubes(twoCubeLine, aICubes, oneCubeLine);
+        Log.d(TAG, "createMergeLines: " + possibleCubes.toString());
+        if (possibleCubes.isEmpty()) {
+            possibleCubes = checkAnyMergeCubes(twoCubeLine, aICubes, openLines);
+            oneInLine = false;
+        }
+        Log.d(TAG, "createMergeLines: " + possibleCubes.toString());
         int mergePos = randPos(possibleCubes);
         List<int[]> mergeLines = addLinesToCheck(mergePos, numValue(getStringCoord(mergePos)));
-        mergeLines.forEach(x -> Log.d(TAG, "MergeLines: " + Arrays.toString(x)));
-        openLines.forEach(x -> Log.d(TAG, "openLines: " + Arrays.toString(x)));
-        mergeLines = compareArrayContent(mergeLines, openLines, false); //one or open
+        if (!oneInLine) mergeLines = compareArrayContent(mergeLines, openLines, false); //one or open
         mergeLines.forEach(x -> Log.d(TAG, "MergeLines: " + Arrays.toString(x) + " pos: " + mergePos));
         for (int[] line : mergeLines) {
             List<Integer> temp = Arrays.stream(line).boxed().collect(Collectors.toList());
@@ -243,13 +246,15 @@ public class DifficultMoves {
             Log.d(TAG, "createMergeLines: " + temp.toString());
             if (check.isEmpty()) {
                 temp.retainAll(aICubes);
+                Log.d(TAG, "temp: " + temp.toString() + " ai cubes: " + aICubes.toString());
                 possibleMoves.remove(Integer.valueOf(mergePos));
-                if (temp.size() == 1) {
+                Log.d(TAG, "one : " + temp.toString());
+                if (temp.size() == 1 && oneInLine) {
                     possibleMoves.remove(temp.get(0));
                     Log.d(TAG, "one in line: " + possibleMoves.toString());
                     sendMove(possibleMoves.get(rand.nextBoolean() ? 0 : 1));
                     break;
-                } else if (temp.isEmpty()) {
+                } else if (temp.isEmpty() && !oneInLine) {
                     int move = rand.nextInt(3);
                     Log.d(TAG, "zero in line: " + possibleMoves.toString());
                     sendMove(possibleMoves.get(move));

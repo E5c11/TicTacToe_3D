@@ -90,10 +90,9 @@ public class MoveUtils {
 
     //check two different lists of lines for merging unplayed cubes
     public static List<Integer> checkAnyMergeCubes(List<int[]> firstLines, List<Integer> firstCubes,
-                                            List<int[]> secondLines, List<Integer> secondCubes) {
+                                            List<int[]> secondLines) {
         List<Integer> unplayedUserCubes = checkUnplayedCubes(firstLines, firstCubes);
-        List<Integer> unplayedAiCubes =
-                checkUnplayedCubes(secondLines, secondCubes == null ? firstCubes : secondCubes);
+        List<Integer> unplayedAiCubes = checkUnplayedCubes(secondLines, firstCubes);
         Log.d(TAG, "checkAnyMergeCubes: two: " + unplayedUserCubes.toString() + " one: " + unplayedAiCubes.toString());
         unplayedAiCubes.retainAll(unplayedUserCubes);
         return unplayedAiCubes;

@@ -5,17 +5,25 @@ import static com.esc.test.apps.utils.Utils.addNonNull;
 import android.util.Log;
 
 import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.utils.Lines;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MoveUtils {
 
+    public static final int NO_MOVES = 100;
     public static final int[] TOPLEFT2BACKRIGHT = {0, 21, 42, 63}; //+21
     public static final int[] TOPRIGHT2BACKLEFT = {3, 22, 41, 60}; //+19
     public static final int[] BOTTOMRIGHT2BACKLEFT = {15, 26, 37, 48}; //+9
     public static final int[] BOTTOMLEFT2BACKRIGHT = {12, 25, 38, 51}; //+13
+    private static final String TAG = "myT";
 
     public static int[] numValue(String cube) {
         int[] numCube = new int[3];
@@ -34,14 +42,8 @@ public class MoveUtils {
         z = pos / 16;
         x = ((pos - (z * 16)) / 4);
         y = (pos - (z * 16)) % 4;
-        Log.d("myT", "getStringCoord: " + x + " " + y + " " + z);
+//        Log.d("myT", "getStringCoord: " + x + " " + y + " " + z);
         return x + "" + y + "" + z;
-    }
-
-    public static int getRandomPos(int... exclude) {
-        int pos = new Random().nextInt(64);
-        if (exclude.length != 0 && pos == exclude[0]) getRandomPos(exclude);
-        return pos;
     }
 
     public static int[] generateLine(int floorValue, int increment) {
@@ -63,6 +65,56 @@ public class MoveUtils {
         addNonNull(lines2check, generateXzDiagonal(cubePos, numCube));
         addNonNull(lines2check, generateXyzDiagonals(cubePos));
         return lines2check;
+    }
+
+    //checks for a merging cube in two cube lines (same user's lines)
+    public static List<Integer> checkMergeCube(List<int[]> lines2check, List<Integer> userCubes, List<Integer> aiCubes) {
+        Set<Integer> commonCube = new HashSet<>();
+        List<Integer> existingCubes = new ArrayList<>();
+        existingCubes.addAll(userCubes);
+        existingCubes.addAll(aiCubes);
+        for(int[] checkLine : lines2check) {
+            for(int[] line : lines2check) {
+                if (checkLine != line) {
+                    for (int firstCube : checkLine) {
+                        for (int secondCube : line) {
+                            if (firstCube == secondCube && !existingCubes.contains(firstCube))
+                                commonCube.add(firstCube);
+                        }
+                    }
+                }
+            }
+        }
+        return new ArrayList<>(commonCube);
+    }
+
+    //check two different lists of lines for merging unplayed cubes
+    public static List<Integer> checkAnyMergeCubes(List<int[]> firstLines, List<Integer> firstCubes,
+                                            List<int[]> secondLines, List<Integer> secondCubes) {
+        List<Integer> unplayedUserCubes = checkUnplayedCubes(firstLines, firstCubes);
+        List<Integer> unplayedAiCubes =
+                checkUnplayedCubes(secondLines, secondCubes == null ? firstCubes : secondCubes);
+        Log.d(TAG, "checkAnyMergeCubes: two: " + unplayedUserCubes.toString() + " one: " + unplayedAiCubes.toString());
+        unplayedAiCubes.retainAll(unplayedUserCubes);
+        return unplayedAiCubes;
+    }
+
+    public static List<Integer> checkUnplayedCubes(List<int[]> lines2check, List<Integer> cubes) {
+        Set<Integer> commonCube = new HashSet<>();
+        for (int[] line : lines2check) {
+            for (int cube : line) {
+                if (!cubes.contains(cube)) commonCube.add(cube);
+            }
+        }
+        return new ArrayList<>(commonCube);
+    }
+
+    public static int getRandomCube(List<Integer> exclude) {
+        int[] range = IntStream.rangeClosed(0, 63).toArray();
+        List<Integer> rangeExcluding = Arrays.stream(range).boxed().collect(Collectors.toList());
+        rangeExcluding.removeAll(exclude);
+        if (rangeExcluding.isEmpty()) return NO_MOVES;
+        return rangeExcluding.get(new Random().nextInt(rangeExcluding.size() - 1));
     }
 
     private static int[] generateXLine(int cubePos) {
@@ -130,4 +182,17 @@ public class MoveUtils {
         }
         return cubes;
     }
+
+    //ether retains common items or deletes items from a list
+    public static List<int[]> compareArrayContent(List<int[]> first, List<int[]> second, boolean delete) {
+        List<int[]> mergeList = new ArrayList<>();
+        Set<int[]> newList = new HashSet<>();
+        for (int[] firstLine : first)
+            for (int[] secondLine : second) {
+                if (Arrays.equals(firstLine, secondLine) && !delete) mergeList.add(firstLine);
+                else if (!Arrays.equals(firstLine, secondLine) && delete) newList.add(secondLine);
+            }
+        return delete ? new ArrayList<>(newList) : mergeList;
+    }
+
 }

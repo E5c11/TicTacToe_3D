@@ -179,7 +179,6 @@ public class NormalMoves {
         if (newMove == NO_MOVES) error.postValue("No moves available");
         aICubes.add(newMove);
         sendMove(newMove);
-        addMoveToLines(newMove);
     }
 
     private void chooseMove(List<int[]> first, List<int[]> second) {
@@ -197,7 +196,6 @@ public class NormalMoves {
             int newMove = newPos.get(rand.nextInt(newPos.size()));
             aICubes.add(newMove);
             sendMove(newMove);
-            addMoveToLines(newMove);
         }
         else anywhereMove();
     }
@@ -254,6 +252,7 @@ public class NormalMoves {
         Log.d(TAG, "sendMove: " + pos);
         movesFactory.createMoves(getStringCoord(pos), aIPiece,
                 String.valueOf(moveCount), false);
+        addMoveToLines(pos);
     }
 
     private void addOneLine(int[] line) {

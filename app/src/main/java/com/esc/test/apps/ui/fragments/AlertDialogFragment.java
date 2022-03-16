@@ -5,7 +5,6 @@ import static com.esc.test.apps.utils.AlertType.EMAIL;
 import static com.esc.test.apps.utils.AlertType.PASSWORD;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.EditTextBinding;

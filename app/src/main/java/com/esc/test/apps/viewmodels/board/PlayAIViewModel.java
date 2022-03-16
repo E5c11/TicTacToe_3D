@@ -12,6 +12,7 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.datastore.GameState;
 import com.esc.test.apps.datastore.UserDetails;
 import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.other.DifficultMoves;
 import com.esc.test.apps.other.NormalMoves;
 import com.esc.test.apps.other.MovesFactory;
 import com.esc.test.apps.pojos.CubeID;
@@ -32,7 +33,7 @@ public class PlayAIViewModel extends ViewModel {
     private final MovesFactory movesFactory;
     private final Application app;
     private final MoveRepository moveRepo;
-    private final NormalMoves normalMoves;
+    private final DifficultMoves normalMoves;
     private final Random rand;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
@@ -45,7 +46,7 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           NormalMoves normalMoves, Random rand, GameState gameState, UserDetails user
+                           DifficultMoves normalMoves, Random rand, GameState gameState, UserDetails user
 
     ) {
         this.movesFactory = movesFactory;

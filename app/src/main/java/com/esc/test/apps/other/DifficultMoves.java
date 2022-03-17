@@ -228,7 +228,6 @@ public class DifficultMoves {
     private void createMergeLines() {
         boolean oneInLine = true;
         List<Integer> possibleCubes = checkAnyMergeCubes(twoCubeLine, aICubes, oneCubeLine);
-        Log.d(TAG, "createMergeLines: " + possibleCubes.toString());
         if (possibleCubes.isEmpty()) {
             possibleCubes = checkAnyMergeCubes(twoCubeLine, aICubes, openLines);
             oneInLine = false;
@@ -236,19 +235,15 @@ public class DifficultMoves {
         Log.d(TAG, "createMergeLines: " + possibleCubes.toString());
         int mergePos = randPos(possibleCubes);
         List<int[]> mergeLines = addLinesToCheck(mergePos, numValue(getStringCoord(mergePos)));
-        if (!oneInLine) mergeLines = compareArrayContent(mergeLines, openLines, false); //one or open
-        mergeLines.forEach(x -> Log.d(TAG, "MergeLines: " + Arrays.toString(x) + " pos: " + mergePos));
+        if (!oneInLine) mergeLines = compareArrayContent(mergeLines, openLines, false);
         for (int[] line : mergeLines) {
             List<Integer> temp = Arrays.stream(line).boxed().collect(Collectors.toList());
             List<Integer> check = new ArrayList<>(temp);
             List<Integer> possibleMoves = new ArrayList<>(temp);
             check.retainAll(userCubes);
-            Log.d(TAG, "createMergeLines: " + temp.toString());
             if (check.isEmpty()) {
                 temp.retainAll(aICubes);
-                Log.d(TAG, "temp: " + temp.toString() + " ai cubes: " + aICubes.toString());
                 possibleMoves.remove(Integer.valueOf(mergePos));
-                Log.d(TAG, "one : " + temp.toString());
                 if (temp.size() == 1 && oneInLine) {
                     possibleMoves.remove(temp.get(0));
                     Log.d(TAG, "one in line: " + possibleMoves.toString());
@@ -287,8 +282,7 @@ public class DifficultMoves {
                 else if (i == 2) {
                     oneCubeLine.remove(line);
                     addTwoLine(line);
-                }
-                else if (i == 3) {
+                } else if (i == 3) {
                     twoCubeLine.remove(line);
                     addThreeLine(line);
                 }

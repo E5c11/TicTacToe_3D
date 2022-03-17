@@ -50,7 +50,7 @@ public class Moves {
     }
 
     private void findPos(String tempCube, String playedPiece, String moveId) {
-        Log.d(TAG, "moves " +  tempCube);
+//        Log.d(TAG, "moves " +  tempCube);
 //        start = System.nanoTime();
         numCube = numValue(tempCube);
 

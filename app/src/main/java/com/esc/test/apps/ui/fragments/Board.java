@@ -287,7 +287,7 @@ public class Board extends Fragment {
         int lastDrawable = passPlayViewModel.getLastPiecePlayed();
         if (lastDrawable != 0) layers.get(lastTurn[0]).getChildAt(lastTurn[1])
                                     .setBackground(requireContext().getDrawable(lastDrawable));
-        Log.d(TAG, "updated view " + turnPos[0] + " " + turnPos[1] + " " + playedPiece);
+//        Log.d(TAG, "updated view " + turnPos[0] + " " + turnPos[1] + " " + playedPiece);
         layers.get(turnPos[0]).getChildAt(turnPos[1])
                 .setBackground(requireContext().getDrawable(passPlayViewModel.setCubeMove(playedPiece)));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
@@ -298,7 +298,7 @@ public class Board extends Fragment {
         PopupMenu popup = new PopupMenu(requireContext(), v);
         popup.getMenuInflater().inflate(R.menu.levels, popup.getMenu());
         popup.setOnMenuItemClickListener(item -> {
-            if (!item.getTitle().equals(getString(R.string.difficult))) playAIViewModel.setLevel(item.getTitle());
+            playAIViewModel.setLevel(item.getTitle());
             Snackbar.make(binding.getRoot(),
                     "Difficulty will change when you start a new game", Snackbar.LENGTH_SHORT).show();
             return true;

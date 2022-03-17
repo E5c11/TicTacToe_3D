@@ -50,13 +50,13 @@ public class ProfileManagement extends Fragment {
     }
 
     private void setListeners() {
-        binding.displayName.getRoot().setOnClickListener(v -> navigateTo(getString(R.string.change_display_name),
+        binding.displayName.getRoot().setOnClickListener(v -> navigateToAlert(getString(R.string.change_display_name),
                 getString(R.string.display_name_asterisk), DISPLAY_NAME));
-        binding.email.getRoot().setOnClickListener(v -> navigateTo(getString(R.string.change_email),
+        binding.email.getRoot().setOnClickListener(v -> navigateToAlert(getString(R.string.change_email),
                 getString(R.string.email_asterisk), EMAIL));
-        binding.password.getRoot().setOnClickListener(v -> navigateTo(getString(R.string.change_password),
+        binding.password.getRoot().setOnClickListener(v -> navigateToAlert(getString(R.string.change_password),
                 getString(R.string.passcon_asterisk), PASSWORD));
-        binding.delete.getRoot().setOnClickListener(v -> navigateTo(getString(R.string.delete_account),
+        binding.delete.getRoot().setOnClickListener(v -> navigateToAlert(getString(R.string.delete_account),
                 getString(R.string.delete_account_message), DELETE));
     }
 
@@ -71,7 +71,7 @@ public class ProfileManagement extends Fragment {
         });
     }
 
-    private void navigateTo(String title, String message, AlertType type) {
+    private void navigateToAlert(String title, String message, AlertType type) {
         NavHostFragment.findNavController(this).navigate(
                 ProfileManagementDirections.actionGlobalAlertDialogFragment(
                         title, message, type));

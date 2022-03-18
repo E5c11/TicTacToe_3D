@@ -33,7 +33,7 @@ public class PlayAIViewModel extends ViewModel {
     private final MovesFactory movesFactory;
     private final Application app;
     private final MoveRepository moveRepo;
-    private final DifficultMoves normalMoves;
+    private final NormalMoves normalMoves;
     private final Random rand;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
@@ -46,7 +46,7 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           DifficultMoves normalMoves, Random rand, GameState gameState, UserDetails user
+                           NormalMoves normalMoves, Random rand, GameState gameState, UserDetails user
 
     ) {
         this.movesFactory = movesFactory;

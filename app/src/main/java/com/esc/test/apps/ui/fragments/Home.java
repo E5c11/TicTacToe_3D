@@ -44,7 +44,7 @@ public class Home extends Fragment {
         final Animation an1 = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate);
         binding.passPlay.setOnClickListener(v -> {
             v.startAnimation(an1);
-            NavDirections action = HomeDirections.actionHomeToBoardActivity(null, null);
+            NavDirections action = HomeDirections.actionHomeToTutorial();
             Navigation.findNavController(v).navigate(action);
         });
         binding.playAi.setOnClickListener(v -> {

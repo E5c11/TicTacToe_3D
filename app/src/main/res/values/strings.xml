@@ -34,6 +34,7 @@
     <string name="resume">Resume</string>
     <string name="start">Start</string>
     <string name="quit">Quit</string>
+    <string name="skip">Skip</string>
     <string name="level">Level</string>
     <string name="confirm">Confirm</string>
     <string name="new_set">New set</string>

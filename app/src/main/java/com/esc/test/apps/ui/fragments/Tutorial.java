@@ -11,7 +11,6 @@ import android.widget.GridView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -63,11 +62,10 @@ public class Tutorial extends Fragment {
     private void changeSquareIcon(View view) {
         ColorDrawable viewColor = (ColorDrawable) view.getBackground();
         CubeID cube = (CubeID) view.getTag();
-        int confirmColor = ContextCompat.getColor(requireContext(), R.color.colorTransBlue);
-        if (viewColor == null || viewColor.getColor() != confirmColor) {
+        if (viewColor == null || viewColor.getColor() != viewModel.confirmColor) {
             String lastPos = viewModel.lastPos;
             if (!lastPos.isEmpty()) removeConfirm(lastPos);
-            view.setBackgroundColor(confirmColor);
+            view.setBackgroundColor(viewModel.confirmColor);
             view.setAnimation(getFlashAnimation());
             viewModel.lastPos = cube.getArrayPos();
         } else {
@@ -84,7 +82,7 @@ public class Tutorial extends Fragment {
     }
 
     private void setObservers() {
-        viewModel.instruction.observe(getViewLifecycleOwner(), s -> binding.instructions.setText(s));
+        viewModel.instructionText.observe(getViewLifecycleOwner(), s -> binding.instructions.setText(s));
 
     }
 

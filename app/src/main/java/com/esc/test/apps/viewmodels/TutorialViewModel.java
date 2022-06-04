@@ -4,14 +4,15 @@ import static com.esc.test.apps.other.MoveUtils.getCubeIds;
 
 import android.app.Application;
 
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.entities.Instruction;
 import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.pojos.MoveUpdate;
-import com.esc.test.apps.utils.SingleLiveEvent;
+import com.esc.test.apps.utils.TutorialInstructions;
 
 import java.util.ArrayList;
 
@@ -23,15 +24,18 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 public class TutorialViewModel extends AndroidViewModel {
 
     private final ArrayList<CubeID[]> layerIDs = new ArrayList<>();
-    private final MutableLiveData<String> _instruction = new MutableLiveData<>();
-    public final LiveData<String> instruction = _instruction;
+    private final MutableLiveData<String> _instructionText = new MutableLiveData<>();
+    public final LiveData<String> instructionText = _instructionText;
     private final MutableLiveData<String> _lastMove = new MutableLiveData<>();
     private final LiveData<String> lastMove = _lastMove;
     private final MutableLiveData<String> _pcMove = new MutableLiveData<>();
     private final LiveData<String> pcMove = _pcMove;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
-    private int count;
+    public final int confirmColor;
+    public Instruction instruction;
+
+    private int userCount = 0;
     public String lastPos = "";
 
     @Inject
@@ -39,6 +43,7 @@ public class TutorialViewModel extends AndroidViewModel {
         super(app);
         populateGridLists();
         setDrawables();
+        confirmColor = ContextCompat.getColor(app, R.color.colorTransBlue);
     }
 
     private void populateGridLists() {
@@ -58,12 +63,20 @@ public class TutorialViewModel extends AndroidViewModel {
     }
 
     public void nextInstruction() {
-        count ++;
+        userCount ++;
+        instruction = TutorialInstructions.user.get(userCount);
+        nextPrompt();
+    }
+
+    public void skipInstruction() {
+        userCount += 2;
+        instruction = TutorialInstructions.user.get(userCount);
         nextPrompt();
     }
 
     private void nextPrompt() {
-        _instruction.setValue("Click the square again to confirm your move");
+        _instructionText.setValue(instruction.getPrompt());
+
     }
 
     public ArrayList<CubeID[]> getLayerIDs() { return layerIDs; }

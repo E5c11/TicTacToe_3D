@@ -65,15 +65,19 @@ public class Tutorial extends Fragment {
         if (viewColor == null || viewColor.getColor() != viewModel.confirmColor) {
             String lastPos = viewModel.lastPos;
             if (!lastPos.isEmpty()) removeConfirm(lastPos);
-            view.setBackgroundColor(viewModel.confirmColor);
-            view.setAnimation(getFlashAnimation());
+            flash(view);
             viewModel.lastPos = cube.getArrayPos();
         } else {
             viewModel.lastPos = "";
 //            viewModel.updateView(cube);
-            updateSquare(cube.getArrayPos());
+            updateSquare(cube.getArrayPos(), false);
         }
         viewModel.nextInstruction();
+    }
+
+    private void flash(View view) {
+        view.setBackgroundColor(viewModel.confirmColor);
+        view.setAnimation(getFlashAnimation());
     }
 
     private void removeConfirm(String tag) {
@@ -83,14 +87,17 @@ public class Tutorial extends Fragment {
 
     private void setObservers() {
         viewModel.instructionText.observe(getViewLifecycleOwner(), s -> binding.instructions.setText(s));
-
+        viewModel.flash.observe(getViewLifecycleOwner(), instruction -> {
+            updateSquare(instruction.getPos(), true);
+            if (!instruction.getAltPos().equals("")) updateSquare(instruction.getAltPos(), true);
+        });
     }
 
-    private void updateSquare(String tag) {
+    private void updateSquare(String tag, boolean animation) {
         int[] turnPos = getGridAdapter(tag);
         layers.get(turnPos[0]).getChildAt(turnPos[1])
                 .setBackground(requireContext().getDrawable(R.drawable.baseline_close_24));
-        layers.get(turnPos[0]).getChildAt(turnPos[1]).setAnimation(null);
+        layers.get(turnPos[0]).getChildAt(turnPos[1]).setAnimation(animation? getFlashAnimation() : null);
     }
 
     private void addLayers() {

@@ -4,6 +4,7 @@ import static com.esc.test.apps.other.MoveUtils.getCubeIds;
 import static com.esc.test.apps.utils.TutAction.FLASH;
 
 import android.app.Application;
+import android.os.Handler;
 
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
@@ -40,6 +41,7 @@ public class TutorialViewModel extends AndroidViewModel {
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
     public final int confirmColor;
     private final Random rand;
+    private final Application app;
     public PlayerInstruction playerInstruction;
 
     private int userCount = 0;
@@ -50,7 +52,9 @@ public class TutorialViewModel extends AndroidViewModel {
         super(app);
         populateGridLists();
         setDrawables();
+        this.app = app;
         this.rand = rand;
+        new Handler().postDelayed((Runnable) this::startPrompts, 100);
         confirmColor = ContextCompat.getColor(app, R.color.colorTransBlue);
     }
 
@@ -70,6 +74,11 @@ public class TutorialViewModel extends AndroidViewModel {
         lastCross = R.drawable.baseline_close_red;
     }
 
+    public void startPrompts() {
+        playerInstruction = TutorialInstructions.user.get(0);
+        nextPrompt();
+    }
+
     public void nextInstruction() {
         userCount ++;
         playerInstruction = TutorialInstructions.user.get(userCount);
@@ -85,6 +94,10 @@ public class TutorialViewModel extends AndroidViewModel {
     private void nextPrompt() {
         if (playerInstruction.getAction() == FLASH) _flash.setValue(playerInstruction);
         _instructionText.setValue(playerInstruction.getPrompt());
+    }
+
+    public void wrongSquare() {
+        _instructionText.setValue(app.getString(R.string.error_prompt));
     }
 
     public ArrayList<CubeID[]> getLayerIDs() { return layerIDs; }

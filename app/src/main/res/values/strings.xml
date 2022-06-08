@@ -55,6 +55,7 @@
     <!--Tutorial Instructions-->
     <string name="tutorial_welcome">Welcome to Tic Tac Toe in 3D</string>
     <string name="four_to_win">Get 4 in a row to win!!</string>
+    <string name="error_prompt">Please select the marked square.</string>
     <string name="first_instruction">Tap the square to make your first move.</string>
     <string name="second_instruction">Tap again on the highlighted square to confirm.</string>
     <string name="third_instruction">You can also win across grids.</string>

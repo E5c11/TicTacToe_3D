@@ -1,7 +1,10 @@
 package com.esc.test.apps.adapters;
 
+import static com.esc.test.apps.viewmodels.board.PlayFriendBoardViewModel.TAG;
+
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -31,6 +34,7 @@ public class CubeAdapter extends BaseAdapter {
             button.setLayoutParams(new GridView.LayoutParams(screenWidth/10, screenWidth/10));
             button.setBackground(null);
             button.setTag(bPosition[i]);
+            Log.d(TAG, "getView: ");
         } else button = (ImageView) view;
         return button;
     }

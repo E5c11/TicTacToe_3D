@@ -15,7 +15,6 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.entities.PlayerInstruction;
 import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.utils.SingleLiveEvent;
-import com.esc.test.apps.utils.TutAction;
 import com.esc.test.apps.utils.TutorialInstructions;
 
 import java.util.ArrayList;
@@ -34,9 +33,9 @@ public class TutorialViewModel extends AndroidViewModel {
     private final MutableLiveData<String> _lastMove = new MutableLiveData<>();
     private final SingleLiveEvent<PlayerInstruction> _flash = new SingleLiveEvent<>();
     public final SingleLiveEvent<PlayerInstruction> flash = _flash;
+    private final SingleLiveEvent<String> _pcMove = new SingleLiveEvent<>();
+    public final SingleLiveEvent<String> pcMove = _pcMove;
     private final LiveData<String> lastMove = _lastMove;
-    private final MutableLiveData<String> _pcMove = new MutableLiveData<>();
-    private final LiveData<String> pcMove = _pcMove;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
     public final int confirmColor;
@@ -54,8 +53,8 @@ public class TutorialViewModel extends AndroidViewModel {
         setDrawables();
         this.app = app;
         this.rand = rand;
-        new Handler().postDelayed((Runnable) this::startPrompts, 100);
         confirmColor = ContextCompat.getColor(app, R.color.colorTransBlue);
+        new Handler().postDelayed((Runnable) this::startPrompts, 100);
     }
 
     private void populateGridLists() {
@@ -68,7 +67,7 @@ public class TutorialViewModel extends AndroidViewModel {
     private void setDrawables() {
         turnColor = R.color.colorAccent;
         notTurnColor = R.color.colorPrimary;
-        circleDrawable = R.drawable.baseline_panorama_fish_eye_24;
+        circleDrawable = R.drawable.baseline_circle_24;
         crossDrawable = R.drawable.baseline_close_24;
         lastCircle = R.drawable.baseline_panorama_fish_eye_red;
         lastCross = R.drawable.baseline_close_red;
@@ -80,6 +79,7 @@ public class TutorialViewModel extends AndroidViewModel {
     }
 
     public void nextInstruction() {
+        _pcMove.setValue(TutorialInstructions.pc.get(userCount).getPos());
         userCount ++;
         playerInstruction = TutorialInstructions.user.get(userCount);
         nextPrompt();

@@ -59,7 +59,7 @@
     <string name="first_instruction">Tap the square to make your first move.</string>
     <string name="second_instruction">Tap again on the highlighted square to confirm.</string>
     <string name="third_instruction">You can also win across grids.</string>
-    <string name="fourth_instruction">Look at the grid formation to complete you row.</string>
+    <string name="fourth_instruction">Look at the grid formation to complete your row.</string>
     <string name="fifth_instruction">Are you sure this move will complete your row?</string>
     <string name="sixth_instruction">Can you find your winning move?</string>
     <string name="seventh_instruction">Are you sure this is the winning move?</string>

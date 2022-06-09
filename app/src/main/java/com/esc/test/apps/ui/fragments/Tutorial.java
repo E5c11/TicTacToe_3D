@@ -76,12 +76,12 @@ public class Tutorial extends Fragment {
                 if (!lastPos.isEmpty()) removeConfirm(lastPos);
                 highlight(view);
                 viewModel.lastPos = cube.getArrayPos();
+//                viewModel.nextInstruction();
             } else {
                 viewModel.lastPos = "";
-//            viewModel.updateView(cube);
+                viewModel.nextInstruction();
                 updateSquare(cube.getArrayPos(), false);
             }
-            viewModel.nextInstruction();
         }
     }
 
@@ -99,16 +99,23 @@ public class Tutorial extends Fragment {
         viewModel.instructionText.observe(getViewLifecycleOwner(), s -> binding.instructions.setText(s));
         viewModel.flash.observe(getViewLifecycleOwner(), instruction -> {
             updateSquare(instruction.getPos(), true);
+            viewModel.lastPos = instruction.getPos();
             if (instruction.getAltPos() != null && !instruction.getAltPos().equals(""))
                 updateSquare(instruction.getAltPos(), true);
+        });
+        viewModel.pcMove.observe(getViewLifecycleOwner(), move -> {
+            int[] turnPos = getGridAdapter(move);
+            layers.get(turnPos[0]).getChildAt(turnPos[1])
+                    .setBackground(requireContext().getDrawable(R.drawable.baseline_circle_24));
         });
     }
 
     private void updateSquare(String tag, boolean animation) {
         int[] turnPos = getGridAdapter(tag);
         layers.get(turnPos[0]).getChildAt(turnPos[1])
-                .setBackground(requireContext().getDrawable(R.drawable.baseline_close_24));
-        layers.get(turnPos[0]).getChildAt(turnPos[1]).setAnimation(animation? getFlashAnimation() : null);
+                .setBackground(requireContext().getDrawable(
+                        animation ? R.color.colorTransBlue : R.drawable.baseline_close_24));
+        layers.get(turnPos[0]).getChildAt(turnPos[1]).setAnimation(animation ? getFlashAnimation() : null);
     }
 
     private void addLayers() {

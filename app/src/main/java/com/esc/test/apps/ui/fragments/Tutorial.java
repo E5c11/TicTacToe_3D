@@ -5,6 +5,7 @@ import static com.esc.test.apps.utils.TutAction.FLASH;
 import static com.esc.test.apps.utils.Utils.getFlashAnimation;
 
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +21,6 @@ import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.TutorialFragmentBinding;
 import com.esc.test.apps.entities.PlayerInstruction;
 import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.utils.TutAction;
 import com.esc.test.apps.viewmodels.TutorialViewModel;
 
 import java.util.ArrayList;
@@ -70,23 +70,24 @@ public class Tutorial extends Fragment {
         if (!cube.getArrayPos().equals(pi.getPos()) ||
                 (pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos()))) {
             viewModel.wrongSquare();
+            updateSquare(viewModel.playerInstruction.getPos(), true);
         } else {
-            if (viewColor == null || viewColor.getColor() != viewModel.confirmColor) {
+            if (viewColor == null || viewColor.getColor() != viewModel.confirmColour) {
                 String lastPos = viewModel.lastPos;
                 if (!lastPos.isEmpty()) removeConfirm(lastPos);
                 highlight(view);
                 viewModel.lastPos = cube.getArrayPos();
-//                viewModel.nextInstruction();
+                viewModel.nextInstruction(false);
             } else {
                 viewModel.lastPos = "";
-                viewModel.nextInstruction();
+                viewModel.nextInstruction(true);
                 updateSquare(cube.getArrayPos(), false);
             }
         }
     }
 
     private void highlight(View view) {
-        view.setBackgroundColor(viewModel.confirmColor);
+        view.setBackgroundColor(viewModel.confirmColour);
         if (viewModel.playerInstruction.getAction() == FLASH) view.setAnimation(getFlashAnimation());
     }
 

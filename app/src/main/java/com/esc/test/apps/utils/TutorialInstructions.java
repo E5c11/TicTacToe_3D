@@ -22,9 +22,9 @@ public class TutorialInstructions {
 //        add(new PlayerInstruction(App.res.getString(R.string.second_instruction), HIGHLIGHT, "0"));
         add(new PlayerInstruction(App.res.getString(R.string.third_instruction), FLASH, "16"));
         add(new PlayerInstruction(App.res.getString(R.string.fourth_instruction), WAIT, "32"));
-//        add(new PlayerInstruction(App.res.getString(R.string.fifth_instruction), FLASH, "32"));
+        add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "32"));
         add(new PlayerInstruction(App.res.getString(R.string.sixth_instruction), WAIT, "48"));
-//        add(new PlayerInstruction(App.res.getString(R.string.seventh_instruction), FLASH, "48"));
+        add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "48"));
         add(new PlayerInstruction(App.res.getString(R.string.eighth_instruction), RESTART, "48"));
 
 
@@ -43,6 +43,9 @@ public class TutorialInstructions {
         add(new PcInstruction("9"));
         add(new PcInstruction("6"));
         add(new PcInstruction("3"));
+
+        //Second round
+
     }};
 
 }

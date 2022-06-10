@@ -2,6 +2,7 @@ package com.esc.test.apps.viewmodels;
 
 import static com.esc.test.apps.other.MoveUtils.getCubeIds;
 import static com.esc.test.apps.utils.TutAction.FLASH;
+import static com.esc.test.apps.utils.TutAction.RESTART;
 
 import android.app.Application;
 import android.os.Handler;
@@ -38,12 +39,12 @@ public class TutorialViewModel extends AndroidViewModel {
     private final LiveData<String> lastMove = _lastMove;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
-    public final int confirmColor;
+    public final int confirmColour;
     private final Random rand;
     private final Application app;
     public PlayerInstruction playerInstruction;
 
-    private int userCount = 0;
+    private int userCount = 0, pcCount = 0;
     public String lastPos = "";
 
     @Inject
@@ -53,8 +54,8 @@ public class TutorialViewModel extends AndroidViewModel {
         setDrawables();
         this.app = app;
         this.rand = rand;
-        confirmColor = ContextCompat.getColor(app, R.color.colorTransBlue);
-        new Handler().postDelayed((Runnable) this::startPrompts, 100);
+        confirmColour = ContextCompat.getColor(app, R.color.colorTransBlue);
+        new Handler().postDelayed(this::startPrompts, 100);
     }
 
     private void populateGridLists() {
@@ -78,15 +79,12 @@ public class TutorialViewModel extends AndroidViewModel {
         nextPrompt();
     }
 
-    public void nextInstruction() {
-        _pcMove.setValue(TutorialInstructions.pc.get(userCount).getPos());
+    public void nextInstruction(boolean isPc) {
+        if (isPc && !checkNextInstruction().getAction().equals(RESTART)) {
+            _pcMove.setValue(TutorialInstructions.pc.get(pcCount).getPos());
+            pcCount ++;
+        }
         userCount ++;
-        playerInstruction = TutorialInstructions.user.get(userCount);
-        nextPrompt();
-    }
-
-    public void skipInstruction() {
-        userCount += 2;
         playerInstruction = TutorialInstructions.user.get(userCount);
         nextPrompt();
     }
@@ -98,6 +96,11 @@ public class TutorialViewModel extends AndroidViewModel {
 
     public void wrongSquare() {
         _instructionText.setValue(app.getString(R.string.error_prompt));
+        if (playerInstruction.getPos().equals(checkNextInstruction().getPos())) userCount ++;
+    }
+
+    private PlayerInstruction checkNextInstruction() {
+       return TutorialInstructions.user.get(userCount + 1);
     }
 
     public ArrayList<CubeID[]> getLayerIDs() { return layerIDs; }

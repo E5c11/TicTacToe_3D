@@ -36,7 +36,8 @@ public class TutorialViewModel extends AndroidViewModel {
     public final SingleLiveEvent<PlayerInstruction> flash = _flash;
     private final SingleLiveEvent<String> _pcMove = new SingleLiveEvent<>();
     public final SingleLiveEvent<String> pcMove = _pcMove;
-    private final LiveData<String> lastMove = _lastMove;
+    private final SingleLiveEvent<String> _restart = new SingleLiveEvent<>();
+    public final SingleLiveEvent<String> restart = _restart;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
     public final int confirmColour;
@@ -46,6 +47,7 @@ public class TutorialViewModel extends AndroidViewModel {
 
     private int userCount = 0, pcCount = 0;
     public String lastPos = "";
+    public String lastAltPos = "";
 
     @Inject
     public TutorialViewModel(Application app, Random rand) {
@@ -92,6 +94,10 @@ public class TutorialViewModel extends AndroidViewModel {
     private void nextPrompt() {
         if (playerInstruction.getAction() == FLASH) _flash.setValue(playerInstruction);
         _instructionText.setValue(playerInstruction.getPrompt());
+        if (playerInstruction.getAction() == RESTART) {
+            new Handler().postDelayed(() -> _restart.setValue("restart"), 2000);
+            new Handler().postDelayed(() -> nextInstruction(false), 2100);
+        }
     }
 
     public void wrongSquare() {

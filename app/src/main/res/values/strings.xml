@@ -68,9 +68,8 @@
     <string name="ninth_instruction">Let\'s try to win in a different way.</string>
     <string name="tenth_instruction">Start in the same position.</string>
     <string name="eleventh_instruction">Choose a square a step down or across in the next grid.</string>
-    <string name="twelfth_instruction">Here\'s a hint ;)</string>
-    <string name="thirteenth_instruction">See if you can find the next step in the next grid.</string>
-    <string name="fourteenth_instruction">Find the final square to win.</string>
+    <string name="twelfth_instruction">See if you can find the next step in the next grid.</string>
+    <string name="thirteenth_instruction">Find the final square to win.</string>
 
     <!--Network-->
     <string name="network_success">success</string>

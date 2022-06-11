@@ -5,7 +5,6 @@ import static com.esc.test.apps.utils.TutAction.FLASH;
 import static com.esc.test.apps.utils.Utils.getFlashAnimation;
 
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -56,21 +55,23 @@ public class Tutorial extends Fragment {
             i.setAdapter(cubeAdapter);
             i.setOnItemClickListener((adapterView, view, j, l) -> changeSquareIcon(view));
             numLayers++;
-            Log.d(TAG, "setTutorial: ");
         });
-        Log.d(TAG, "setTutorial: after");
         setObservers();
-//        viewModel.startPrompts();
     }
 
     private void changeSquareIcon(View view) {
         ColorDrawable viewColor = (ColorDrawable) view.getBackground();
         CubeID cube = (CubeID) view.getTag();
         PlayerInstruction pi = viewModel.playerInstruction;
-        if (!cube.getArrayPos().equals(pi.getPos()) ||
-                (pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos()))) {
+        if ((!cube.getArrayPos().equals(pi.getPos()) && pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos())) ||
+                (pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos())) && !cube.getArrayPos().equals(pi.getPos())) {
             viewModel.wrongSquare();
-            updateSquare(viewModel.playerInstruction.getPos(), true);
+            updateSquare(pi.getPos(), true);
+            viewModel.lastPos = pi.getPos();
+            if (pi.getAltPos() != null) {
+                updateSquare(pi.getAltPos(), true);
+                viewModel.lastAltPos = pi.getAltPos();
+            }
         } else {
             if (viewColor == null || viewColor.getColor() != viewModel.confirmColour) {
                 String lastPos = viewModel.lastPos;
@@ -79,6 +80,11 @@ public class Tutorial extends Fragment {
                 viewModel.lastPos = cube.getArrayPos();
                 viewModel.nextInstruction(false);
             } else {
+                if (!viewModel.lastAltPos.equals("")) {
+                    removeConfirm(viewModel.lastAltPos);
+                    removeConfirm(viewModel.lastPos);
+                    viewModel.lastAltPos = "";
+                }
                 viewModel.lastPos = "";
                 viewModel.nextInstruction(true);
                 updateSquare(cube.getArrayPos(), false);
@@ -101,14 +107,13 @@ public class Tutorial extends Fragment {
         viewModel.flash.observe(getViewLifecycleOwner(), instruction -> {
             updateSquare(instruction.getPos(), true);
             viewModel.lastPos = instruction.getPos();
-            if (instruction.getAltPos() != null && !instruction.getAltPos().equals(""))
-                updateSquare(instruction.getAltPos(), true);
         });
         viewModel.pcMove.observe(getViewLifecycleOwner(), move -> {
             int[] turnPos = getGridAdapter(move);
             layers.get(turnPos[0]).getChildAt(turnPos[1])
                     .setBackground(requireContext().getDrawable(R.drawable.baseline_circle_24));
         });
+        viewModel.restart.observe(getViewLifecycleOwner(), s -> setBoard());
     }
 
     private void updateSquare(String tag, boolean animation) {

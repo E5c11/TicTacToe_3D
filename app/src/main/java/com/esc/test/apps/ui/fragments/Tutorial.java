@@ -23,6 +23,8 @@ import com.esc.test.apps.pojos.CubeID;
 import com.esc.test.apps.viewmodels.TutorialViewModel;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -63,17 +65,18 @@ public class Tutorial extends Fragment {
         ColorDrawable viewColor = (ColorDrawable) view.getBackground();
         CubeID cube = (CubeID) view.getTag();
         PlayerInstruction pi = viewModel.playerInstruction;
-        if (((!cube.getArrayPos().equals(pi.getPos()) && pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos())) ||
-                (pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos())) && !cube.getArrayPos().equals(pi.getPos())) ||
-                !cube.getArrayPos().equals(pi.getPos())
+        //Check wrong square
+        if (((!Objects.equals(cube.getArrayPos(), pi.getPos()) && !Objects.equals(cube.getArrayPos(), pi.getAltPos())) ||
+                (!Objects.equals(cube.getArrayPos(), pi.getAltPos())) && !Objects.equals(cube.getArrayPos(), pi.getPos())) ||
+                !Objects.equals(cube.getArrayPos(), pi.getPos())
                 && viewColor == null) {
             viewModel.wrongSquare();
-            if (viewModel.line != null && viewModel.line.equals("")) {
+            if (Objects.equals(viewModel.line, "")) {
                 updateSquare(pi.getAltPos(), true);
                 viewModel.lastAltPos = pi.getAltPos();
                 updateSquare(pi.getPos(), true);
                 viewModel.lastPos = pi.getPos();
-            } else if (viewModel.line != null && viewModel.line.equals("second")) {
+            } else if (Objects.equals(viewModel.line, "second")) {
                 updateSquare(pi.getAltPos(), true);
                 viewModel.lastAltPos = pi.getAltPos();
             } else {
@@ -81,6 +84,7 @@ public class Tutorial extends Fragment {
                 viewModel.lastPos = pi.getPos();
             }
         } else {
+            //Check confirm square
             if (viewColor == null || viewColor.getColor() != viewModel.confirmColour) {
                 if (viewModel.lastAltPos != null && !viewModel.lastAltPos.isEmpty()) {
                     removeConfirm(viewModel.lastAltPos);
@@ -91,13 +95,13 @@ public class Tutorial extends Fragment {
                 }
                 highlight(view);
                 viewModel.nextInstruction(false);
-            } else {
+            } else {                                        //Update view with move
                 if (!viewModel.lastAltPos.isEmpty()) {
                     removeConfirm(viewModel.lastAltPos);
                     removeConfirm(viewModel.lastPos);
-                    if (viewModel.line != null && viewModel.line.isEmpty()) viewModel.line = "second";
+                    if (Objects.equals(viewModel.line, "")) viewModel.line = "second";
                 } else {
-                    if (viewModel.line != null && viewModel.line.isEmpty()) viewModel.line = "first";
+                    if (Objects.equals(viewModel.line, "")) viewModel.line = "first";
                     removeConfirm(viewModel.lastPos);
                 }
                 viewModel.lastPos = "";

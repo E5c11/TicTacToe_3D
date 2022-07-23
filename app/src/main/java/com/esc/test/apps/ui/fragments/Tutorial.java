@@ -63,31 +63,47 @@ public class Tutorial extends Fragment {
         ColorDrawable viewColor = (ColorDrawable) view.getBackground();
         CubeID cube = (CubeID) view.getTag();
         PlayerInstruction pi = viewModel.playerInstruction;
-        if ((!cube.getArrayPos().equals(pi.getPos()) && pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos())) ||
-                (pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos())) && !cube.getArrayPos().equals(pi.getPos())) {
+        if (((!cube.getArrayPos().equals(pi.getPos()) && pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos())) ||
+                (pi.getAltPos() != null && !cube.getArrayPos().equals(pi.getAltPos())) && !cube.getArrayPos().equals(pi.getPos())) ||
+                !cube.getArrayPos().equals(pi.getPos())
+                && viewColor == null) {
             viewModel.wrongSquare();
-            updateSquare(pi.getPos(), true);
-            viewModel.lastPos = pi.getPos();
-            if (pi.getAltPos() != null) {
+            if (viewModel.line != null && viewModel.line.equals("")) {
                 updateSquare(pi.getAltPos(), true);
                 viewModel.lastAltPos = pi.getAltPos();
+                updateSquare(pi.getPos(), true);
+                viewModel.lastPos = pi.getPos();
+            } else if (viewModel.line != null && viewModel.line.equals("second")) {
+                updateSquare(pi.getAltPos(), true);
+                viewModel.lastAltPos = pi.getAltPos();
+            } else {
+                updateSquare(pi.getPos(), true);
+                viewModel.lastPos = pi.getPos();
             }
         } else {
             if (viewColor == null || viewColor.getColor() != viewModel.confirmColour) {
-                String lastPos = viewModel.lastPos;
-                if (!lastPos.isEmpty()) removeConfirm(lastPos);
+                if (viewModel.lastAltPos != null && !viewModel.lastAltPos.isEmpty()) {
+                    removeConfirm(viewModel.lastAltPos);
+                    viewModel.lastAltPos = cube.getArrayPos();
+                } else {
+                    removeConfirm(viewModel.lastPos);
+                    viewModel.lastPos = cube.getArrayPos();
+                }
                 highlight(view);
-                viewModel.lastPos = cube.getArrayPos();
                 viewModel.nextInstruction(false);
             } else {
-                if (!viewModel.lastAltPos.equals("")) {
+                if (!viewModel.lastAltPos.isEmpty()) {
                     removeConfirm(viewModel.lastAltPos);
                     removeConfirm(viewModel.lastPos);
-                    viewModel.lastAltPos = "";
+                    if (viewModel.line != null && viewModel.line.isEmpty()) viewModel.line = "second";
+                } else {
+                    if (viewModel.line != null && viewModel.line.isEmpty()) viewModel.line = "first";
+                    removeConfirm(viewModel.lastPos);
                 }
                 viewModel.lastPos = "";
-                viewModel.nextInstruction(true);
+                viewModel.lastAltPos = "";
                 updateSquare(cube.getArrayPos(), false);
+                viewModel.nextInstruction(true);
             }
         }
     }
@@ -98,8 +114,10 @@ public class Tutorial extends Fragment {
     }
 
     private void removeConfirm(String tag) {
-        int[] turnPos = getGridAdapter(tag);
-        layers.get(turnPos[0]).getChildAt(turnPos[1]).setBackground(null);
+        if (!tag.isEmpty()) {
+            int[] turnPos = getGridAdapter(tag);
+            layers.get(turnPos[0]).getChildAt(turnPos[1]).setBackground(null);
+        }
     }
 
     private void setObservers() {
@@ -112,6 +130,15 @@ public class Tutorial extends Fragment {
             int[] turnPos = getGridAdapter(move);
             layers.get(turnPos[0]).getChildAt(turnPos[1])
                     .setBackground(requireContext().getDrawable(R.drawable.baseline_circle_24));
+            layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
+        });
+        viewModel.winner.observe(getViewLifecycleOwner(), line -> {
+            for (String move : line) {
+                int[] turnPos = getGridAdapter(move);
+                layers.get(turnPos[0]).getChildAt(turnPos[1])
+                        .setBackground(requireContext().getDrawable(R.drawable.baseline_star_24));
+                layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
+            }
         });
         viewModel.restart.observe(getViewLifecycleOwner(), s -> setBoard());
     }
@@ -122,6 +149,7 @@ public class Tutorial extends Fragment {
                 .setBackground(requireContext().getDrawable(
                         animation ? R.color.colorTransBlue : R.drawable.baseline_close_24));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setAnimation(animation ? getFlashAnimation() : null);
+        if (!animation) layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
     }
 
     private void addLayers() {

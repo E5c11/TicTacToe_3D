@@ -70,6 +70,7 @@
     <string name="eleventh_instruction">Choose a square a step down or across in the next grid.</string>
     <string name="twelfth_instruction">See if you can find the next step in the next grid.</string>
     <string name="thirteenth_instruction">Find the final square to win.</string>
+    <string name="fourteenth_instruction">Well done, you have won your first game!!</string>
 
     <!--Network-->
     <string name="network_success">success</string>

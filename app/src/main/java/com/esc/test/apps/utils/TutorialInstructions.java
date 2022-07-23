@@ -11,6 +11,7 @@ import com.esc.test.apps.entities.PlayerInstruction;
 import com.esc.test.apps.entities.PcInstruction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class TutorialInstructions {
@@ -19,7 +20,6 @@ public class TutorialInstructions {
 
         // First round
         add(new PlayerInstruction(App.res.getString(R.string.first_instruction), FLASH, "0"));
-//        add(new PlayerInstruction(App.res.getString(R.string.second_instruction), HIGHLIGHT, "0"));
         add(new PlayerInstruction(App.res.getString(R.string.third_instruction), FLASH, "16"));
         add(new PlayerInstruction(App.res.getString(R.string.fourth_instruction), WAIT, "32"));
         add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "32"));
@@ -30,8 +30,12 @@ public class TutorialInstructions {
 //        // Second round
         add(new PlayerInstruction(App.res.getString(R.string.tenth_instruction), FLASH, "0"));
         add(new PlayerInstruction(App.res.getString(R.string.eleventh_instruction), WAIT, "17", "20"));
+        add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "17", "20"));
         add(new PlayerInstruction(App.res.getString(R.string.twelfth_instruction), WAIT, "34", "40"));
+        add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "34", "40"));
         add(new PlayerInstruction(App.res.getString(R.string.thirteenth_instruction), WAIT, "51", "60"));
+        add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "51", "60"));
+        add(new PlayerInstruction(App.res.getString(R.string.fourteenth_instruction), RESTART, "51", "60"));
 //        add(new Instruction(App.res.getString(R.string.)));
 
     }};
@@ -47,6 +51,12 @@ public class TutorialInstructions {
         add(new PcInstruction("12"));
         add(new PcInstruction("25"));
         add(new PcInstruction("38"));
+    }};
+
+    public static final List<List<String>> winningRow = new ArrayList<>() {{
+        add(Arrays.asList("0", "16", "32", "48"));
+        add(Arrays.asList("0", "17", "34", "51"));
+        add(Arrays.asList("0", "20", "40", "60"));
     }};
 
 }

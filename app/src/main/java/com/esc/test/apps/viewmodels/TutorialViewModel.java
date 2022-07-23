@@ -6,6 +6,7 @@ import static com.esc.test.apps.utils.TutAction.RESTART;
 
 import android.app.Application;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
@@ -19,6 +20,8 @@ import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.TutorialInstructions;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import javax.inject.Inject;
@@ -38,6 +41,8 @@ public class TutorialViewModel extends AndroidViewModel {
     public final SingleLiveEvent<String> pcMove = _pcMove;
     private final SingleLiveEvent<String> _restart = new SingleLiveEvent<>();
     public final SingleLiveEvent<String> restart = _restart;
+    private final SingleLiveEvent<List<String>> _winner = new SingleLiveEvent<>();
+    public final SingleLiveEvent<List<String>> winner = _winner;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
     public final int confirmColour;
@@ -45,9 +50,10 @@ public class TutorialViewModel extends AndroidViewModel {
     private final Application app;
     public PlayerInstruction playerInstruction;
 
-    private int userCount = 0, pcCount = 0;
+    private int userCount = 0, pcCount = 0, gameCount = 0;
     public String lastPos = "";
     public String lastAltPos = "";
+    public String line = null;
 
     @Inject
     public TutorialViewModel(Application app, Random rand) {
@@ -94,9 +100,13 @@ public class TutorialViewModel extends AndroidViewModel {
     private void nextPrompt() {
         if (playerInstruction.getAction() == FLASH) _flash.setValue(playerInstruction);
         _instructionText.setValue(playerInstruction.getPrompt());
+        if (line == null && playerInstruction.getAltPos() != null) line = "";
         if (playerInstruction.getAction() == RESTART) {
-            new Handler().postDelayed(() -> _restart.setValue("restart"), 2000);
-            new Handler().postDelayed(() -> nextInstruction(false), 2100);
+            if (line == null || !line.equals("second")) line = "first";
+            _winner.setValue(TutorialInstructions.winningRow.get(line.equals("first") ? gameCount : ++gameCount));
+            lastAltPos = ""; lastPos = ""; gameCount ++; line = null;
+            new Handler().postDelayed(() -> _restart.setValue("restart"), 3000);
+            new Handler().postDelayed(() -> nextInstruction(false), 3100);
         }
     }
 

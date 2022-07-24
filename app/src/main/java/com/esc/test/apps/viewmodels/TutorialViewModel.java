@@ -104,12 +104,12 @@ public class TutorialViewModel extends AndroidViewModel {
         if (line == null && playerInstruction.getAltPos() != null) line = "";
         if (playerInstruction.getAction() == FLASH) _flash.setValue(playerInstruction);
         else if (playerInstruction.getAction() == RESTART) {
-            if (line == null || !line.equals("second")) line = "first";
-            _winner.setValue(TutorialInstructions.winningRow.get(line.equals("first") ? gameCount : ++gameCount));
+            checkLine();
             lastAltPos = ""; lastPos = ""; gameCount ++; line = null;
             new Handler().postDelayed(() -> _restart.setValue("restart"), 3000);
             new Handler().postDelayed(() -> nextInstruction(false), 3100);
         } else if (playerInstruction.getAction() ==  END) {
+            checkLine();
             new Handler().postDelayed(() ->
                     _instructionText.setValue(app.getString(R.string.nineteenth_instruction)), 2000);
             new Handler().postDelayed(() -> _end.postValue(true), 4000);
@@ -121,6 +121,11 @@ public class TutorialViewModel extends AndroidViewModel {
     public void wrongSquare() {
         _instructionText.setValue(app.getString(R.string.error_prompt));
         if (playerInstruction.getPos().equals(checkNextInstruction().getPos())) userCount ++;
+    }
+
+    private void checkLine() {
+        if (line == null || !line.equals("second")) line = "first";
+        _winner.setValue(TutorialInstructions.winningRow.get(line.equals("first") ? gameCount : ++gameCount));
     }
 
     private PlayerInstruction checkNextInstruction() {

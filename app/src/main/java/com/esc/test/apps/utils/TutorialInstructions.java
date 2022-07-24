@@ -64,8 +64,8 @@ public class TutorialInstructions {
 
         //Third round
         add(new PcInstruction("3"));
-        add(new PcInstruction("19"));
-        add(new PcInstruction("43"));
+        add(new PcInstruction("22"));
+        add(new PcInstruction("41"));
     }};
 
     public static final List<List<String>> winningRow = new ArrayList<>() {{

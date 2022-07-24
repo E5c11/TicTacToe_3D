@@ -70,7 +70,7 @@ public class Tutorial extends Fragment {
         //Check wrong square
         if (((!Objects.equals(cube.getArrayPos(), pi.getPos()) && !Objects.equals(cube.getArrayPos(), pi.getAltPos())) ||
                 (!Objects.equals(cube.getArrayPos(), pi.getAltPos())) && !Objects.equals(cube.getArrayPos(), pi.getPos())) ||
-                !Objects.equals(cube.getArrayPos(), pi.getPos())
+                (!Objects.equals(cube.getArrayPos(), pi.getPos()) && pi.getAltPos() == null)
                 && viewColor == null) {
             viewModel.wrongSquare();
             if (Objects.equals(viewModel.line, "")) {
@@ -81,7 +81,7 @@ public class Tutorial extends Fragment {
         } else {
             //Check confirm square
             if (viewColor == null || viewColor.getColor() != viewModel.confirmColour) {
-                if (viewModel.lastAltPos != null && !viewModel.lastAltPos.isEmpty()) {
+                if (Objects.equals(cube.getArrayPos(), pi.getAltPos())) {
                     removeConfirm(viewModel.lastAltPos);
                     viewModel.lastAltPos = cube.getArrayPos();
                 } else {

@@ -1,6 +1,7 @@
 package com.esc.test.apps.viewmodels;
 
 import static com.esc.test.apps.other.MoveUtils.getCubeIds;
+import static com.esc.test.apps.utils.TutAction.END;
 import static com.esc.test.apps.utils.TutAction.FLASH;
 import static com.esc.test.apps.utils.TutAction.RESTART;
 
@@ -43,6 +44,8 @@ public class TutorialViewModel extends AndroidViewModel {
     public final SingleLiveEvent<String> restart = _restart;
     private final SingleLiveEvent<List<String>> _winner = new SingleLiveEvent<>();
     public final SingleLiveEvent<List<String>> winner = _winner;
+    private final SingleLiveEvent<Boolean> _end = new SingleLiveEvent<>();
+    public final SingleLiveEvent<Boolean> end = _end;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
     public final int confirmColour;
@@ -88,7 +91,7 @@ public class TutorialViewModel extends AndroidViewModel {
     }
 
     public void nextInstruction(boolean isPc) {
-        if (isPc && !checkNextInstruction().getAction().equals(RESTART)) {
+        if (isPc && !checkNextInstruction().getAction().equals(RESTART) && !checkNextInstruction().getAction().equals(END)) {
             _pcMove.setValue(TutorialInstructions.pc.get(pcCount).getPos());
             pcCount ++;
         }
@@ -98,16 +101,21 @@ public class TutorialViewModel extends AndroidViewModel {
     }
 
     private void nextPrompt() {
-        if (playerInstruction.getAction() == FLASH) _flash.setValue(playerInstruction);
-        _instructionText.setValue(playerInstruction.getPrompt());
         if (line == null && playerInstruction.getAltPos() != null) line = "";
-        if (playerInstruction.getAction() == RESTART) {
+        if (playerInstruction.getAction() == FLASH) _flash.setValue(playerInstruction);
+        else if (playerInstruction.getAction() == RESTART) {
             if (line == null || !line.equals("second")) line = "first";
             _winner.setValue(TutorialInstructions.winningRow.get(line.equals("first") ? gameCount : ++gameCount));
             lastAltPos = ""; lastPos = ""; gameCount ++; line = null;
             new Handler().postDelayed(() -> _restart.setValue("restart"), 3000);
             new Handler().postDelayed(() -> nextInstruction(false), 3100);
+        } else if (playerInstruction.getAction() ==  END) {
+            new Handler().postDelayed(() ->
+                    _instructionText.setValue(app.getString(R.string.nineteenth_instruction)), 2000);
+            new Handler().postDelayed(() -> _end.postValue(true), 4000);
         }
+        _instructionText.setValue(playerInstruction.getPrompt());
+
     }
 
     public void wrongSquare() {

@@ -28,6 +28,8 @@ import com.esc.test.apps.viewmodels.board.PlayFriendBoardViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -80,13 +82,13 @@ public class Board extends Fragment {
         BoardArgs extras = BoardArgs.fromBundle(getArguments());
 
         if (extras.getGameType() != null) {
-            if (extras.getGamePiece() != null) {
+            if (!Objects.equals(extras.getGamePiece(), "from_tut")) {
                 gameButtonsVis();
-                String extra = extras.getGamePiece();
+                String gamePiece = extras.getGamePiece();
                 String uids = extras.getGameType();
                 playFriendViewModel = new ViewModelProvider(this).get(PlayFriendBoardViewModel.class);
-                Log.d(TAG, "friend's starting piece is: " + extra);
-                if (extra.equals(getResources().getString(R.string.cross))) {
+                Log.d(TAG, "friend's starting piece is: " + gamePiece);
+                if (Objects.equals(gamePiece, getResources().getString(R.string.cross))) {
                     playFriendViewModel.getGameUids(uids, true);
                     changeGridOnClick(false);
                 } else {
@@ -95,6 +97,7 @@ public class Board extends Fragment {
                 }
                 setOpponentUIDObserver();
             } else {
+                if (extras.getGamePiece() != null) firstTimeInstructions();
                 Log.d(TAG, "checkExtras: ai game");
                 passPlayViewModel.clearLocalGame();
                 playAIViewModel = new ViewModelProvider(this).get(PlayAIViewModel.class);
@@ -304,6 +307,10 @@ public class Board extends Fragment {
             return true;
         });
         popup.show();
+    }
+
+    private void firstTimeInstructions() {
+        levelPopup(binding.level);
     }
 
     @Override

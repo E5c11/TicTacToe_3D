@@ -70,7 +70,12 @@
     <string name="eleventh_instruction">Choose a square a step down or across in the next grid.</string>
     <string name="twelfth_instruction">See if you can find the next step in the next grid.</string>
     <string name="thirteenth_instruction">Find the final square to win.</string>
-    <string name="fourteenth_instruction">Well done, you have won your first game!!</string>
+    <string name="fourteenth_instruction">Well done, you have won your second game!!</string>
+    <string name="fifteenth_instruction">Choose a square a step down in all 3 dimensions.</string>
+    <string name="sixteenth_instruction">See if you can find the next 3 dimensional move.</string>
+    <string name="seventeenth_instruction">Find the final 3D move to win!</string>
+    <string name="eighteenth_instruction">You have won the game using all 3 dimension in each move!!!</string>
+    <string name="nineteenth_instruction">You are now ready to proceed to play on your own.</string>
 
     <!--Network-->
     <string name="network_success">success</string>

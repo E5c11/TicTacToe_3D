@@ -99,5 +99,9 @@
         android:id="@+id/tutorial"
         android:name="com.esc.test.apps.ui.fragments.Tutorial"
         android:label="tutorial_fragment"
-        tools:layout="@layout/tutorial_fragment" />
+        tools:layout="@layout/tutorial_fragment" >
+        <action
+            android:id="@+id/action_tutorial_to_boardActivity"
+            app:destination="@id/boardActivity" />
+    </fragment>
 </navigation>

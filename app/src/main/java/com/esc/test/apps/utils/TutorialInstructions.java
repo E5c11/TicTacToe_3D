@@ -1,5 +1,6 @@
 package com.esc.test.apps.utils;
 
+import static com.esc.test.apps.utils.TutAction.END;
 import static com.esc.test.apps.utils.TutAction.FLASH;
 import static com.esc.test.apps.utils.TutAction.HIGHLIGHT;
 import static com.esc.test.apps.utils.TutAction.RESTART;
@@ -27,7 +28,7 @@ public class TutorialInstructions {
         add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "48"));
         add(new PlayerInstruction(App.res.getString(R.string.eighth_instruction), RESTART, "48"));
 
-//        // Second round
+        // Second round
         add(new PlayerInstruction(App.res.getString(R.string.tenth_instruction), FLASH, "0"));
         add(new PlayerInstruction(App.res.getString(R.string.eleventh_instruction), WAIT, "17", "20"));
         add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "17", "20"));
@@ -36,7 +37,16 @@ public class TutorialInstructions {
         add(new PlayerInstruction(App.res.getString(R.string.thirteenth_instruction), WAIT, "51", "60"));
         add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "51", "60"));
         add(new PlayerInstruction(App.res.getString(R.string.fourteenth_instruction), RESTART, "51", "60"));
-//        add(new Instruction(App.res.getString(R.string.)));
+
+        // Third round
+        add(new PlayerInstruction(App.res.getString(R.string.tenth_instruction), FLASH, "0"));
+        add(new PlayerInstruction(App.res.getString(R.string.fifteenth_instruction), WAIT, "21"));
+        add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "21"));
+        add(new PlayerInstruction(App.res.getString(R.string.sixteenth_instruction), WAIT, "42"));
+        add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "42"));
+        add(new PlayerInstruction(App.res.getString(R.string.seventeenth_instruction), WAIT, "63"));
+        add(new PlayerInstruction(App.res.getString(R.string.confirm_prompt), WAIT, "63"));
+        add(new PlayerInstruction(App.res.getString(R.string.eighteenth_instruction), END, "63"));
 
     }};
 
@@ -51,12 +61,18 @@ public class TutorialInstructions {
         add(new PcInstruction("12"));
         add(new PcInstruction("25"));
         add(new PcInstruction("38"));
+
+        //Third round
+        add(new PcInstruction("3"));
+        add(new PcInstruction("19"));
+        add(new PcInstruction("43"));
     }};
 
     public static final List<List<String>> winningRow = new ArrayList<>() {{
         add(Arrays.asList("0", "16", "32", "48"));
         add(Arrays.asList("0", "17", "34", "51"));
         add(Arrays.asList("0", "20", "40", "60"));
+        add(Arrays.asList("0", "21", "42", "63"));
     }};
 
 }

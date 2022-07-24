@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
@@ -72,17 +74,10 @@ public class Tutorial extends Fragment {
                 && viewColor == null) {
             viewModel.wrongSquare();
             if (Objects.equals(viewModel.line, "")) {
-                updateSquare(pi.getAltPos(), true);
-                viewModel.lastAltPos = pi.getAltPos();
-                updateSquare(pi.getPos(), true);
-                viewModel.lastPos = pi.getPos();
-            } else if (Objects.equals(viewModel.line, "second")) {
-                updateSquare(pi.getAltPos(), true);
-                viewModel.lastAltPos = pi.getAltPos();
-            } else {
-                updateSquare(pi.getPos(), true);
-                viewModel.lastPos = pi.getPos();
-            }
+                hint(pi.getPos());
+                altHint(pi.getAltPos());
+            } else if (Objects.equals(viewModel.line, "second")) altHint(pi.getAltPos());
+            else hint(pi.getPos());
         } else {
             //Check confirm square
             if (viewColor == null || viewColor.getColor() != viewModel.confirmColour) {
@@ -110,6 +105,16 @@ public class Tutorial extends Fragment {
                 viewModel.nextInstruction(true);
             }
         }
+    }
+
+    private void hint(String pos) {
+        updateSquare(pos, true);
+        viewModel.lastPos = pos;
+    }
+
+    private void altHint(String pos) {
+        updateSquare(pos, true);
+        viewModel.lastAltPos = pos;
     }
 
     private void highlight(View view) {
@@ -145,6 +150,10 @@ public class Tutorial extends Fragment {
             }
         });
         viewModel.restart.observe(getViewLifecycleOwner(), s -> setBoard());
+        viewModel.end.observe(getViewLifecycleOwner(), end -> {
+            NavDirections action = TutorialDirections.actionTutorialToBoardActivity("ai_game", "from_tut");
+            Navigation.findNavController(binding.getRoot()).navigate(action);
+        });
     }
 
     private void updateSquare(String tag, boolean animation) {

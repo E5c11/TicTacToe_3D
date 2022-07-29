@@ -19,8 +19,8 @@ import com.esc.test.apps.adapters.ActiveFriendsAdapter;
 import com.esc.test.apps.adapters.FriendRequestAdapter;
 import com.esc.test.apps.databinding.FriendListBinding;
 import com.esc.test.apps.databinding.FriendsActivityBinding;
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.viewmodels.FriendsModelView;
 
 import javax.inject.Inject;

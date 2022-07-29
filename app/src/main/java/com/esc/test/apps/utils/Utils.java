@@ -85,13 +85,6 @@ public class Utils {
         return anim;
     }
 
-//    public static Snackbar showNetworkState(boolean state) {
-//        if (state) return Snackbar.make(
-//                binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
-//        else return Snackbar.make(
-//                binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
-//    }
-
     public static void dispose(Disposable d) {
         d.dispose();
     }

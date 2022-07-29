@@ -1,13 +1,12 @@
 package com.esc.test.apps.viewmodels;
 
-import static com.esc.test.apps.other.MoveUtils.getCubeIds;
+import static com.esc.test.apps.adapters.move.MoveUtils.getCubeIds;
 import static com.esc.test.apps.utils.TutAction.END;
 import static com.esc.test.apps.utils.TutAction.FLASH;
 import static com.esc.test.apps.utils.TutAction.RESTART;
 
 import android.app.Application;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
@@ -15,15 +14,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.PlayerInstruction;
-import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.entities.PlayerInstruction;
+import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.TutorialInstructions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 import javax.inject.Inject;

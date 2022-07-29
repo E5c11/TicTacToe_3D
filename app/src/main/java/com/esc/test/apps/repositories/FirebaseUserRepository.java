@@ -12,11 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetails;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;

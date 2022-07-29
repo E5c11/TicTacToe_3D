@@ -15,7 +15,7 @@ import androidx.navigation.Navigation;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.HomeActivityBinding;
-import com.esc.test.apps.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetails;
 import com.esc.test.apps.utils.AlertType;
 import com.google.android.material.snackbar.Snackbar;
 

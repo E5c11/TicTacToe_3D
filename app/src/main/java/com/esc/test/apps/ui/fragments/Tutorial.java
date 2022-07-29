@@ -20,13 +20,12 @@ import androidx.navigation.Navigation;
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.TutorialFragmentBinding;
-import com.esc.test.apps.entities.PlayerInstruction;
-import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.data.entities.PlayerInstruction;
+import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.viewmodels.TutorialViewModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

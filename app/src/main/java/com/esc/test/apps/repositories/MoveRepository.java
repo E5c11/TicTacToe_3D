@@ -1,26 +1,21 @@
 package com.esc.test.apps.repositories;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
-import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.gamestuff.GameMovesDao;
-import com.esc.test.apps.pojos.MoveInfo;
+import com.esc.test.apps.data.entities.Move;
+import com.esc.test.apps.room.GameMovesDao;
+import com.esc.test.apps.data.pojos.MoveInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
 
 import io.reactivex.Flowable;

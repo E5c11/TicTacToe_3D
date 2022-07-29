@@ -1,11 +1,10 @@
-package com.esc.test.apps.services;
+package com.esc.test.apps.network.services;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.repositories.FirebaseUserRepository;
+import com.esc.test.apps.data.datastore.UserDetails;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

@@ -5,7 +5,6 @@ import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 
@@ -20,7 +19,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.BoardActivityBinding;
-import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.utils.AlertType;
 import com.esc.test.apps.viewmodels.board.PassPlayBoardViewModel;
 import com.esc.test.apps.viewmodels.board.PlayAIViewModel;
@@ -29,7 +28,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
 

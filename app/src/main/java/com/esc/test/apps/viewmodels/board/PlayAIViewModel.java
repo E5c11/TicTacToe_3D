@@ -9,13 +9,12 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.other.DifficultMoves;
-import com.esc.test.apps.other.NormalMoves;
-import com.esc.test.apps.other.MovesFactory;
-import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.entities.Move;
+import com.esc.test.apps.adapters.move.NormalMoves;
+import com.esc.test.apps.adapters.move.MovesFactory;
+import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.ExecutorFactory;
 

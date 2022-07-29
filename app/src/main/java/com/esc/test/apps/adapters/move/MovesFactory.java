@@ -1,9 +1,9 @@
-package com.esc.test.apps.other;
+package com.esc.test.apps.adapters.move;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.esc.test.apps.datastore.GameState;
+import com.esc.test.apps.data.datastore.GameState;
 import com.esc.test.apps.repositories.FirebaseMoveRepository;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;

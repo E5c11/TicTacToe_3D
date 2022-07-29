@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.FriendListBinding;
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.utils.Utils;
 
 import java.util.Objects;

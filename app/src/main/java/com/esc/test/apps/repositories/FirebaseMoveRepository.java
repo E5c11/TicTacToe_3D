@@ -12,10 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.UserDetails;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
-import com.esc.test.apps.pojos.MoveInfo;
+import com.esc.test.apps.data.pojos.MoveInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.google.firebase.database.DataSnapshot;

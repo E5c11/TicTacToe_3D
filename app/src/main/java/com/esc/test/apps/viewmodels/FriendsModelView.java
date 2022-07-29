@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.utils.SingleLiveEvent;
-import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.repositories.FirebaseGameRepository;
 
 import java.util.List;

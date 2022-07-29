@@ -1,20 +1,20 @@
-package com.esc.test.apps.other;
+package com.esc.test.apps.adapters.move;
 
-import static com.esc.test.apps.other.MoveUtils.NO_MOVES;
-import static com.esc.test.apps.other.MoveUtils.addLinesToCheck;
-import static com.esc.test.apps.other.MoveUtils.checkAnyMergeCubes;
-import static com.esc.test.apps.other.MoveUtils.checkMergeCube;
-import static com.esc.test.apps.other.MoveUtils.compareArrayContent;
-import static com.esc.test.apps.other.MoveUtils.getRandomCube;
-import static com.esc.test.apps.other.MoveUtils.getStringCoord;
-import static com.esc.test.apps.other.MoveUtils.numValue;
+import static com.esc.test.apps.adapters.move.MoveUtils.NO_MOVES;
+import static com.esc.test.apps.adapters.move.MoveUtils.addLinesToCheck;
+import static com.esc.test.apps.adapters.move.MoveUtils.checkAnyMergeCubes;
+import static com.esc.test.apps.adapters.move.MoveUtils.checkMergeCube;
+import static com.esc.test.apps.adapters.move.MoveUtils.compareArrayContent;
+import static com.esc.test.apps.adapters.move.MoveUtils.getRandomCube;
+import static com.esc.test.apps.adapters.move.MoveUtils.getStringCoord;
+import static com.esc.test.apps.adapters.move.MoveUtils.numValue;
 
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.Lines;
 import com.esc.test.apps.utils.SingleLiveEvent;
@@ -26,13 +26,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class NormalMoves {
+public class DifficultMoves {
     //AI lines
     private final List<int[]> possibleLines = new ArrayList<>();
     private final List<int[]> oneCubeLine = new ArrayList<>();
@@ -52,7 +51,7 @@ public class NormalMoves {
     private final MovesFactory movesFactory;
     private final Random rand;
     private final UserDetails user;
-    //    private int lastAIMove;
+//    private int lastAIMove;
     private int lastUserMove;
     private int moveCount;
     private String aIPiece;
@@ -60,7 +59,7 @@ public class NormalMoves {
     private static final String TAG = "myT";
 
     @Inject
-    public NormalMoves(MovesFactory movesFactory, Random rand, UserDetails user) {
+    public DifficultMoves(MovesFactory movesFactory, Random rand, UserDetails user) {
         this.movesFactory = movesFactory;
         this.rand = rand;
         this.user = user;
@@ -168,9 +167,9 @@ public class NormalMoves {
         else {
             if (!twoCubeLine.isEmpty()) {
                 Log.d(TAG, "newMove: 2");
-                if (level.equals("Normal")) chooseMove(twoCubeLine, null);
-                else if (level.equals("Difficult")) playMergeCube(checkMergeCube(twoCubeLine, aICubes, userCubes));
-                else chooseMove(twoCubeLine, oneCubeLine.isEmpty() ? possibleLines : oneCubeLine);
+                    if (level.equals("Normal")) chooseMove(twoCubeLine, null);
+                    else if (level.equals("Difficult")) playMergeCube(checkMergeCube(twoCubeLine, aICubes, userCubes));
+                    else chooseMove(twoCubeLine, oneCubeLine.isEmpty() ? possibleLines : oneCubeLine);
             }
             else if (!oneCubeLine.isEmpty()) {
                 Log.d(TAG, "newMove: 1 ");

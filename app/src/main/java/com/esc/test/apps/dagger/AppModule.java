@@ -4,20 +4,16 @@ import android.app.Application;
 
 import androidx.room.Room;
 
-import com.esc.test.apps.gamestuff.GameMovesDao;
-import com.esc.test.apps.gamestuff.GamesDao;
-import com.esc.test.apps.gamestuff.HistoryDatabase;
+import com.esc.test.apps.room.GameMovesDao;
+import com.esc.test.apps.room.GamesDao;
+import com.esc.test.apps.room.HistoryDatabase;
 import com.esc.test.apps.network.ConnectionLiveData;
-import com.esc.test.apps.utils.Lines;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;

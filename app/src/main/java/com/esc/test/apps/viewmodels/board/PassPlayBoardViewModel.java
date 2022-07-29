@@ -1,6 +1,6 @@
 package com.esc.test.apps.viewmodels.board;
 
-import static com.esc.test.apps.other.MoveUtils.getCubeIds;
+import static com.esc.test.apps.adapters.move.MoveUtils.getCubeIds;
 import static com.esc.test.apps.utils.Utils.dispose;
 
 import android.app.Application;
@@ -14,12 +14,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.entities.Game;
-import com.esc.test.apps.other.MovesFactory;
-import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.pojos.MoveInfo;
-import com.esc.test.apps.pojos.MoveUpdate;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.entities.Game;
+import com.esc.test.apps.adapters.move.MovesFactory;
+import com.esc.test.apps.data.pojos.CubeID;
+import com.esc.test.apps.data.pojos.MoveInfo;
+import com.esc.test.apps.data.pojos.MoveUpdate;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.SingleLiveEvent;

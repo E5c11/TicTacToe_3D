@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.esc.test.apps.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetails;
 import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
 import com.esc.test.apps.utils.SingleLiveEvent;

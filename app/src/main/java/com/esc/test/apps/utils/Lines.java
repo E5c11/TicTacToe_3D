@@ -1,9 +1,9 @@
 package com.esc.test.apps.utils;
 
-import static com.esc.test.apps.other.MoveUtils.BOTTOMLEFT2BACKRIGHT;
-import static com.esc.test.apps.other.MoveUtils.BOTTOMRIGHT2BACKLEFT;
-import static com.esc.test.apps.other.MoveUtils.TOPLEFT2BACKRIGHT;
-import static com.esc.test.apps.other.MoveUtils.TOPRIGHT2BACKLEFT;
+import static com.esc.test.apps.adapters.move.MoveUtils.BOTTOMLEFT2BACKRIGHT;
+import static com.esc.test.apps.adapters.move.MoveUtils.BOTTOMRIGHT2BACKLEFT;
+import static com.esc.test.apps.adapters.move.MoveUtils.TOPLEFT2BACKRIGHT;
+import static com.esc.test.apps.adapters.move.MoveUtils.TOPRIGHT2BACKLEFT;
 
 import java.util.ArrayList;
 import java.util.List;

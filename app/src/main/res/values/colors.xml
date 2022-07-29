@@ -10,4 +10,5 @@
     <color name="colorPrimaryTransGrey">#95424242</color>
     <color name="colorTransparent">#00000000</color>
     <color name="colorTransBlue">#800000FF</color>
+    <color name="back">#000000</color>
 </resources>

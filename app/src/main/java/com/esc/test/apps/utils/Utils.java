@@ -2,6 +2,8 @@ package com.esc.test.apps.utils;
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -72,6 +74,15 @@ public class Utils {
         LocalDate now = LocalDate.now();
         LocalDate past = LocalDate.parse(pastDate, formatter);
         return String.valueOf(ChronoUnit.DAYS.between(past, now));
+    }
+
+    public static Animation getFlashAnimation() {
+        Animation anim = new AlphaAnimation(0.0f, 1.0f);
+        anim.setDuration(500);
+        anim.setStartOffset(500);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
+        return anim;
     }
 
 //    public static Snackbar showNetworkState(boolean state) {

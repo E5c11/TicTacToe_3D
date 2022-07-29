@@ -23,7 +23,6 @@ import com.esc.test.apps.pojos.MoveUpdate;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.SingleLiveEvent;
-import com.esc.test.apps.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +87,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private void setDrawables() {
         turnColor = R.color.colorAccent;
         notTurnColor = R.color.colorPrimary;
-        circleDrawable = R.drawable.baseline_panorama_fish_eye_24;
+        circleDrawable = R.drawable.baseline_circle_24;
         crossDrawable = R.drawable.baseline_close_24;
         lastCircle = R.drawable.baseline_panorama_fish_eye_red;
         lastCross = R.drawable.baseline_close_red;

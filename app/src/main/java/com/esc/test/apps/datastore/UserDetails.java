@@ -57,6 +57,9 @@ public class UserDetails {
     public void setLevel(String level) { editor.putString("user_level", level).commit(); }
     public String getLevel() { return pref.getString("user_level", "Normal"); }
 
+    public void setTutorial(boolean tutorial) { editor.putBoolean("did_tutorial", tutorial).commit(); }
+    public boolean getTutorial() { return pref.getBoolean("did_tutorial", false); }
+
     public void clearPrefs() {
         String token = getToken();
         editor.clear().apply();

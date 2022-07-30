@@ -2,6 +2,7 @@ package com.esc.test.apps.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -14,14 +15,18 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.databinding.HomeActivityBinding;
-import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.utils.AlertType;
+import com.esc.test.apps.utils.Utils;
 import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @AndroidEntryPoint
 public class Home extends Fragment {
@@ -29,9 +34,10 @@ public class Home extends Fragment {
     public Home() { super(R.layout.home_activity); }
 
     private HomeActivityBinding binding;
+    private Disposable d;
 
-    @Inject
-    UserDetails user;
+    @Inject UserDetail user;
+    @Inject UserPreferences pref;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -44,13 +50,14 @@ public class Home extends Fragment {
         final Animation an1 = AnimationUtils.loadAnimation(requireContext(), R.anim.rotate);
         binding.passPlay.setOnClickListener(v -> {
             v.startAnimation(an1);
-            NavDirections action;
-            if (user.getTutorial()) {
-                action = HomeDirections.actionHomeToTutorial();
-            } else {
-                action = HomeDirections.actionHomeToBoardActivity(null, null);
-            }
-            Navigation.findNavController(v).navigate(action);
+            d = pref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext(prefs -> {
+                NavDirections action;
+                if (user.getTutorial()) action = HomeDirections.actionHomeToTutorial();
+                else action = HomeDirections.actionHomeToBoardActivity(null, null);
+                requireActivity().runOnUiThread(() -> Navigation.findNavController(v).navigate(action));
+                Utils.dispose(d);
+            }).doOnError(throwable -> Log.d("myT", "userPref: error")).subscribe();
+
         });
         binding.playAi.setOnClickListener(v -> {
             NavDirections action = HomeDirections.actionHomeToBoardActivity("play_ai", null);

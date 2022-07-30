@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.databinding.FriendListBinding;
-import com.esc.test.apps.data.datastore.UserDetails;
 import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.utils.Utils;
 
@@ -23,10 +23,10 @@ public class ActiveFriendsAdapter extends
 
     private final Context context;
     private final OnClickListener listener;
-    private final UserDetails userInfo;
+    private final UserDetail userInfo;
     public static final String ACTIVE_LIST = "active";
 
-    public ActiveFriendsAdapter(Context context, OnClickListener listener, UserDetails userInfo) {
+    public ActiveFriendsAdapter(Context context, OnClickListener listener, UserDetail userInfo) {
         super(diffCallback);
         this.context = context;
         this.listener = listener;

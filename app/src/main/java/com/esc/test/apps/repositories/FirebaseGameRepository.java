@@ -22,7 +22,7 @@ import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.datastore.GameState;
-import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
 import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
@@ -50,7 +50,7 @@ public class FirebaseGameRepository {
     private final Application app;
     private final DatabaseReference gamesRef;
     private final DatabaseReference usersRef;
-    private final UserDetails userDetails;
+    private final UserDetail userDetails;
     private final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
     private final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
     private final FirebaseQueryLiveData friends;
@@ -64,7 +64,7 @@ public class FirebaseGameRepository {
 
     @Inject
     public FirebaseGameRepository (GameState gameState, Application app,
-                                   DatabaseReference db, UserDetails userDetails,
+                                   DatabaseReference db, UserDetail userDetails,
                                    FirebaseMoveRepository fbMoveRepo
     ) {
         this.gameState = gameState;

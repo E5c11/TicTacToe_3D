@@ -7,13 +7,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class UserDetails {
+public class UserDetail {
 
     private final SharedPreferences pref;
     private final SharedPreferences.Editor editor;
 
     @Inject
-    public UserDetails(Application app) {
+    public UserDetail(Application app) {
         pref = app.getSharedPreferences("UserPref", 0);
         editor = pref.edit();
     }

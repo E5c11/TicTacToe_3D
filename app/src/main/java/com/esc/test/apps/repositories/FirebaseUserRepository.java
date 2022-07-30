@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.google.firebase.FirebaseTooManyRequestsException;
@@ -35,7 +35,7 @@ import javax.inject.Singleton;
 public class FirebaseUserRepository {
 
     private final FirebaseAuth firebaseAuth;
-    private final UserDetails userDetails;
+    private final UserDetail userDetails;
     private final DatabaseReference users;
     private final Application app;
     private final SingleLiveEvent<Boolean> loggedIn = new SingleLiveEvent<>();
@@ -47,7 +47,7 @@ public class FirebaseUserRepository {
     private int attempt = 0;
 
     @Inject
-    public FirebaseUserRepository(FirebaseAuth firebaseAuth, UserDetails userDetails,
+    public FirebaseUserRepository(FirebaseAuth firebaseAuth, UserDetail userDetails,
                                   DatabaseReference db, Application app
     ) {
         this.firebaseAuth = firebaseAuth;

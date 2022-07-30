@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.datastore.GameState;
-import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.adapters.move.MovesFactory;
 import com.esc.test.apps.data.pojos.CubeID;
@@ -37,7 +37,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private String friendGamePiece;
     private Disposable d;
     private int moveCount = 0;
-    private final UserDetails userDetails;
+    private final UserDetail userDetails;
     private final GameState gameState;
     private final Application app;
     private final MoveRepository moveRepository;
@@ -51,7 +51,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     @Inject
     public PlayFriendBoardViewModel(GameState gameState, MoveRepository moveRepository,
                                     GameRepository gameRepository, Application app,
-                                    UserDetails userDetails, FirebaseGameRepository fbGameRepo,
+                                    UserDetail userDetails, FirebaseGameRepository fbGameRepo,
                                     FirebaseMoveRepository fbMoveRepo, MovesFactory moves,
                                     ConnectionLiveData network
     ) {

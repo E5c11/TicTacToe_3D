@@ -4,7 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -15,7 +15,8 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class FirebaseMessageService extends FirebaseMessagingService {
 
-    @Inject UserDetails user;
+    @Inject
+    UserDetail user;
 
     @Override
     public void onNewToken(@NonNull String s) {

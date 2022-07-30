@@ -21,6 +21,7 @@ import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.utils.AlertType;
+import com.esc.test.apps.utils.Utils;
 import com.esc.test.apps.viewmodels.board.PassPlayBoardViewModel;
 import com.esc.test.apps.viewmodels.board.PlayAIViewModel;
 import com.esc.test.apps.viewmodels.board.PlayFriendBoardViewModel;
@@ -52,6 +53,7 @@ public class Board extends Fragment {
         passPlayViewModel = new ViewModelProvider(this).get(PassPlayBoardViewModel.class);
         setBoard();
         checkExtras();
+
     }
 
     private void setBoard() {
@@ -80,7 +82,7 @@ public class Board extends Fragment {
         BoardArgs extras = BoardArgs.fromBundle(getArguments());
 
         if (extras.getGameType() != null) {
-            if (!Objects.equals(extras.getGamePiece(), "from_tut")) {
+            if (!Objects.equals(extras.getGameType(), "play_ai")) {
                 gameButtonsVis();
                 String gamePiece = extras.getGamePiece();
                 String uids = extras.getGameType();

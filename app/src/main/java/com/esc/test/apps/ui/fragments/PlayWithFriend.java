@@ -17,9 +17,9 @@ import com.bumptech.glide.Glide;
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.ActiveFriendsAdapter;
 import com.esc.test.apps.adapters.FriendRequestAdapter;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.databinding.FriendListBinding;
 import com.esc.test.apps.databinding.FriendsActivityBinding;
-import com.esc.test.apps.data.datastore.UserDetails;
 import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.viewmodels.FriendsModelView;
 
@@ -38,7 +38,8 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     private FriendsActivityBinding binding;
     private ActiveFriendsAdapter activeAdapter;
     private FriendRequestAdapter requestAdapter;
-    @Inject UserDetails user;
+    @Inject
+    UserDetail user;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

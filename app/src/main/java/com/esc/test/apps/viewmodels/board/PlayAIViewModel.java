@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.datastore.GameState;
-import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.adapters.move.NormalMoves;
 import com.esc.test.apps.adapters.move.MovesFactory;
@@ -37,7 +37,7 @@ public class PlayAIViewModel extends ViewModel {
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
     private final GameState gameState;
-    private final UserDetails user;
+    private final UserDetail user;
     private int moveCount;
     private int userMovePos;
     private String userPiece;
@@ -45,7 +45,7 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           NormalMoves normalMoves, Random rand, GameState gameState, UserDetails user
+                           NormalMoves normalMoves, Random rand, GameState gameState, UserDetail user
 
     ) {
         this.movesFactory = movesFactory;

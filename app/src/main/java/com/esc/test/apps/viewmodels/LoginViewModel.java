@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
 import com.esc.test.apps.utils.SingleLiveEvent;
@@ -32,12 +32,12 @@ public class LoginViewModel extends ViewModel {
     private String password;
     private String email;
     private boolean login = true;
-    private final UserDetails userDetails;
+    private final UserDetail userDetails;
     private final FirebaseUserRepository fbUserRepo;
     private static final String TAG = "myT";
 
     @Inject
-    public LoginViewModel(UserDetails userDetails, FirebaseUserRepository fbUserRepo,
+    public LoginViewModel(UserDetail userDetails, FirebaseUserRepository fbUserRepo,
                           ConnectionLiveData network
     ) {
         this.userDetails = userDetails;

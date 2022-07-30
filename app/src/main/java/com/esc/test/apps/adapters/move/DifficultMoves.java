@@ -13,7 +13,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.esc.test.apps.data.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.Lines;
@@ -50,7 +50,7 @@ public class DifficultMoves {
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
     private final MovesFactory movesFactory;
     private final Random rand;
-    private final UserDetails user;
+    private final UserDetail user;
 //    private int lastAIMove;
     private int lastUserMove;
     private int moveCount;
@@ -59,7 +59,7 @@ public class DifficultMoves {
     private static final String TAG = "myT";
 
     @Inject
-    public DifficultMoves(MovesFactory movesFactory, Random rand, UserDetails user) {
+    public DifficultMoves(MovesFactory movesFactory, Random rand, UserDetail user) {
         this.movesFactory = movesFactory;
         this.rand = rand;
         this.user = user;

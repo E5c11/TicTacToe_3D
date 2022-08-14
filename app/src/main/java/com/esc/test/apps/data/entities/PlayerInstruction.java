@@ -1,4 +1,4 @@
-package com.esc.test.apps.entities;
+package com.esc.test.apps.data.entities;
 
 import com.esc.test.apps.utils.TutAction;
 

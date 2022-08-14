@@ -1,6 +1,6 @@
 package com.esc.test.apps.viewmodels.board;
 
-import static com.esc.test.apps.other.MoveUtils.getCubeIds;
+import static com.esc.test.apps.adapters.move.MoveUtils.getCubeIds;
 import static com.esc.test.apps.utils.Utils.dispose;
 
 import android.app.Application;
@@ -14,12 +14,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.entities.Game;
-import com.esc.test.apps.other.MovesFactory;
-import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.pojos.MoveInfo;
-import com.esc.test.apps.pojos.MoveUpdate;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.entities.Game;
+import com.esc.test.apps.adapters.move.MovesFactory;
+import com.esc.test.apps.data.pojos.CubeID;
+import com.esc.test.apps.data.pojos.MoveInfo;
+import com.esc.test.apps.data.pojos.MoveUpdate;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.SingleLiveEvent;
@@ -30,8 +30,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
 public class PassPlayBoardViewModel extends ViewModel {
@@ -43,7 +43,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final MutableLiveData<Integer> xTurn = new MutableLiveData<>();
     private final MutableLiveData<Integer> oTurn = new MutableLiveData<>();
     private final MutableLiveData<List<int[]>> winnerLine = new MutableLiveData<>();
-    private final SingleLiveEvent<MoveUpdate> lastMove = new SingleLiveEvent<>();
+    public final SingleLiveEvent<MoveUpdate> lastMove = new SingleLiveEvent<>();
     private final LiveData<String> winner;
     private final LiveData<String> starter;
     private final GameState gameState;
@@ -188,8 +188,6 @@ public class PassPlayBoardViewModel extends ViewModel {
         oTurn.setValue(turnColor);
         updateTurn(app.getString(R.string.circle));
     }
-
-    public LiveData<MoveUpdate> getLastMove() { return lastMove; }
 
     public LiveData<Integer> getxTurn() { return xTurn; }
 

@@ -1,4 +1,4 @@
-package com.esc.test.apps.gamestuff;
+package com.esc.test.apps.room;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,8 +7,9 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import com.esc.test.apps.entities.Game;
-import io.reactivex.Flowable;
+import com.esc.test.apps.data.entities.Game;
+
+import io.reactivex.rxjava3.core.Flowable;
 
 @Dao
 public interface GamesDao {

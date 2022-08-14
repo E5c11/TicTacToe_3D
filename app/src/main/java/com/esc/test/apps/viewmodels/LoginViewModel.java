@@ -1,5 +1,7 @@
 package com.esc.test.apps.viewmodels;
 
+import static com.esc.test.apps.data.datastore.UserPreferencesKt.GUEST_EMAIL;
+
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -7,7 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.esc.test.apps.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
 import com.esc.test.apps.utils.SingleLiveEvent;
@@ -16,29 +19,33 @@ import com.esc.test.apps.utils.Utils;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
 public class LoginViewModel extends ViewModel {
 
     private final SingleLiveEvent<Boolean> loggedIn;
-    private final SingleLiveEvent<String> error;
-    private final ConnectionLiveData network;
+    public final SingleLiveEvent<String> error;
+    public final ConnectionLiveData network;
     private final MutableLiveData<String> displayNameExists;
     private final MutableLiveData<String> passwordError = new MutableLiveData<>();
     private final MutableLiveData<String> emailError;
     private final MutableLiveData<String> passConError = new MutableLiveData<>();
+    private Disposable d;
     private String displayName;
     private String passCon;
     private String password;
     private String email;
     private boolean login = true;
-    private final UserDetails userDetails;
+    private final UserDetail userDetails;
+    private final UserPreferences userPref;
     private final FirebaseUserRepository fbUserRepo;
     private static final String TAG = "myT";
 
     @Inject
-    public LoginViewModel(UserDetails userDetails, FirebaseUserRepository fbUserRepo,
-                          ConnectionLiveData network
+    public LoginViewModel(UserDetail userDetails, FirebaseUserRepository fbUserRepo,
+                          ConnectionLiveData network, UserPreferences userPref
     ) {
         this.userDetails = userDetails;
         this.fbUserRepo = fbUserRepo;
@@ -47,16 +54,20 @@ public class LoginViewModel extends ViewModel {
         error = fbUserRepo.getError();
         emailError = fbUserRepo.getEmailError();
         displayNameExists = fbUserRepo.getDisplayNameExists();
+        this.userPref = userPref;
         logUserIn();
     }
 
     private void logUserIn() {
-        if (checkExistingUser())
-            fbUserRepo.connectLogin(userDetails.getEmail(), userDetails.getPassword());
-        else {
-            Log.d("myT", "first launch");
-            loggedIn.setValue(false);
-        }
+        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            if (!pref.getEmail().equals(GUEST_EMAIL))
+                fbUserRepo.connectLogin(pref.getEmail(), pref.getPassword());
+            else {
+                Log.d("myT", "first launch");
+                loggedIn.postValue(false);
+            }
+            Utils.dispose(d);
+        }).subscribe();
     }
 
     public void getUserDetails() {
@@ -65,7 +76,7 @@ public class LoginViewModel extends ViewModel {
         fbUserRepo.connectLogin(email, password);
     }
 
-    private Boolean checkExistingUser() { return userDetails.getEmail() != null; }
+//    private Boolean checkExistingUser() { return userDetails.getEmail() != null; }
 
     public void isEmailValid(String viewEmail) {
         if (Utils.validEmail(viewEmail)) fbUserRepo.isEmailValid(viewEmail);
@@ -158,6 +169,7 @@ public class LoginViewModel extends ViewModel {
 
     public LiveData<String> getEmailError() {
         return Transformations.map(emailError, msg -> {
+            Log.d(TAG, "getEmailError: " + msg);
             switch (msg) {
                 case "This email already exists":
                     return login ? "" : msg;
@@ -180,9 +192,5 @@ public class LoginViewModel extends ViewModel {
     }
 
     public LiveData<String> getDisplayNameExists() { return displayNameExists; }
-
-    public LiveData<String> getError() { return error; }
-
-    public LiveData<Boolean> getNetwork() { return network; }
 
 }

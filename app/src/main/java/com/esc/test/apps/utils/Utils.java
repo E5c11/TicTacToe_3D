@@ -1,10 +1,15 @@
 package com.esc.test.apps.utils;
 
+import android.app.Application;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
+import com.esc.test.apps.R;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.time.LocalDate;
@@ -14,7 +19,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.reactivex.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class Utils {
 
@@ -85,12 +90,13 @@ public class Utils {
         return anim;
     }
 
-//    public static Snackbar showNetworkState(boolean state) {
-//        if (state) return Snackbar.make(
-//                binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();
-//        else return Snackbar.make(
-//                binding.getRoot(), "No network connection", Snackbar.LENGTH_INDEFINITE).show();
-//    }
+    public static void showSnackBar(FragmentActivity app, String message, View root){
+
+        Snackbar currentSnackBar = Snackbar.make(root, message, Snackbar.LENGTH_LONG);
+        View sbView = currentSnackBar.getView();
+        sbView.setBackgroundColor(ContextCompat.getColor(app, R.color.colorSignIn));
+        currentSnackBar.show();
+    }
 
     public static void dispose(Disposable d) {
         d.dispose();

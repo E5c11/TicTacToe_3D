@@ -1,23 +1,16 @@
-package com.esc.test.apps.other;
-
-import static com.esc.test.apps.other.MoveUtils.NO_MOVES;
-import static com.esc.test.apps.other.MoveUtils.addLinesToCheck;
-import static com.esc.test.apps.other.MoveUtils.checkAnyMergeCubes;
-import static com.esc.test.apps.other.MoveUtils.checkMergeCube;
-import static com.esc.test.apps.other.MoveUtils.compareArrayContent;
-import static com.esc.test.apps.other.MoveUtils.getRandomCube;
-import static com.esc.test.apps.other.MoveUtils.getStringCoord;
-import static com.esc.test.apps.other.MoveUtils.numValue;
+package com.esc.test.apps.adapters.move;
 
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
+import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.Lines;
 import com.esc.test.apps.utils.SingleLiveEvent;
+import com.esc.test.apps.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,10 +19,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Singleton
 public class NormalMoves {
@@ -51,19 +46,27 @@ public class NormalMoves {
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
     private final MovesFactory movesFactory;
     private final Random rand;
-    private final UserDetails user;
+    private final UserDetail user;
+    private UserPreferences userPref;
+    private Disposable d;
     //    private int lastAIMove;
     private int lastUserMove;
     private int moveCount;
     private String aIPiece;
     private String level;
+
     private static final String TAG = "myT";
 
+    public static final String EASY = "Easy";
+    public static final String NORMAL = "Normal";
+    public static final String DIFFICULT = "Hard";
+
     @Inject
-    public NormalMoves(MovesFactory movesFactory, Random rand, UserDetails user) {
+    public NormalMoves(MovesFactory movesFactory, Random rand, UserDetail user, UserPreferences userPref) {
         this.movesFactory = movesFactory;
         this.rand = rand;
         this.user = user;
+        this.userPref = userPref;
     }
 
     public void newGame() {
@@ -71,7 +74,11 @@ public class NormalMoves {
         threeLineBlock.clear(); aICubes.clear(); userCubes.clear();
         openLines.clear();
         for (int[] line : Lines.lines) openLines.add(Arrays.copyOf(line, line.length));
-        level = user.getLevel();
+//        level = user.getLevel();
+        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            level = pref.getLevel();
+            Utils.dispose(d);
+        }).subscribe();
         Log.d(TAG, "newGame: " + level + " " + openLines.size());
     }
 
@@ -102,11 +109,11 @@ public class NormalMoves {
     }
 
     private void userLines() {
-        List<int[]> userLines = addLinesToCheck(lastUserMove, numValue(getStringCoord(lastUserMove)));
+        List<int[]> userLines = MoveUtils.addLinesToCheck(lastUserMove, MoveUtils.numValue(MoveUtils.getStringCoord(lastUserMove)));
         userLines.forEach(x -> Log.d(TAG, "userLines: " + Arrays.toString(x)));
         possibleLines.removeAll(userLines);
         oneCubeLine.removeAll(userLines);
-        openLines = compareArrayContent(userLines, openLines, true);
+        openLines = MoveUtils.compareArrayContent(userLines, openLines, true);
         blockUser(userLines);
     }
 
@@ -125,7 +132,7 @@ public class NormalMoves {
                 }
                 if (cubeInLine == 1) {
                     oneLineBlock.add(line);
-                    openLines = compareArrayContent(Collections.singletonList(line), openLines, true);
+                    openLines = MoveUtils.compareArrayContent(Collections.singletonList(line), openLines, true);
                 }
                 if (cubeInLine == 2) {
                     twoLineBlock.add(line);
@@ -144,7 +151,7 @@ public class NormalMoves {
     private void newMove() {
         if (!threeCubeLine.isEmpty()) { //check to win
             Log.d(TAG, "newMove: 3");
-            if (level.equals("Normal") || level.equals("Difficult")) chooseMove(threeCubeLine, null);
+            if (level.equals(NORMAL) || level.equals(DIFFICULT)) chooseMove(threeCubeLine, null);
             else {
                 if (threeCubeLine.isEmpty() && threeLineBlock.isEmpty()) checkPossibleMoves();
                 else if (!threeCubeLine.isEmpty() && threeCubeLine.size() > 1) chooseMove(threeCubeLine, null);
@@ -154,7 +161,7 @@ public class NormalMoves {
         }
         else if (!threeLineBlock.isEmpty()) { // check to block win
             Log.d(TAG, "newMove: block");
-            if (level.equals("Normal") || level.equals("Difficult")) chooseMove(threeLineBlock, null);
+            if (level.equals(NORMAL) || level.equals(DIFFICULT)) chooseMove(threeLineBlock, null);
             else chooseMove(threeLineBlock, twoCubeLine.isEmpty() ? possibleLines : twoCubeLine);
         }
         else checkPossibleMoves();
@@ -168,13 +175,13 @@ public class NormalMoves {
         else {
             if (!twoCubeLine.isEmpty()) {
                 Log.d(TAG, "newMove: 2");
-                if (level.equals("Normal")) chooseMove(twoCubeLine, null);
-                else if (level.equals("Difficult")) playMergeCube(checkMergeCube(twoCubeLine, aICubes, userCubes));
+                if (level.equals(NORMAL)) chooseMove(twoCubeLine, null);
+                else if (level.equals(DIFFICULT)) playMergeCube(MoveUtils.checkMergeCube(twoCubeLine, aICubes, userCubes));
                 else chooseMove(twoCubeLine, oneCubeLine.isEmpty() ? possibleLines : oneCubeLine);
             }
             else if (!oneCubeLine.isEmpty()) {
                 Log.d(TAG, "newMove: 1 ");
-                if (level.equals("Normal") || level.equals("Difficult")) {
+                if (level.equals(NORMAL) || level.equals(DIFFICULT)) {
                     chooseMove(oneCubeLine, null);
                 }
                 else {
@@ -190,14 +197,14 @@ public class NormalMoves {
         List<Integer> occupiedCubes = new ArrayList<>();
         occupiedCubes.addAll(aICubes);
         occupiedCubes.addAll(userCubes);
-        int newMove = getRandomCube(occupiedCubes);
-        if (newMove == NO_MOVES) error.postValue("No moves available");
+        int newMove = MoveUtils.getRandomCube(occupiedCubes);
+        if (newMove == MoveUtils.NO_MOVES) error.postValue("No moves available");
         sendMove(newMove);
         return newMove;
     }
 
     private void chooseMove(List<int[]> first, List<int[]> second) {
-        if (level.equals("Easy") && second != null) first.addAll(second);
+        if (level.equals(EASY) && second != null) first.addAll(second);
         int[] moveLine = first.get(rand.nextInt(first.size()));
         List<Integer> newPos = new ArrayList<>();
         for (int cube : moveLine) {
@@ -216,7 +223,7 @@ public class NormalMoves {
     private void playMergeCube(List<Integer> commonCube) {
         Log.d(TAG, "playMergeCube: " + commonCube.toString());
         if (commonCube.isEmpty() && !twoCubeLine.isEmpty()) {
-            blockMergeCube(checkMergeCube(twoLineBlock, userCubes, aICubes));
+            blockMergeCube(MoveUtils.checkMergeCube(twoLineBlock, userCubes, aICubes));
         } else sendMergeCube(commonCube);
     }
 
@@ -228,15 +235,15 @@ public class NormalMoves {
 
     private void createMergeLines() {
         boolean oneInLine = true;
-        List<Integer> possibleCubes = checkAnyMergeCubes(twoCubeLine, aICubes, oneCubeLine);
+        List<Integer> possibleCubes = MoveUtils.checkAnyMergeCubes(twoCubeLine, aICubes, oneCubeLine);
         if (possibleCubes.isEmpty()) {
-            possibleCubes = checkAnyMergeCubes(twoCubeLine, aICubes, openLines);
+            possibleCubes = MoveUtils.checkAnyMergeCubes(twoCubeLine, aICubes, openLines);
             oneInLine = false;
         }
         Log.d(TAG, "createMergeLines: " + possibleCubes.toString());
         int mergePos = randPos(possibleCubes);
-        List<int[]> mergeLines = addLinesToCheck(mergePos, numValue(getStringCoord(mergePos)));
-        if (!oneInLine) mergeLines = compareArrayContent(mergeLines, openLines, false);
+        List<int[]> mergeLines = MoveUtils.addLinesToCheck(mergePos, MoveUtils.numValue(MoveUtils.getStringCoord(mergePos)));
+        if (!oneInLine) mergeLines = MoveUtils.compareArrayContent(mergeLines, openLines, false);
         for (int[] line : mergeLines) {
             List<Integer> temp = Arrays.stream(line).boxed().collect(Collectors.toList());
             List<Integer> check = new ArrayList<>(temp);
@@ -261,7 +268,7 @@ public class NormalMoves {
     }
 
     private void addMoveToLines(int move) {
-        List<int[]> newLines = addLinesToCheck(move, numValue(getStringCoord(move)));
+        List<int[]> newLines = MoveUtils.addLinesToCheck(move, MoveUtils.numValue(MoveUtils.getStringCoord(move)));
         arrangeNewLines(newLines);
     }
 
@@ -319,7 +326,7 @@ public class NormalMoves {
         Log.d(TAG, "sendMove: " + pos);
         aICubes.add(pos);
 //        lastAIMove = pos;
-        movesFactory.createMoves(getStringCoord(pos), aIPiece,
+        movesFactory.createMoves(MoveUtils.getStringCoord(pos), aIPiece,
                 String.valueOf(moveCount), false);
         addMoveToLines(pos);
     }
@@ -327,7 +334,7 @@ public class NormalMoves {
     private void addOneLine(int[] line) {
         possibleLines.add(line);
         oneCubeLine.add(line);
-        openLines = compareArrayContent(Collections.singletonList(line), openLines, true);
+        openLines = MoveUtils.compareArrayContent(Collections.singletonList(line), openLines, true);
     }
     private void addTwoLine(int[] line) {
         possibleLines.add(line);

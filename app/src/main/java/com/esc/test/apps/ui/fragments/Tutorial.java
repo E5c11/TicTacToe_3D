@@ -3,6 +3,7 @@ package com.esc.test.apps.ui.fragments;
 import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
 import static com.esc.test.apps.utils.TutAction.FLASH;
 import static com.esc.test.apps.utils.Utils.getFlashAnimation;
+import static com.esc.test.apps.viewmodels.board.PlayAIViewModel.AI_GAME;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -20,13 +21,12 @@ import androidx.navigation.Navigation;
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.TutorialFragmentBinding;
-import com.esc.test.apps.entities.PlayerInstruction;
-import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.data.entities.PlayerInstruction;
+import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.viewmodels.TutorialViewModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -151,7 +151,7 @@ public class Tutorial extends Fragment {
         });
         viewModel.restart.observe(getViewLifecycleOwner(), s -> setBoard());
         viewModel.end.observe(getViewLifecycleOwner(), end -> {
-            NavDirections action = TutorialDirections.actionTutorialToBoardActivity("ai_game", "from_tut");
+            NavDirections action = TutorialDirections.actionTutorialToBoardActivity(AI_GAME, "from_tut");
             Navigation.findNavController(binding.getRoot()).navigate(action);
         });
     }

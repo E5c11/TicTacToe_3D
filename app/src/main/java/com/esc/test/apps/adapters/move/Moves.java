@@ -1,14 +1,10 @@
-package com.esc.test.apps.other;
-
-import static com.esc.test.apps.other.MoveUtils.addLinesToCheck;
-import static com.esc.test.apps.other.MoveUtils.getCubePos;
-import static com.esc.test.apps.other.MoveUtils.numValue;
+package com.esc.test.apps.adapters.move;
 
 import android.util.Log;
 
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.pojos.MoveInfo;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.entities.Move;
+import com.esc.test.apps.data.pojos.MoveInfo;
 import com.esc.test.apps.repositories.FirebaseMoveRepository;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
@@ -52,9 +48,9 @@ public class Moves {
     private void findPos(String tempCube, String playedPiece, String moveId) {
 //        Log.d(TAG, "moves " +  tempCube);
 //        start = System.nanoTime();
-        numCube = numValue(tempCube);
+        numCube = MoveUtils.numValue(tempCube);
 
-        cubePos = getCubePos(numCube);
+        cubePos = MoveUtils.getCubePos(numCube);
         numInRow = 1;
         this.playedPiece = playedPiece;
 
@@ -66,7 +62,7 @@ public class Moves {
     }
 
     private void getLinesToCheck() {
-        lines2check.addAll(addLinesToCheck(cubePos, numCube));
+        lines2check.addAll(MoveUtils.addLinesToCheck(cubePos, numCube));
         executor.execute(this::checkOtherCubes);
     }
 

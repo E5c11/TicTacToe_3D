@@ -21,13 +21,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.datastore.UserDetails;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
-import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
+import com.google.api.LogDescriptor;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,6 +45,10 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 @Singleton
 public class FirebaseGameRepository {
 
@@ -50,31 +56,35 @@ public class FirebaseGameRepository {
     private final Application app;
     private final DatabaseReference gamesRef;
     private final DatabaseReference usersRef;
-    private final UserDetails userDetails;
-    private final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
-    private final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
-    private final FirebaseQueryLiveData friends;
-    private final FirebaseQueryLiveData requests;
+    private final UserDetail userDetails;
+    private final UserPreferences userPref;
+    public final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
+    public final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
     private final FirebaseMoveRepository fbMoveRepo;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
+    private Disposable d;
     private String gameSetID;
     private String friendUID;
+    private String uid;
     private ValueEventListener playerUIDsListener;
-    public static final String TAG = "myT";
+    public static final String TAG = "[Firebase]}";
 
     @Inject
     public FirebaseGameRepository (GameState gameState, Application app,
-                                   DatabaseReference db, UserDetails userDetails,
-                                   FirebaseMoveRepository fbMoveRepo
+                                   DatabaseReference db, UserDetail userDetails,
+                                   FirebaseMoveRepository fbMoveRepo, UserPreferences userPref
     ) {
         this.gameState = gameState;
         this.app = app;
         this.userDetails = userDetails;
+        this.userPref = userPref;
         this.fbMoveRepo = fbMoveRepo;
         gamesRef = db.child(GAMES);
         usersRef = db.child(USERS);
-        friends = new FirebaseQueryLiveData(usersRef.child(userDetails.getUid()).child(FRIENDS));
-        requests = new FirebaseQueryLiveData(usersRef.child(userDetails.getUid()).child(FRIEND_REQUEST));
+        d = userPref.getUserPreference().subscribeOn(AndroidSchedulers.mainThread()).doOnNext(prefs -> {
+            uid = prefs.getUid();
+            Utils.dispose(d);
+        }).subscribe();
     }
 
     public void findFriend(String friend_name) {
@@ -99,31 +109,26 @@ public class FirebaseGameRepository {
             public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
-    public SingleLiveEvent<UserInfo> getNewFriend() { return newFriend; }
 
     public void acceptInvite(UserInfo user) {
-                usersRef.child(userDetails.getUid()).child(FRIENDS)
-                    .child(user.getUid()).child(DISPLAY_NAME).setValue(user.getDisplay_name());
-
+        usersRef.child(uid).child(FRIENDS).child(user.getUid()).child(DISPLAY_NAME).setValue(user.getDisplay_name());
     }
 
     public void startGame(UserInfo user, boolean firstPlayer) {
-        executor.execute(() -> {
-            String gameSetRef = Utils.getGameSetUID(userDetails.getUid(), user.getUid(), 0);
-            String gameRef = Utils.getGameUID();
-            gameState.setGameID(gameRef);
-            Log.d(TAG, "startGame: " + gameRef);
-            if (firstPlayer) {
-                String startPlayer = gameSetup(user.getUid(), gameSetRef, gameRef);
-                if (startPlayer.equals(userDetails.getUid()))
+        String gameSetRef = Utils.getGameSetUID(uid, user.getUid(), 0);
+        String gameRef = Utils.getGameUID();
+        gameState.setGameID(gameRef);
+        Log.d(TAG, "startGame: " + gameRef);
+        if (firstPlayer) {
+            String startPlayer = gameSetup(user.getUid(), gameSetRef, gameRef, uid);
+                if (startPlayer.equals(uid))
                     startInfo(gameSetRef, app.getString(R.string.circle));
                 else startInfo(gameSetRef, app.getString(R.string.cross));
-            } else startInfo(gameSetRef, friendStart(user.getStarter()));
-        });
+        } else startInfo(gameSetRef, friendStart(user.getStarter()));
     }
 
-    private String gameSetup(String uid, String gameSetRef, String gameRef) {
-        String startPlayer = new Random().nextBoolean() ? uid : userDetails.getUid();
+    private String gameSetup(String guestUid, String gameSetRef, String gameRef, String uid) {
+        String startPlayer = new Random().nextBoolean() ? guestUid : uid;
         Log.d(TAG, "gameSetup: ");
         gamesRef.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer).addOnCompleteListener(task -> {
             Log.d(TAG, "gameSetup: game details sent");
@@ -139,22 +144,21 @@ public class FirebaseGameRepository {
         return friendStart ? app.getString(R.string.cross) : app.getString(R.string.circle);
     }
 
-    public SingleLiveEvent<String[]> getStartGame() { return startGame; }
-
     public void sendGameInvite(UserInfo user, boolean startGame) {
-        usersRef.child(user.getUid()).child(FRIENDS).child(userDetails.getUid())
+        usersRef.child(user.getUid()).child(FRIENDS).child(uid)
                 .child(GAME_REQUEST).setValue(startGame);
     }
 
     public void inviteNewFriend() {
-        UserInfo userInfo = getNewFriend().getValue();
-        usersRef.child(userDetails.getUid()).child(FRIEND_INVITE)
-                .child(userInfo.getUid()).child(DISPLAY_NAME).setValue(userInfo.getDisplay_name());
+        UserInfo userInfo = newFriend.getValue();
+        Log.d(TAG, "sendInvite: " + userInfo.getUid());
+        usersRef.child(uid).child(FRIEND_INVITE).child(userInfo.getUid())
+                .child(DISPLAY_NAME).setValue(userInfo.getDisplay_name());
     }
 
     public void endGame(String winner) {
         if (winner == null) winner = friendUID;
-        else winner = userDetails.getUid();
+        else winner = uid;
         gamesRef.child(gameSetID).child(gameState.getGameID()).child(WINNER).setValue(winner);
     }
 
@@ -163,7 +167,7 @@ public class FirebaseGameRepository {
         gameSetID = uids;
         gameState.setGameSetID(uids);
         String[] players = uids.split("_");
-        if (players[0].equals(userDetails.getUid())) {
+        if (players[0].equals(uid)) {
             usersRef.child(players[1]).child(FRIENDS).child(players[0])
                     .child(ACTIVE_GAME).addListenerForSingleValueEvent(playerUIDsListener);
             friendUID = players[1];
@@ -194,11 +198,13 @@ public class FirebaseGameRepository {
         };
     }
 
-    public LiveData<List<UserInfo>> getActiveFriends() {
+    public LiveData<List<UserInfo>> getActiveFriends(String uid) {
+        FirebaseQueryLiveData friends = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIENDS));
         return Transformations.map(friends, this::getFriends);
     }
 
-    public LiveData<List<UserInfo>> getFriendRequests() {
+    public LiveData<List<UserInfo>> getFriendRequests(String uid) {
+        FirebaseQueryLiveData requests = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIEND_REQUEST));
         return Transformations.map(requests, this::getFriends);
     }
 

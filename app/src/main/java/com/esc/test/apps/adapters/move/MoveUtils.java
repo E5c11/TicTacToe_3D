@@ -1,11 +1,10 @@
-package com.esc.test.apps.other;
+package com.esc.test.apps.adapters.move;
 
 import static com.esc.test.apps.utils.Utils.addNonNull;
 
 import android.util.Log;
 
-import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.utils.Lines;
+import com.esc.test.apps.data.pojos.CubeID;
 
 import java.util.ArrayList;
 import java.util.Arrays;

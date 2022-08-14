@@ -17,10 +17,11 @@ import com.bumptech.glide.Glide;
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.ActiveFriendsAdapter;
 import com.esc.test.apps.adapters.FriendRequestAdapter;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.databinding.FriendListBinding;
 import com.esc.test.apps.databinding.FriendsActivityBinding;
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.viewmodels.FriendsModelView;
 
 import javax.inject.Inject;
@@ -38,7 +39,9 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     private FriendsActivityBinding binding;
     private ActiveFriendsAdapter activeAdapter;
     private FriendRequestAdapter requestAdapter;
-    @Inject UserDetails user;
+
+//    @Inject UserDetail user;
+    @Inject UserPreferences user;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -70,14 +73,14 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     }
 
     private void setObservers() {
-        friendsModelView.getNewFriend().observe(this, s -> {
+        friendsModelView.newFriend.observe(getViewLifecycleOwner(), s -> {
             foundNewFriend();
             if (s.getDisplay_name() != null) friendFound.friendName.setText(s.getDisplay_name());
             if (s.getStatus() != null) friendFound.friendActive.setText(s.getStatus());
             if (s.getProfilePicture() != null)
                 Glide.with(this).load(s.getProfilePicture()).into(friendFound.friendPp);
         });
-        friendsModelView.getStartGame().observe(this, s -> {
+        friendsModelView.startGame.observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
                 NavDirections action =
                         PlayWithFriendDirections.actionPlayWithFriendToBoardActivity(s[0], s[1]);
@@ -85,8 +88,14 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
                 Log.d(TAG, "setObservers: ");
             }
         });
-        friendsModelView.getActiveFriends().observe(getViewLifecycleOwner(), activeAdapter::submitList);
-        friendsModelView.getFriendRequests().observe(getViewLifecycleOwner(), requestAdapter::submitList);
+        friendsModelView.listsReady.observe(getViewLifecycleOwner(), ready -> {
+            if (ready) setListObservers();
+        });
+    }
+
+    private void setListObservers() {
+        friendsModelView.friends.observe(getViewLifecycleOwner(), activeAdapter::submitList);
+        friendsModelView.requests.observe(getViewLifecycleOwner(), requestAdapter::submitList);
     }
 
     private void setListeners() {

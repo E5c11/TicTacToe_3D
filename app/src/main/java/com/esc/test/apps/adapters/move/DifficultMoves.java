@@ -1,20 +1,20 @@
-package com.esc.test.apps.other;
+package com.esc.test.apps.adapters.move;
 
-import static com.esc.test.apps.other.MoveUtils.NO_MOVES;
-import static com.esc.test.apps.other.MoveUtils.addLinesToCheck;
-import static com.esc.test.apps.other.MoveUtils.checkAnyMergeCubes;
-import static com.esc.test.apps.other.MoveUtils.checkMergeCube;
-import static com.esc.test.apps.other.MoveUtils.compareArrayContent;
-import static com.esc.test.apps.other.MoveUtils.getRandomCube;
-import static com.esc.test.apps.other.MoveUtils.getStringCoord;
-import static com.esc.test.apps.other.MoveUtils.numValue;
+import static com.esc.test.apps.adapters.move.MoveUtils.NO_MOVES;
+import static com.esc.test.apps.adapters.move.MoveUtils.addLinesToCheck;
+import static com.esc.test.apps.adapters.move.MoveUtils.checkAnyMergeCubes;
+import static com.esc.test.apps.adapters.move.MoveUtils.checkMergeCube;
+import static com.esc.test.apps.adapters.move.MoveUtils.compareArrayContent;
+import static com.esc.test.apps.adapters.move.MoveUtils.getRandomCube;
+import static com.esc.test.apps.adapters.move.MoveUtils.getStringCoord;
+import static com.esc.test.apps.adapters.move.MoveUtils.numValue;
 
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.Lines;
 import com.esc.test.apps.utils.SingleLiveEvent;
@@ -50,7 +50,7 @@ public class DifficultMoves {
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
     private final MovesFactory movesFactory;
     private final Random rand;
-    private final UserDetails user;
+    private final UserDetail user;
 //    private int lastAIMove;
     private int lastUserMove;
     private int moveCount;
@@ -59,7 +59,7 @@ public class DifficultMoves {
     private static final String TAG = "myT";
 
     @Inject
-    public DifficultMoves(MovesFactory movesFactory, Random rand, UserDetails user) {
+    public DifficultMoves(MovesFactory movesFactory, Random rand, UserDetail user) {
         this.movesFactory = movesFactory;
         this.rand = rand;
         this.user = user;

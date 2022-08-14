@@ -1,35 +1,52 @@
 package com.esc.test.apps.viewmodels;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.utils.SingleLiveEvent;
-import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.repositories.FirebaseGameRepository;
+import com.esc.test.apps.utils.Utils;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
-public class FriendsModelView extends ViewModel {
+public class FriendsModelView extends AndroidViewModel {
 
     private final FirebaseGameRepository fbGameRepo;
-    private final SingleLiveEvent<UserInfo> newFriend;
-    private final SingleLiveEvent<String[]> startGame;
-    private final LiveData<List<UserInfo>> friends;
-    private final LiveData<List<UserInfo>> requests;
+    public final SingleLiveEvent<UserInfo> newFriend;
+    public final SingleLiveEvent<String[]> startGame;
+    public final SingleLiveEvent<Boolean> listsReady = new SingleLiveEvent<>();
+    public LiveData<List<UserInfo>> friends;
+    public LiveData<List<UserInfo>> requests;
+    private UserPreferences userPref;
+    private Disposable d;
     public static final String TAG = "myT";
 
     @Inject
-    public FriendsModelView(FirebaseGameRepository fbGameRepo) {
+    public FriendsModelView(Application app, FirebaseGameRepository fbGameRepo, UserPreferences userPref) {
+        super(app);
         this.fbGameRepo = fbGameRepo;
-        newFriend = fbGameRepo.getNewFriend();
-        startGame = fbGameRepo.getStartGame();
-        friends = fbGameRepo.getActiveFriends();
-        requests = fbGameRepo.getFriendRequests();
+        newFriend = fbGameRepo.newFriend;
+        startGame = fbGameRepo.startGame;
+        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .doOnNext( pref -> {
+                friends = fbGameRepo.getActiveFriends(pref.getUid());
+                requests = fbGameRepo.getFriendRequests(pref.getUid());
+                listsReady.postValue(true);
+                Utils.dispose(d);
+        }).subscribe();
     }
 
     public void findFriend(String friend_name) {
@@ -48,19 +65,7 @@ public class FriendsModelView extends ViewModel {
         fbGameRepo.sendGameInvite(user, startGame);
     }
 
-    public LiveData<List<UserInfo>> getActiveFriends() {
-        return friends;
-    }
-
-    public LiveData<List<UserInfo>> getFriendRequests() {
-        return requests;
-    }
-
     public void inviteNewFriend() {
         fbGameRepo.inviteNewFriend();
     }
-
-    public SingleLiveEvent<UserInfo> getNewFriend() {return newFriend;}
-
-    public SingleLiveEvent<String[]> getStartGame() {return startGame;}
 }

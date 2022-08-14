@@ -11,22 +11,27 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.databinding.FriendListBinding;
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.utils.Utils;
 
 import java.util.Objects;
+
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class ActiveFriendsAdapter extends
         ListAdapter<UserInfo, RequestHolder> {
 
     private final Context context;
     private final OnClickListener listener;
-    private final UserDetails userInfo;
+    private final UserPreferences userInfo;
+    private Disposable d;
     public static final String ACTIVE_LIST = "active";
 
-    public ActiveFriendsAdapter(Context context, OnClickListener listener, UserDetails userInfo) {
+    public ActiveFriendsAdapter(Context context, OnClickListener listener, UserPreferences userInfo) {
         super(diffCallback);
         this.context = context;
         this.listener = listener;
@@ -59,10 +64,11 @@ public class ActiveFriendsAdapter extends
             else
                 holder.bindStarter(context.getResources().getString(R.string.your_turn));
         } else if (user.getMove() != null) {
-            if (user.getMove().getUid().equals(userInfo.getUid()))
-                holder.bindStarter(context.getResources().getString(R.string.your_turn));
-            else
-                holder.bindStarter(context.getResources().getString(R.string.their_turn));
+            d = userInfo.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( prefs -> {
+                if (user.getMove().getUid().equals(prefs.getUid())) holder.bindStarter(context.getResources().getString(R.string.your_turn));
+                else holder.bindStarter(context.getResources().getString(R.string.their_turn));
+                Utils.dispose(d);
+            }).subscribe();
         }
     }
 
@@ -70,7 +76,7 @@ public class ActiveFriendsAdapter extends
         void onItemClick(UserInfo userInfo, String list, String btnText);
     }
 
-    public static final DiffUtil.ItemCallback<UserInfo> diffCallback = new DiffUtil.ItemCallback<UserInfo>() {
+    public static final DiffUtil.ItemCallback<UserInfo> diffCallback = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull UserInfo oldItem, @NonNull UserInfo newItem) {
             return Objects.equals(oldItem.getStatus(), newItem.getStatus());

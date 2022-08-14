@@ -1,4 +1,4 @@
-package com.esc.test.apps.datastore;
+package com.esc.test.apps.data.datastore;
 
 import android.app.Application;
 import android.content.SharedPreferences;

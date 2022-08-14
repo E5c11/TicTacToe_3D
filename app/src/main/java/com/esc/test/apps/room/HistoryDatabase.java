@@ -1,10 +1,10 @@
-package com.esc.test.apps.gamestuff;
+package com.esc.test.apps.room;
 
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-import com.esc.test.apps.entities.Game;
-import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.data.entities.Game;
+import com.esc.test.apps.data.entities.Move;
 
 @Database(entities = {Move.class, Game.class}, version = 2)
 public abstract class HistoryDatabase extends RoomDatabase {

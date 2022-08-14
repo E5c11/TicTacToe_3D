@@ -9,13 +9,13 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.Move;
-import com.esc.test.apps.other.DifficultMoves;
-import com.esc.test.apps.other.NormalMoves;
-import com.esc.test.apps.other.MovesFactory;
-import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.adapters.move.MovesFactory;
+import com.esc.test.apps.adapters.move.NormalMoves;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
+import com.esc.test.apps.data.entities.Move;
+import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.ExecutorFactory;
 
@@ -25,7 +25,8 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
 public class PlayAIViewModel extends ViewModel {
@@ -37,17 +38,21 @@ public class PlayAIViewModel extends ViewModel {
     private final Random rand;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
+    public final LiveData<String> error;
     private final GameState gameState;
-    private final UserDetails user;
+    private final UserDetail user;
+    private final UserPreferences userPref;
+    private Disposable d;
     private int moveCount;
     private int userMovePos;
     private String userPiece;
     private static final String TAG = "myT";
+    public static final String AI_GAME = "play_ai";
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           NormalMoves normalMoves, Random rand, GameState gameState, UserDetails user
-
+                           NormalMoves normalMoves, Random rand, GameState gameState, UserDetail user,
+                           UserPreferences userPref
     ) {
         this.movesFactory = movesFactory;
         this.app = app;
@@ -56,10 +61,12 @@ public class PlayAIViewModel extends ViewModel {
         this.rand = rand;
         this.gameState = gameState;
         this.user = user;
+        this.userPref = userPref;
         firstMove();
         catchLastMove();
         lastMove = LiveDataReactiveStreams.fromPublisher(moveRepo.getLastMove()
                 .subscribeOn(Schedulers.io()));
+        error = normalMoves.getError();
         normalMoves.newGame();
     }
 
@@ -108,8 +115,8 @@ public class PlayAIViewModel extends ViewModel {
     }
 
     public void setLevel(CharSequence level) {
-        user.setLevel(level.toString());
+        userPref.updateLevelJava(level.toString());
+//        user.setLevel(level.toString());
     }
 
-    public LiveData<String> getError() { return normalMoves.getError(); }
 }

@@ -8,14 +8,14 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.datastore.GameState;
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.entities.Move;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.network.ConnectionLiveData;
-import com.esc.test.apps.other.MovesFactory;
-import com.esc.test.apps.pojos.CubeID;
-import com.esc.test.apps.pojos.MoveInfo;
-import com.esc.test.apps.pojos.Turn;
+import com.esc.test.apps.adapters.move.MovesFactory;
+import com.esc.test.apps.data.pojos.CubeID;
+import com.esc.test.apps.data.pojos.MoveInfo;
+import com.esc.test.apps.data.pojos.Turn;
 import com.esc.test.apps.repositories.FirebaseGameRepository;
 import com.esc.test.apps.repositories.FirebaseMoveRepository;
 import com.esc.test.apps.repositories.GameRepository;
@@ -27,18 +27,20 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
 public class PlayFriendBoardViewModel extends ViewModel {
 
-    private final LiveData<List<MoveInfo>> existingMoves;
+    public final LiveData<List<MoveInfo>> existingMoves;
     private final LiveData<String> turn;
+    public LiveData<MoveInfo> moveInfo;
     private String friendGamePiece;
     private Disposable d;
     private int moveCount = 0;
-    private final UserDetails userDetails;
+    private final UserDetail userDetails;
+    private final UserPreferences userPref;
     private final GameState gameState;
     private final Application app;
     private final MoveRepository moveRepository;
@@ -46,15 +48,15 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private final MovesFactory moves;
     private final FirebaseGameRepository fbGameRepo;
     private final FirebaseMoveRepository fbMoveRepo;
-    private final ConnectionLiveData network;
+    public final ConnectionLiveData network;
     public static final String TAG = "myT";
 
     @Inject
     public PlayFriendBoardViewModel(GameState gameState, MoveRepository moveRepository,
                                     GameRepository gameRepository, Application app,
-                                    UserDetails userDetails, FirebaseGameRepository fbGameRepo,
+                                    UserDetail userDetails, FirebaseGameRepository fbGameRepo,
                                     FirebaseMoveRepository fbMoveRepo, MovesFactory moves,
-                                    ConnectionLiveData network
+                                    ConnectionLiveData network, UserPreferences userPref
     ) {
         this.app = app;
         this.moveRepository = moveRepository;
@@ -68,6 +70,11 @@ public class PlayFriendBoardViewModel extends ViewModel {
         existingMoves = fbMoveRepo.getExistingMoves();
         turn = LiveDataReactiveStreams.fromPublisher(gameRepository.getTurn()
                 .subscribeOn(Schedulers.io()));
+        this.userPref = userPref;
+        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            moveInfo = getMoveInfo(pref.getUid());
+            Utils.dispose(d);
+        }).subscribe();
     }
 
     public void getGameUids(String uids, boolean friendStarts) {
@@ -93,7 +100,11 @@ public class PlayFriendBoardViewModel extends ViewModel {
 
     public void uploadWinner() {
         if (friendGamePiece != null) {
-            fbGameRepo.endGame(userDetails.getUid());
+            d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+                fbGameRepo.endGame(pref.getUid());
+                Utils.dispose(d);
+            }).subscribe();
+//            fbGameRepo.endGame(userDetails.getUid());
         }
     }
 
@@ -107,16 +118,13 @@ public class PlayFriendBoardViewModel extends ViewModel {
         });
     }
 
-    public LiveData<MoveInfo> getMoveInfo() {
-        return Transformations.map(fbMoveRepo.getMoveInfo(), friendMove -> {
+    public LiveData<MoveInfo> getMoveInfo(String uid) {
+        return Transformations.map(fbMoveRepo.getMoveInfo(uid), friendMove -> {
             if (friendMove != null)
                 moveCount = Integer.parseInt(friendMove.getMoveID()) + 1;
             return friendMove;
         });}
 
-    public LiveData<List<MoveInfo>> getExistingMoves() { return existingMoves; }
-
-    public LiveData<Boolean> getNetwork() { return network; }
 }
 
 

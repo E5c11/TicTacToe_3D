@@ -1,11 +1,11 @@
-package com.esc.test.apps.services;
+package com.esc.test.apps.network.services;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.esc.test.apps.datastore.UserDetails;
-import com.esc.test.apps.repositories.FirebaseUserRepository;
+import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -16,12 +16,14 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class FirebaseMessageService extends FirebaseMessagingService {
 
-    @Inject UserDetails user;
+    @Inject UserDetail user;
+    @Inject UserPreferences userPref;
 
     @Override
     public void onNewToken(@NonNull String s) {
-        Log.d("myT", "onNewToken: " + s);
-        user.setToken(s);
+        Log.d("[Firebase Token]", "onNewToken: " + s);
+//        user.setToken(s);
+        userPref.updateTokenJava(s);
     }
 
     @Override

@@ -2,14 +2,13 @@ package com.esc.test.apps.utils;
 
 import static com.esc.test.apps.utils.TutAction.END;
 import static com.esc.test.apps.utils.TutAction.FLASH;
-import static com.esc.test.apps.utils.TutAction.HIGHLIGHT;
 import static com.esc.test.apps.utils.TutAction.RESTART;
 import static com.esc.test.apps.utils.TutAction.WAIT;
 
 import com.esc.test.apps.App;
 import com.esc.test.apps.R;
-import com.esc.test.apps.entities.PlayerInstruction;
-import com.esc.test.apps.entities.PcInstruction;
+import com.esc.test.apps.data.entities.PlayerInstruction;
+import com.esc.test.apps.data.entities.PcInstruction;
 
 import java.util.ArrayList;
 import java.util.Arrays;

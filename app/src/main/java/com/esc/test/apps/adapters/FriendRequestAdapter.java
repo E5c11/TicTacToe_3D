@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.ListAdapter;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.FriendListBinding;
-import com.esc.test.apps.pojos.UserInfo;
+import com.esc.test.apps.data.pojos.UserInfo;
 
 public class FriendRequestAdapter extends
         ListAdapter<UserInfo, RequestHolder> {

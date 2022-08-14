@@ -1,11 +1,11 @@
 package com.esc.test.apps.ui.fragments;
 
 import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
+import static com.esc.test.apps.viewmodels.board.PlayAIViewModel.AI_GAME;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
 
@@ -20,8 +20,9 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
 import com.esc.test.apps.databinding.BoardActivityBinding;
-import com.esc.test.apps.pojos.CubeID;
+import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.utils.AlertType;
+import com.esc.test.apps.utils.Utils;
 import com.esc.test.apps.viewmodels.board.PassPlayBoardViewModel;
 import com.esc.test.apps.viewmodels.board.PlayAIViewModel;
 import com.esc.test.apps.viewmodels.board.PlayFriendBoardViewModel;
@@ -29,7 +30,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -54,6 +54,7 @@ public class Board extends Fragment {
         passPlayViewModel = new ViewModelProvider(this).get(PassPlayBoardViewModel.class);
         setBoard();
         checkExtras();
+
     }
 
     private void setBoard() {
@@ -82,7 +83,7 @@ public class Board extends Fragment {
         BoardArgs extras = BoardArgs.fromBundle(getArguments());
 
         if (extras.getGameType() != null) {
-            if (!Objects.equals(extras.getGamePiece(), "from_tut")) {
+            if (!Objects.equals(extras.getGameType(), AI_GAME)) {
                 gameButtonsVis();
                 String gamePiece = extras.getGamePiece();
                 String uids = extras.getGameType();
@@ -232,7 +233,7 @@ public class Board extends Fragment {
                 updateGridView(move.getPosition(), move.getPiece_played());
             }
         });
-        playAIViewModel.getError().observe(getViewLifecycleOwner(), error -> Snackbar.make(
+        playAIViewModel.error.observe(getViewLifecycleOwner(), error -> Snackbar.make(
                 binding.getRoot(), error, Snackbar.LENGTH_LONG).show());
     }
 
@@ -248,7 +249,7 @@ public class Board extends Fragment {
                 }
             }
         });
-        playFriendViewModel.getExistingMoves().observe(getViewLifecycleOwner(), s -> {
+        playFriendViewModel.existingMoves.observe(getViewLifecycleOwner(), s -> {
 //            Log.d(TAG, "setOpponentUIDObserver: get moves");
             if (s != null) {
                 if (!s.isEmpty()) {
@@ -257,14 +258,14 @@ public class Board extends Fragment {
                 }
             }
         });
-        playFriendViewModel.getMoveInfo().observe(getViewLifecycleOwner(), s -> {
+        playFriendViewModel.moveInfo.observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
                 updateGridView(s.getPosition(), s.getPiece_played());
                 passPlayViewModel.downloadedMove(s);
                 Log.d(TAG, "downloaded move view update: ");
             }
         });
-        playFriendViewModel.getNetwork().observe(getViewLifecycleOwner(), s -> {
+        playFriendViewModel.network.observe(getViewLifecycleOwner(), s -> {
             if (s != null)
                 if (s) {
                     changeGridOnClick(true);
@@ -280,7 +281,7 @@ public class Board extends Fragment {
     }
 
     private void getNewMoves() {
-        passPlayViewModel.getLastMove().observe(getViewLifecycleOwner(), s -> {
+        passPlayViewModel.lastMove.observe(getViewLifecycleOwner(), s -> {
             if (s != null) updateGridView(s.getPos(), s.getPiece());
         });
     }

@@ -1,23 +1,19 @@
 package com.esc.test.apps.repositories;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
-import com.esc.test.apps.entities.Game;
+import com.esc.test.apps.data.entities.Game;
 
-import com.esc.test.apps.gamestuff.GamesDao;
+import com.esc.test.apps.room.GamesDao;
 import com.esc.test.apps.utils.ExecutorFactory;
 
-import io.reactivex.Flowable;
+import io.reactivex.rxjava3.core.Flowable;
 
 @Singleton
 public class GameRepository {

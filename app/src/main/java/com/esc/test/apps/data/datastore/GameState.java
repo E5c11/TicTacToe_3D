@@ -55,7 +55,6 @@ public class GameState {
 
     public void newLocalGame() {
         String circle, cross, starter;
-        setWinner(null);
         clearWinnerLine();
         if (getStarter() != null) {
             if (getStarter().equals(app.getString(R.string.circle))) starter = app.getString(R.string.cross);
@@ -71,11 +70,9 @@ public class GameState {
     }
 
     public void newOnlineGame() {
-        String gameId, gameSetId;
-        setWinner(null);
         clearWinnerLine();
-        gameId = getGameID();
-        gameSetId = getGameSetID();
+        String gameId = getGameID();
+        String gameSetId = getGameSetID();
         editor.clear().commit();
         setGameID(gameId);
         setGameSetID(gameSetId);

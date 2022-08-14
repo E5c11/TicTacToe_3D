@@ -1,5 +1,8 @@
 package com.esc.test.apps.viewmodels;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -14,15 +17,17 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
-public class FriendsModelView extends ViewModel {
+public class FriendsModelView extends AndroidViewModel {
 
     private final FirebaseGameRepository fbGameRepo;
     public final SingleLiveEvent<UserInfo> newFriend;
     public final SingleLiveEvent<String[]> startGame;
+    public final SingleLiveEvent<Boolean> listsReady = new SingleLiveEvent<>();
     public LiveData<List<UserInfo>> friends;
     public LiveData<List<UserInfo>> requests;
     private UserPreferences userPref;
@@ -30,14 +35,17 @@ public class FriendsModelView extends ViewModel {
     public static final String TAG = "myT";
 
     @Inject
-    public FriendsModelView(FirebaseGameRepository fbGameRepo, UserPreferences userPref) {
+    public FriendsModelView(Application app, FirebaseGameRepository fbGameRepo, UserPreferences userPref) {
+        super(app);
         this.fbGameRepo = fbGameRepo;
         newFriend = fbGameRepo.newFriend;
         startGame = fbGameRepo.startGame;
-        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            friends = fbGameRepo.getActiveFriends(pref.getUid());
-            requests = fbGameRepo.getFriendRequests(pref.getUid());
-            Utils.dispose(d);
+        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .doOnNext( pref -> {
+                friends = fbGameRepo.getActiveFriends(pref.getUid());
+                requests = fbGameRepo.getFriendRequests(pref.getUid());
+                listsReady.postValue(true);
+                Utils.dispose(d);
         }).subscribe();
     }
 

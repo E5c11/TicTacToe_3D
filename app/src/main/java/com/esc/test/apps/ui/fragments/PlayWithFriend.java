@@ -88,6 +88,12 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
                 Log.d(TAG, "setObservers: ");
             }
         });
+        friendsModelView.listsReady.observe(getViewLifecycleOwner(), ready -> {
+            if (ready) setListObservers();
+        });
+    }
+
+    private void setListObservers() {
         friendsModelView.friends.observe(getViewLifecycleOwner(), activeAdapter::submitList);
         friendsModelView.requests.observe(getViewLifecycleOwner(), requestAdapter::submitList);
     }

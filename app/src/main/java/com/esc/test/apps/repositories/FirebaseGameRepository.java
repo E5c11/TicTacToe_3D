@@ -29,6 +29,7 @@ import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
+import com.google.api.LogDescriptor;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -150,6 +151,7 @@ public class FirebaseGameRepository {
 
     public void inviteNewFriend() {
         UserInfo userInfo = newFriend.getValue();
+        Log.d(TAG, "sendInvite: " + userInfo.getUid());
         usersRef.child(uid).child(FRIEND_INVITE).child(userInfo.getUid())
                 .child(DISPLAY_NAME).setValue(userInfo.getDisplay_name());
     }

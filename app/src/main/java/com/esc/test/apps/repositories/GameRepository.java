@@ -13,7 +13,7 @@ import com.esc.test.apps.data.entities.Game;
 import com.esc.test.apps.room.GamesDao;
 import com.esc.test.apps.utils.ExecutorFactory;
 
-import io.reactivex.Flowable;
+import io.reactivex.rxjava3.core.Flowable;
 
 @Singleton
 public class GameRepository {

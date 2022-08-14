@@ -8,7 +8,8 @@ import androidx.room.Query;
 import java.util.List;
 
 import com.esc.test.apps.data.entities.Game;
-import io.reactivex.Flowable;
+
+import io.reactivex.rxjava3.core.Flowable;
 
 @Dao
 public interface GamesDao {

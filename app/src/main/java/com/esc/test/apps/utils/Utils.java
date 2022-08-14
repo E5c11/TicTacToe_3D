@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.reactivex.disposables.Disposable;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class Utils {
 
@@ -99,10 +99,6 @@ public class Utils {
     }
 
     public static void dispose(Disposable d) {
-        d.dispose();
-    }
-
-    public static void dispose(io.reactivex.rxjava3.disposables.Disposable d) {
         d.dispose();
     }
 }

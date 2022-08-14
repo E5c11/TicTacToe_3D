@@ -18,6 +18,7 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.ActiveFriendsAdapter;
 import com.esc.test.apps.adapters.FriendRequestAdapter;
 import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.databinding.FriendListBinding;
 import com.esc.test.apps.databinding.FriendsActivityBinding;
 import com.esc.test.apps.data.pojos.UserInfo;
@@ -38,8 +39,9 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     private FriendsActivityBinding binding;
     private ActiveFriendsAdapter activeAdapter;
     private FriendRequestAdapter requestAdapter;
-    @Inject
-    UserDetail user;
+
+//    @Inject UserDetail user;
+    @Inject UserPreferences user;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -71,14 +73,14 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     }
 
     private void setObservers() {
-        friendsModelView.getNewFriend().observe(this, s -> {
+        friendsModelView.getNewFriend().observe(getViewLifecycleOwner(), s -> {
             foundNewFriend();
             if (s.getDisplay_name() != null) friendFound.friendName.setText(s.getDisplay_name());
             if (s.getStatus() != null) friendFound.friendActive.setText(s.getStatus());
             if (s.getProfilePicture() != null)
                 Glide.with(this).load(s.getProfilePicture()).into(friendFound.friendPp);
         });
-        friendsModelView.getStartGame().observe(this, s -> {
+        friendsModelView.getStartGame().observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
                 NavDirections action =
                         PlayWithFriendDirections.actionPlayWithFriendToBoardActivity(s[0], s[1]);

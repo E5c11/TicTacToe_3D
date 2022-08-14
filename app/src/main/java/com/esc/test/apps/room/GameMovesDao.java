@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.esc.test.apps.data.entities.Move;
 
-import io.reactivex.Flowable;
+import io.reactivex.rxjava3.core.Flowable;
 
 @Dao
 public interface GameMovesDao {

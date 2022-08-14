@@ -5,10 +5,12 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 
 import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.Lines;
 import com.esc.test.apps.utils.SingleLiveEvent;
+import com.esc.test.apps.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +22,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Singleton
 public class NormalMoves {
@@ -42,18 +47,26 @@ public class NormalMoves {
     private final MovesFactory movesFactory;
     private final Random rand;
     private final UserDetail user;
+    private UserPreferences userPref;
+    private Disposable d;
     //    private int lastAIMove;
     private int lastUserMove;
     private int moveCount;
     private String aIPiece;
     private String level;
+
     private static final String TAG = "myT";
 
+    public static final String EASY = "Easy";
+    public static final String NORMAL = "Normal";
+    public static final String DIFFICULT = "Hard";
+
     @Inject
-    public NormalMoves(MovesFactory movesFactory, Random rand, UserDetail user) {
+    public NormalMoves(MovesFactory movesFactory, Random rand, UserDetail user, UserPreferences userPref) {
         this.movesFactory = movesFactory;
         this.rand = rand;
         this.user = user;
+        this.userPref = userPref;
     }
 
     public void newGame() {
@@ -61,7 +74,11 @@ public class NormalMoves {
         threeLineBlock.clear(); aICubes.clear(); userCubes.clear();
         openLines.clear();
         for (int[] line : Lines.lines) openLines.add(Arrays.copyOf(line, line.length));
-        level = user.getLevel();
+//        level = user.getLevel();
+        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            level = pref.getLevel();
+            Utils.dispose(d);
+        }).subscribe();
         Log.d(TAG, "newGame: " + level + " " + openLines.size());
     }
 
@@ -134,7 +151,7 @@ public class NormalMoves {
     private void newMove() {
         if (!threeCubeLine.isEmpty()) { //check to win
             Log.d(TAG, "newMove: 3");
-            if (level.equals("Normal") || level.equals("Difficult")) chooseMove(threeCubeLine, null);
+            if (level.equals(NORMAL) || level.equals(DIFFICULT)) chooseMove(threeCubeLine, null);
             else {
                 if (threeCubeLine.isEmpty() && threeLineBlock.isEmpty()) checkPossibleMoves();
                 else if (!threeCubeLine.isEmpty() && threeCubeLine.size() > 1) chooseMove(threeCubeLine, null);
@@ -144,7 +161,7 @@ public class NormalMoves {
         }
         else if (!threeLineBlock.isEmpty()) { // check to block win
             Log.d(TAG, "newMove: block");
-            if (level.equals("Normal") || level.equals("Difficult")) chooseMove(threeLineBlock, null);
+            if (level.equals(NORMAL) || level.equals(DIFFICULT)) chooseMove(threeLineBlock, null);
             else chooseMove(threeLineBlock, twoCubeLine.isEmpty() ? possibleLines : twoCubeLine);
         }
         else checkPossibleMoves();
@@ -158,13 +175,13 @@ public class NormalMoves {
         else {
             if (!twoCubeLine.isEmpty()) {
                 Log.d(TAG, "newMove: 2");
-                if (level.equals("Normal")) chooseMove(twoCubeLine, null);
-                else if (level.equals("Difficult")) playMergeCube(MoveUtils.checkMergeCube(twoCubeLine, aICubes, userCubes));
+                if (level.equals(NORMAL)) chooseMove(twoCubeLine, null);
+                else if (level.equals(DIFFICULT)) playMergeCube(MoveUtils.checkMergeCube(twoCubeLine, aICubes, userCubes));
                 else chooseMove(twoCubeLine, oneCubeLine.isEmpty() ? possibleLines : oneCubeLine);
             }
             else if (!oneCubeLine.isEmpty()) {
                 Log.d(TAG, "newMove: 1 ");
-                if (level.equals("Normal") || level.equals("Difficult")) {
+                if (level.equals(NORMAL) || level.equals(DIFFICULT)) {
                     chooseMove(oneCubeLine, null);
                 }
                 else {
@@ -187,7 +204,7 @@ public class NormalMoves {
     }
 
     private void chooseMove(List<int[]> first, List<int[]> second) {
-        if (level.equals("Easy") && second != null) first.addAll(second);
+        if (level.equals(EASY) && second != null) first.addAll(second);
         int[] moveLine = first.get(rand.nextInt(first.size()));
         List<Integer> newPos = new ArrayList<>();
         for (int cube : moveLine) {

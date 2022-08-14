@@ -15,6 +15,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.entities.PlayerInstruction;
 import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.utils.SingleLiveEvent;
@@ -46,6 +47,7 @@ public class TutorialViewModel extends AndroidViewModel {
     private final SingleLiveEvent<Boolean> _end = new SingleLiveEvent<>();
     public final SingleLiveEvent<Boolean> end = _end;
     private final UserDetail userDetails;
+    private final UserPreferences userPref;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
     public final int confirmColour;
@@ -59,9 +61,10 @@ public class TutorialViewModel extends AndroidViewModel {
     public String line = null;
 
     @Inject
-    public TutorialViewModel(Application app, Random rand, UserDetail userDetails) {
+    public TutorialViewModel(Application app, Random rand, UserDetail userDetails, UserPreferences userPref) {
         super(app);
         this.userDetails = userDetails;
+        this.userPref = userPref;
         populateGridLists();
         setDrawables();
         this.app = app;
@@ -111,7 +114,8 @@ public class TutorialViewModel extends AndroidViewModel {
             new Handler().postDelayed(() -> nextInstruction(false), 3100);
         } else if (playerInstruction.getAction() ==  END) {
             checkLine();
-            userDetails.setTutorial(true);
+            userPref.updateTutorialJava(true);
+//            userDetails.setTutorial(true);
             new Handler().postDelayed(() ->
                     _instructionText.setValue(app.getString(R.string.nineteenth_instruction)), 2000);
             new Handler().postDelayed(() -> _end.postValue(true), 4000);

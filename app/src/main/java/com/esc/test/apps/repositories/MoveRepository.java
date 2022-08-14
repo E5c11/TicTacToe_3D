@@ -18,7 +18,7 @@ import com.esc.test.apps.room.GameMovesDao;
 import com.esc.test.apps.data.pojos.MoveInfo;
 import com.esc.test.apps.utils.ExecutorFactory;
 
-import io.reactivex.Flowable;
+import io.reactivex.rxjava3.core.Flowable;
 
 @Singleton
 public class MoveRepository {

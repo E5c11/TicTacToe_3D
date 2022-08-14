@@ -52,12 +52,11 @@ public class Home extends Fragment {
             v.startAnimation(an1);
             d = pref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext(prefs -> {
                 NavDirections action;
-                if (user.getTutorial()) action = HomeDirections.actionHomeToTutorial();
+                if (!prefs.getDidTutorial()) action = HomeDirections.actionHomeToTutorial();
                 else action = HomeDirections.actionHomeToBoardActivity(null, null);
                 requireActivity().runOnUiThread(() -> Navigation.findNavController(v).navigate(action));
                 Utils.dispose(d);
             }).doOnError(throwable -> Log.d("myT", "userPref: error")).subscribe();
-
         });
         binding.playAi.setOnClickListener(v -> {
             NavDirections action = HomeDirections.actionHomeToBoardActivity("play_ai", null);
@@ -65,14 +64,16 @@ public class Home extends Fragment {
         });
         binding.playFriend.setOnClickListener(v -> goToLogin(v, null));
         binding.manageProfile.setOnClickListener(v -> {
-            if (user.getUid() != null) {
-                v.startAnimation(an1);
-                NavDirections action = HomeDirections.actionHomeToProfileManagement(AlertType.DISPLAY_NAME);
-                Navigation.findNavController(v).navigate(action);
-            } else {
-                goToLogin(v, "profile");
-                Snackbar.make(binding.getRoot(), "Please login first", Snackbar.LENGTH_SHORT).show();
-            }
+            d = pref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( prefs -> {
+                if (!prefs.getUid().equals("guest")) {
+                    v.startAnimation(an1);
+                    NavDirections action = HomeDirections.actionHomeToProfileManagement(AlertType.DISPLAY_NAME);
+                    Navigation.findNavController(v).navigate(action);
+                } else {
+                    goToLogin(v, "profile");
+                    Snackbar.make(binding.getRoot(), "Please login first", Snackbar.LENGTH_SHORT).show();
+                }
+            }).subscribe();
         });
         onBackPressed();
     }

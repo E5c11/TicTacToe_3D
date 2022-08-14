@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.datastore.GameState;
 import com.esc.test.apps.data.datastore.UserDetail;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.adapters.move.MovesFactory;
 import com.esc.test.apps.data.pojos.CubeID;
@@ -26,8 +27,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
 public class PlayFriendBoardViewModel extends ViewModel {
@@ -38,6 +39,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private Disposable d;
     private int moveCount = 0;
     private final UserDetail userDetails;
+    private final UserPreferences userPref;
     private final GameState gameState;
     private final Application app;
     private final MoveRepository moveRepository;
@@ -53,7 +55,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
                                     GameRepository gameRepository, Application app,
                                     UserDetail userDetails, FirebaseGameRepository fbGameRepo,
                                     FirebaseMoveRepository fbMoveRepo, MovesFactory moves,
-                                    ConnectionLiveData network
+                                    ConnectionLiveData network, UserPreferences userPref
     ) {
         this.app = app;
         this.moveRepository = moveRepository;
@@ -67,6 +69,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
         existingMoves = fbMoveRepo.getExistingMoves();
         turn = LiveDataReactiveStreams.fromPublisher(gameRepository.getTurn()
                 .subscribeOn(Schedulers.io()));
+        this.userPref = userPref;
     }
 
     public void getGameUids(String uids, boolean friendStarts) {
@@ -92,7 +95,11 @@ public class PlayFriendBoardViewModel extends ViewModel {
 
     public void uploadWinner() {
         if (friendGamePiece != null) {
-            fbGameRepo.endGame(userDetails.getUid());
+            d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+                fbGameRepo.endGame(pref.getUid());
+                Utils.dispose(d);
+            }).subscribe();
+//            fbGameRepo.endGame(userDetails.getUid());
         }
     }
 

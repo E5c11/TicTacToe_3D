@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.utils.ExecutorFactory;
@@ -46,7 +45,6 @@ public class NormalMoves {
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
     private final MovesFactory movesFactory;
     private final Random rand;
-    private final UserDetail user;
     private UserPreferences userPref;
     private Disposable d;
     //    private int lastAIMove;
@@ -62,10 +60,9 @@ public class NormalMoves {
     public static final String DIFFICULT = "Hard";
 
     @Inject
-    public NormalMoves(MovesFactory movesFactory, Random rand, UserDetail user, UserPreferences userPref) {
+    public NormalMoves(MovesFactory movesFactory, Random rand, UserPreferences userPref) {
         this.movesFactory = movesFactory;
         this.rand = rand;
-        this.user = user;
         this.userPref = userPref;
     }
 

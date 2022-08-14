@@ -14,7 +14,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.entities.PlayerInstruction;
 import com.esc.test.apps.data.pojos.CubeID;
@@ -46,7 +45,6 @@ public class TutorialViewModel extends AndroidViewModel {
     public final SingleLiveEvent<List<String>> winner = _winner;
     private final SingleLiveEvent<Boolean> _end = new SingleLiveEvent<>();
     public final SingleLiveEvent<Boolean> end = _end;
-    private final UserDetail userDetails;
     private final UserPreferences userPref;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
@@ -61,9 +59,8 @@ public class TutorialViewModel extends AndroidViewModel {
     public String line = null;
 
     @Inject
-    public TutorialViewModel(Application app, Random rand, UserDetail userDetails, UserPreferences userPref) {
+    public TutorialViewModel(Application app, Random rand, UserPreferences userPref) {
         super(app);
-        this.userDetails = userDetails;
         this.userPref = userPref;
         populateGridLists();
         setDrawables();

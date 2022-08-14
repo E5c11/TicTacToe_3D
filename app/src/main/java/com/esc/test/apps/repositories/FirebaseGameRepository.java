@@ -22,14 +22,12 @@ import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.datastore.GameState;
-import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.datastore.UserPreferences;
-import com.esc.test.apps.network.FirebaseQueryLiveData;
 import com.esc.test.apps.data.pojos.UserInfo;
+import com.esc.test.apps.network.FirebaseQueryLiveData;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
-import com.google.api.LogDescriptor;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -47,7 +45,6 @@ import javax.inject.Singleton;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Singleton
 public class FirebaseGameRepository {
@@ -56,8 +53,6 @@ public class FirebaseGameRepository {
     private final Application app;
     private final DatabaseReference gamesRef;
     private final DatabaseReference usersRef;
-    private final UserDetail userDetails;
-    private final UserPreferences userPref;
     public final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
     public final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
     private final FirebaseMoveRepository fbMoveRepo;
@@ -71,13 +66,10 @@ public class FirebaseGameRepository {
 
     @Inject
     public FirebaseGameRepository (GameState gameState, Application app,
-                                   DatabaseReference db, UserDetail userDetails,
-                                   FirebaseMoveRepository fbMoveRepo, UserPreferences userPref
+                                   DatabaseReference db, FirebaseMoveRepository fbMoveRepo, UserPreferences userPref
     ) {
         this.gameState = gameState;
         this.app = app;
-        this.userDetails = userDetails;
-        this.userPref = userPref;
         this.fbMoveRepo = fbMoveRepo;
         gamesRef = db.child(GAMES);
         usersRef = db.child(USERS);

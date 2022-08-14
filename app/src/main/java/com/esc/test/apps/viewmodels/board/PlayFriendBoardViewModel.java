@@ -8,14 +8,13 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.data.datastore.GameState;
-import com.esc.test.apps.data.datastore.UserDetail;
-import com.esc.test.apps.data.datastore.UserPreferences;
-import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.adapters.move.MovesFactory;
+import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.data.pojos.MoveInfo;
 import com.esc.test.apps.data.pojos.Turn;
+import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.repositories.FirebaseGameRepository;
 import com.esc.test.apps.repositories.FirebaseMoveRepository;
 import com.esc.test.apps.repositories.GameRepository;
@@ -39,7 +38,6 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private String friendGamePiece;
     private Disposable d;
     private int moveCount = 0;
-    private final UserDetail userDetails;
     private final UserPreferences userPref;
     private final GameState gameState;
     private final Application app;
@@ -54,7 +52,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     @Inject
     public PlayFriendBoardViewModel(GameState gameState, MoveRepository moveRepository,
                                     GameRepository gameRepository, Application app,
-                                    UserDetail userDetails, FirebaseGameRepository fbGameRepo,
+                                    FirebaseGameRepository fbGameRepo,
                                     FirebaseMoveRepository fbMoveRepo, MovesFactory moves,
                                     ConnectionLiveData network, UserPreferences userPref
     ) {
@@ -62,7 +60,6 @@ public class PlayFriendBoardViewModel extends ViewModel {
         this.moveRepository = moveRepository;
         this.gameRepository = gameRepository;
         this.gameState = gameState;
-        this.userDetails = userDetails;
         this.fbGameRepo = fbGameRepo;
         this.fbMoveRepo = fbMoveRepo;
         this.moves = moves;
@@ -104,7 +101,6 @@ public class PlayFriendBoardViewModel extends ViewModel {
                 fbGameRepo.endGame(pref.getUid());
                 Utils.dispose(d);
             }).subscribe();
-//            fbGameRepo.endGame(userDetails.getUid());
         }
     }
 

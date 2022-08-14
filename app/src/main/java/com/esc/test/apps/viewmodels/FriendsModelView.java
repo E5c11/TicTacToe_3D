@@ -4,12 +4,11 @@ import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.data.datastore.UserPreferences;
-import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.repositories.FirebaseGameRepository;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
 
 import java.util.List;
@@ -30,7 +29,6 @@ public class FriendsModelView extends AndroidViewModel {
     public final SingleLiveEvent<Boolean> listsReady = new SingleLiveEvent<>();
     public LiveData<List<UserInfo>> friends;
     public LiveData<List<UserInfo>> requests;
-    private UserPreferences userPref;
     private Disposable d;
     public static final String TAG = "myT";
 

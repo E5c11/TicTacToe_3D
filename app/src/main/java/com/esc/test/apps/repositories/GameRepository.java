@@ -2,16 +2,15 @@ package com.esc.test.apps.repositories;
 
 import androidx.lifecycle.LiveData;
 
+import com.esc.test.apps.data.entities.Game;
+import com.esc.test.apps.room.GamesDao;
+import com.esc.test.apps.utils.ExecutorFactory;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import com.esc.test.apps.data.entities.Game;
-
-import com.esc.test.apps.room.GamesDao;
-import com.esc.test.apps.utils.ExecutorFactory;
 
 import io.reactivex.rxjava3.core.Flowable;
 

@@ -19,7 +19,6 @@ import androidx.navigation.Navigation;
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.databinding.HomeActivityBinding;
-import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.utils.AlertType;
 import com.esc.test.apps.utils.Utils;
 import com.google.android.material.snackbar.Snackbar;
@@ -38,7 +37,6 @@ public class Home extends Fragment {
     private HomeActivityBinding binding;
     private Disposable d;
 
-    @Inject UserDetail user;
     @Inject UserPreferences pref;
 
     @Override

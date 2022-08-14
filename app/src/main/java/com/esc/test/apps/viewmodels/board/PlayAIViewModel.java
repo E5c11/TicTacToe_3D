@@ -12,20 +12,17 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.move.MovesFactory;
 import com.esc.test.apps.adapters.move.NormalMoves;
 import com.esc.test.apps.data.datastore.GameState;
-import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.ExecutorFactory;
 
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
@@ -35,14 +32,11 @@ public class PlayAIViewModel extends ViewModel {
     private final Application app;
     private final MoveRepository moveRepo;
     private final NormalMoves normalMoves;
-    private final Random rand;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
     public final LiveData<String> error;
     private final GameState gameState;
-    private final UserDetail user;
     private final UserPreferences userPref;
-    private Disposable d;
     private int moveCount;
     private int userMovePos;
     private String userPiece;
@@ -51,16 +45,14 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           NormalMoves normalMoves, Random rand, GameState gameState, UserDetail user,
+                           NormalMoves normalMoves, GameState gameState,
                            UserPreferences userPref
     ) {
         this.movesFactory = movesFactory;
         this.app = app;
         this.moveRepo = moveRepo;
         this.normalMoves = normalMoves;
-        this.rand = rand;
         this.gameState = gameState;
-        this.user = user;
         this.userPref = userPref;
         firstMove();
         catchLastMove();
@@ -116,7 +108,6 @@ public class PlayAIViewModel extends ViewModel {
 
     public void setLevel(CharSequence level) {
         userPref.updateLevelJava(level.toString());
-//        user.setLevel(level.toString());
     }
 
 }

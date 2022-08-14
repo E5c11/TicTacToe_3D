@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.network.ConnectionLiveData;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
@@ -38,16 +37,14 @@ public class LoginViewModel extends ViewModel {
     private String password;
     private String email;
     private boolean login = true;
-    private final UserDetail userDetails;
     private final UserPreferences userPref;
     private final FirebaseUserRepository fbUserRepo;
     private static final String TAG = "myT";
 
     @Inject
-    public LoginViewModel(UserDetail userDetails, FirebaseUserRepository fbUserRepo,
+    public LoginViewModel(FirebaseUserRepository fbUserRepo,
                           ConnectionLiveData network, UserPreferences userPref
     ) {
-        this.userDetails = userDetails;
         this.fbUserRepo = fbUserRepo;
         this.network = network;
         loggedIn = fbUserRepo.getLoggedIn();
@@ -71,12 +68,10 @@ public class LoginViewModel extends ViewModel {
     }
 
     public void getUserDetails() {
-        userDetails.clearPrefs();
+        userPref.clearDataJava();
         Log.d(TAG, "getUserDetails: ");
         fbUserRepo.connectLogin(email, password);
     }
-
-//    private Boolean checkExistingUser() { return userDetails.getEmail() != null; }
 
     public void isEmailValid(String viewEmail) {
         if (Utils.validEmail(viewEmail)) fbUserRepo.isEmailValid(viewEmail);

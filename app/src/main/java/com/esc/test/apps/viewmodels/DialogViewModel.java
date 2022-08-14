@@ -1,12 +1,7 @@
 package com.esc.test.apps.viewmodels;
 
-import android.app.Application;
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.repositories.FirebaseGameRepository;
@@ -21,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class DialogViewModel extends ViewModel {
 
-    private final Application app;
     private final FirebaseUserRepository fbUserRepo;
     private final FirebaseGameRepository fbGameRepo;
     private final MediatorLiveData<String> _error = new MediatorLiveData<>();
@@ -30,10 +24,8 @@ public class DialogViewModel extends ViewModel {
     private String input;
 
     @Inject
-    public DialogViewModel(Application app, FirebaseUserRepository fbUserRepo,
-                           FirebaseGameRepository fbGameRepo
+    public DialogViewModel(FirebaseUserRepository fbUserRepo, FirebaseGameRepository fbGameRepo
     ) {
-        this.app = app;
         this.fbUserRepo = fbUserRepo;
         this.fbGameRepo = fbGameRepo;
         addErrorObservers();

@@ -17,11 +17,10 @@ import com.bumptech.glide.Glide;
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.ActiveFriendsAdapter;
 import com.esc.test.apps.adapters.FriendRequestAdapter;
-import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.datastore.UserPreferences;
+import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.databinding.FriendListBinding;
 import com.esc.test.apps.databinding.FriendsActivityBinding;
-import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.viewmodels.FriendsModelView;
 
 import javax.inject.Inject;
@@ -40,7 +39,6 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     private ActiveFriendsAdapter activeAdapter;
     private FriendRequestAdapter requestAdapter;
 
-//    @Inject UserDetail user;
     @Inject UserPreferences user;
 
     @Override

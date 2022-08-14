@@ -13,10 +13,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.data.datastore.GameState;
-import com.esc.test.apps.data.datastore.UserDetail;
 import com.esc.test.apps.data.datastore.UserPreferences;
-import com.esc.test.apps.network.FirebaseQueryLiveData;
 import com.esc.test.apps.data.pojos.MoveInfo;
+import com.esc.test.apps.network.FirebaseQueryLiveData;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
@@ -40,8 +39,6 @@ public class FirebaseMoveRepository {
 
     private final DatabaseReference ref;
     private final GameState gameState;
-    private final UserDetail user;
-    private final UserPreferences userPref;
     private final SingleLiveEvent<List<MoveInfo>> existingMoves = new SingleLiveEvent<>();
     private final List<MoveInfo> tempItems = new ArrayList<>();
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
@@ -51,12 +48,10 @@ public class FirebaseMoveRepository {
 
     @Inject
     public FirebaseMoveRepository (DatabaseReference ref, GameState gameState,
-                                   UserDetail user, UserPreferences userPref
+                                   UserPreferences userPref
     ) {
         this.gameState = gameState;
         this.ref = ref;
-        this.user = user;
-        this.userPref = userPref;
 
         d = userPref.getUserPreference().subscribeOn(AndroidSchedulers.mainThread()).doOnNext(prefs -> {
             uid = prefs.getUid();

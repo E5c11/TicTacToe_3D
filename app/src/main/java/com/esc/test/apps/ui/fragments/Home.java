@@ -1,5 +1,7 @@
 package com.esc.test.apps.ui.fragments;
 
+import static com.esc.test.apps.viewmodels.board.PlayAIViewModel.AI_GAME;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -59,7 +61,7 @@ public class Home extends Fragment {
             }).doOnError(throwable -> Log.d("myT", "userPref: error")).subscribe();
         });
         binding.playAi.setOnClickListener(v -> {
-            NavDirections action = HomeDirections.actionHomeToBoardActivity("play_ai", null);
+            NavDirections action = HomeDirections.actionHomeToBoardActivity(AI_GAME, null);
             Navigation.findNavController(v).navigate(action);
         });
         binding.playFriend.setOnClickListener(v -> goToLogin(v, null));
@@ -68,7 +70,7 @@ public class Home extends Fragment {
                 if (!prefs.getUid().equals("guest")) {
                     v.startAnimation(an1);
                     NavDirections action = HomeDirections.actionHomeToProfileManagement(AlertType.DISPLAY_NAME);
-                    Navigation.findNavController(v).navigate(action);
+                    requireActivity().runOnUiThread(() -> Navigation.findNavController(v).navigate(action));
                 } else {
                     goToLogin(v, "profile");
                     Snackbar.make(binding.getRoot(), "Please login first", Snackbar.LENGTH_SHORT).show();

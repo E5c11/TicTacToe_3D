@@ -3,6 +3,7 @@ package com.esc.test.apps.ui.fragments;
 import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
 import static com.esc.test.apps.utils.TutAction.FLASH;
 import static com.esc.test.apps.utils.Utils.getFlashAnimation;
+import static com.esc.test.apps.viewmodels.board.PlayAIViewModel.AI_GAME;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -150,7 +151,7 @@ public class Tutorial extends Fragment {
         });
         viewModel.restart.observe(getViewLifecycleOwner(), s -> setBoard());
         viewModel.end.observe(getViewLifecycleOwner(), end -> {
-            NavDirections action = TutorialDirections.actionTutorialToBoardActivity("ai_game", "from_tut");
+            NavDirections action = TutorialDirections.actionTutorialToBoardActivity(AI_GAME, "from_tut");
             Navigation.findNavController(binding.getRoot()).navigate(action);
         });
     }

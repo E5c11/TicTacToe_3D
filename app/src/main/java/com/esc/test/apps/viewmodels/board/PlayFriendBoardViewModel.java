@@ -33,8 +33,9 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 @HiltViewModel
 public class PlayFriendBoardViewModel extends ViewModel {
 
-    private final LiveData<List<MoveInfo>> existingMoves;
+    public final LiveData<List<MoveInfo>> existingMoves;
     private final LiveData<String> turn;
+    public LiveData<MoveInfo> moveInfo;
     private String friendGamePiece;
     private Disposable d;
     private int moveCount = 0;
@@ -47,7 +48,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private final MovesFactory moves;
     private final FirebaseGameRepository fbGameRepo;
     private final FirebaseMoveRepository fbMoveRepo;
-    private final ConnectionLiveData network;
+    public final ConnectionLiveData network;
     public static final String TAG = "myT";
 
     @Inject
@@ -70,6 +71,10 @@ public class PlayFriendBoardViewModel extends ViewModel {
         turn = LiveDataReactiveStreams.fromPublisher(gameRepository.getTurn()
                 .subscribeOn(Schedulers.io()));
         this.userPref = userPref;
+        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            moveInfo = getMoveInfo(pref.getUid());
+            Utils.dispose(d);
+        }).subscribe();
     }
 
     public void getGameUids(String uids, boolean friendStarts) {
@@ -113,16 +118,13 @@ public class PlayFriendBoardViewModel extends ViewModel {
         });
     }
 
-    public LiveData<MoveInfo> getMoveInfo() {
-        return Transformations.map(fbMoveRepo.getMoveInfo(), friendMove -> {
+    public LiveData<MoveInfo> getMoveInfo(String uid) {
+        return Transformations.map(fbMoveRepo.getMoveInfo(uid), friendMove -> {
             if (friendMove != null)
                 moveCount = Integer.parseInt(friendMove.getMoveID()) + 1;
             return friendMove;
         });}
 
-    public LiveData<List<MoveInfo>> getExistingMoves() { return existingMoves; }
-
-    public LiveData<Boolean> getNetwork() { return network; }
 }
 
 

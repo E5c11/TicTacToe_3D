@@ -57,10 +57,8 @@ public class FirebaseGameRepository {
     private final DatabaseReference usersRef;
     private final UserDetail userDetails;
     private final UserPreferences userPref;
-    private final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
-    private final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
-    private FirebaseQueryLiveData friends;
-    private FirebaseQueryLiveData requests;
+    public final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
+    public final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
     private final FirebaseMoveRepository fbMoveRepo;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private Disposable d;
@@ -84,8 +82,6 @@ public class FirebaseGameRepository {
         usersRef = db.child(USERS);
         d = userPref.getUserPreference().subscribeOn(AndroidSchedulers.mainThread()).doOnNext(prefs -> {
             uid = prefs.getUid();
-            friends = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIENDS));
-            requests = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIEND_REQUEST));
             Utils.dispose(d);
         }).subscribe();
     }
@@ -112,7 +108,6 @@ public class FirebaseGameRepository {
             public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
-    public SingleLiveEvent<UserInfo> getNewFriend() { return newFriend; }
 
     public void acceptInvite(UserInfo user) {
         usersRef.child(uid).child(FRIENDS).child(user.getUid()).child(DISPLAY_NAME).setValue(user.getDisplay_name());
@@ -148,15 +143,13 @@ public class FirebaseGameRepository {
         return friendStart ? app.getString(R.string.cross) : app.getString(R.string.circle);
     }
 
-    public SingleLiveEvent<String[]> getStartGame() { return startGame; }
-
     public void sendGameInvite(UserInfo user, boolean startGame) {
         usersRef.child(user.getUid()).child(FRIENDS).child(uid)
                 .child(GAME_REQUEST).setValue(startGame);
     }
 
     public void inviteNewFriend() {
-        UserInfo userInfo = getNewFriend().getValue();
+        UserInfo userInfo = newFriend.getValue();
         usersRef.child(uid).child(FRIEND_INVITE).child(userInfo.getUid())
                 .child(DISPLAY_NAME).setValue(userInfo.getDisplay_name());
     }
@@ -203,11 +196,13 @@ public class FirebaseGameRepository {
         };
     }
 
-    public LiveData<List<UserInfo>> getActiveFriends() {
+    public LiveData<List<UserInfo>> getActiveFriends(String uid) {
+        FirebaseQueryLiveData friends = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIENDS));
         return Transformations.map(friends, this::getFriends);
     }
 
-    public LiveData<List<UserInfo>> getFriendRequests() {
+    public LiveData<List<UserInfo>> getFriendRequests(String uid) {
+        FirebaseQueryLiveData requests = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIEND_REQUEST));
         return Transformations.map(requests, this::getFriends);
     }
 

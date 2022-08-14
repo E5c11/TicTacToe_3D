@@ -26,8 +26,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class LoginViewModel extends ViewModel {
 
     private final SingleLiveEvent<Boolean> loggedIn;
-    private final SingleLiveEvent<String> error;
-    private final ConnectionLiveData network;
+    public final SingleLiveEvent<String> error;
+    public final ConnectionLiveData network;
     private final MutableLiveData<String> displayNameExists;
     private final MutableLiveData<String> passwordError = new MutableLiveData<>();
     private final MutableLiveData<String> emailError;
@@ -64,7 +64,7 @@ public class LoginViewModel extends ViewModel {
                 fbUserRepo.connectLogin(pref.getEmail(), pref.getPassword());
             else {
                 Log.d("myT", "first launch");
-                loggedIn.setValue(false);
+                loggedIn.postValue(false);
             }
             Utils.dispose(d);
         }).subscribe();
@@ -169,6 +169,7 @@ public class LoginViewModel extends ViewModel {
 
     public LiveData<String> getEmailError() {
         return Transformations.map(emailError, msg -> {
+            Log.d(TAG, "getEmailError: " + msg);
             switch (msg) {
                 case "This email already exists":
                     return login ? "" : msg;
@@ -191,9 +192,5 @@ public class LoginViewModel extends ViewModel {
     }
 
     public LiveData<String> getDisplayNameExists() { return displayNameExists; }
-
-    public LiveData<String> getError() { return error; }
-
-    public LiveData<Boolean> getNetwork() { return network; }
 
 }

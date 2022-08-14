@@ -59,6 +59,7 @@ public class Login extends Fragment {
     private void setObservers() {
         loginViewModel.getLoggedIn().observe(getViewLifecycleOwner(), s -> {
             Log.d(TAG, "setObservers: ");
+            killProgressBar();
             LoginArgs args = LoginArgs.fromBundle(getArguments());
             if (!s) createNewAccount();
             else if (args.getNavTo() != null) goTo(LoginDirections.actionLoginToProfileManagement(AlertType.DISPLAY_NAME));
@@ -69,12 +70,12 @@ public class Login extends Fragment {
             else binding.password.setError(s);
         });
         loginViewModel.getEmailError().observe(getViewLifecycleOwner(), s -> binding.email.setError(s));
-        loginViewModel.getError().observe(getViewLifecycleOwner(), s -> {
+        loginViewModel.error.observe(getViewLifecycleOwner(), s -> {
             killProgressBar();
             if (!s.equals("kill login"))
                 Snackbar.make(binding.getRoot(), s, Snackbar.LENGTH_LONG).show();
         });
-        loginViewModel.getNetwork().observe(getViewLifecycleOwner(), s -> {
+        loginViewModel.network.observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
                 if (s) Snackbar.make(
                         binding.getRoot(), "Connection restored", Snackbar.LENGTH_LONG).show();

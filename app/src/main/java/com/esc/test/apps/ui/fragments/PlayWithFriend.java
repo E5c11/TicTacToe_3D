@@ -73,14 +73,14 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     }
 
     private void setObservers() {
-        friendsModelView.getNewFriend().observe(getViewLifecycleOwner(), s -> {
+        friendsModelView.newFriend.observe(getViewLifecycleOwner(), s -> {
             foundNewFriend();
             if (s.getDisplay_name() != null) friendFound.friendName.setText(s.getDisplay_name());
             if (s.getStatus() != null) friendFound.friendActive.setText(s.getStatus());
             if (s.getProfilePicture() != null)
                 Glide.with(this).load(s.getProfilePicture()).into(friendFound.friendPp);
         });
-        friendsModelView.getStartGame().observe(getViewLifecycleOwner(), s -> {
+        friendsModelView.startGame.observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
                 NavDirections action =
                         PlayWithFriendDirections.actionPlayWithFriendToBoardActivity(s[0], s[1]);
@@ -88,8 +88,8 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
                 Log.d(TAG, "setObservers: ");
             }
         });
-        friendsModelView.getActiveFriends().observe(getViewLifecycleOwner(), activeAdapter::submitList);
-        friendsModelView.getFriendRequests().observe(getViewLifecycleOwner(), requestAdapter::submitList);
+        friendsModelView.friends.observe(getViewLifecycleOwner(), activeAdapter::submitList);
+        friendsModelView.requests.observe(getViewLifecycleOwner(), requestAdapter::submitList);
     }
 
     private void setListeners() {

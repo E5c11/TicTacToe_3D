@@ -43,7 +43,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final MutableLiveData<Integer> xTurn = new MutableLiveData<>();
     private final MutableLiveData<Integer> oTurn = new MutableLiveData<>();
     private final MutableLiveData<List<int[]>> winnerLine = new MutableLiveData<>();
-    private final SingleLiveEvent<MoveUpdate> lastMove = new SingleLiveEvent<>();
+    public final SingleLiveEvent<MoveUpdate> lastMove = new SingleLiveEvent<>();
     private final LiveData<String> winner;
     private final LiveData<String> starter;
     private final GameState gameState;
@@ -188,8 +188,6 @@ public class PassPlayBoardViewModel extends ViewModel {
         oTurn.setValue(turnColor);
         updateTurn(app.getString(R.string.circle));
     }
-
-    public LiveData<MoveUpdate> getLastMove() { return lastMove; }
 
     public LiveData<Integer> getxTurn() { return xTurn; }
 

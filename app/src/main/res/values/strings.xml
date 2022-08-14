@@ -87,7 +87,7 @@
 
     <!--User-profile-->
     <string name="email_exists">This email already exists</string>
-    <string name="email_does_not_exists">This email does not exists</string>
+    <string name="email_does_not_exists">This email does not exist</string>
     <string name="display_name_exists">Display name exists</string>
 
     <!--User-profile changes-->

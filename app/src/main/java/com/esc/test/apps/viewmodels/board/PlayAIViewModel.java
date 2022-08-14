@@ -38,6 +38,7 @@ public class PlayAIViewModel extends ViewModel {
     private final Random rand;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final LiveData<Move> lastMove;
+    public final LiveData<String> error;
     private final GameState gameState;
     private final UserDetail user;
     private final UserPreferences userPref;
@@ -46,6 +47,7 @@ public class PlayAIViewModel extends ViewModel {
     private int userMovePos;
     private String userPiece;
     private static final String TAG = "myT";
+    public static final String AI_GAME = "play_ai";
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
@@ -64,6 +66,7 @@ public class PlayAIViewModel extends ViewModel {
         catchLastMove();
         lastMove = LiveDataReactiveStreams.fromPublisher(moveRepo.getLastMove()
                 .subscribeOn(Schedulers.io()));
+        error = normalMoves.getError();
         normalMoves.newGame();
     }
 
@@ -116,5 +119,4 @@ public class PlayAIViewModel extends ViewModel {
 //        user.setLevel(level.toString());
     }
 
-    public LiveData<String> getError() { return normalMoves.getError(); }
 }

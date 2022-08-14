@@ -71,7 +71,7 @@ public class FirebaseMoveRepository {
                 Log.d(TAG, "Move " + move.getPosition() + " uploaded"));
     }
 
-    public LiveData<MoveInfo> getMoveInfo() {
+    public LiveData<MoveInfo> getMoveInfo(String uid) {
         DatabaseReference moveRef = ref.child(USERS).child(uid).child(FRIENDS)
                 .child(getFriendUid(gameState.getGameSetID())).child(MOVE);
         FirebaseQueryLiveData moveLiveData = new FirebaseQueryLiveData(moveRef);

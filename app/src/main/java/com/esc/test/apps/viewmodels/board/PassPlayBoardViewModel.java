@@ -14,9 +14,9 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
-import com.esc.test.apps.data.datastore.GameState;
-import com.esc.test.apps.data.entities.Game;
 import com.esc.test.apps.adapters.move.MovesFactory;
+import com.esc.test.apps.data.datastore.GamePreferences;
+import com.esc.test.apps.data.entities.Game;
 import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.data.pojos.MoveInfo;
 import com.esc.test.apps.data.pojos.MoveUpdate;
@@ -44,9 +44,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final MutableLiveData<Integer> oTurn = new MutableLiveData<>();
     private final MutableLiveData<List<int[]>> winnerLine = new MutableLiveData<>();
     public final SingleLiveEvent<MoveUpdate> lastMove = new SingleLiveEvent<>();
-    private final LiveData<String> winner;
-    private final LiveData<String> starter;
-    private final GameState gameState;
+    private final GamePreferences gamePref;
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
     private final MovesFactory moves;
@@ -59,21 +57,17 @@ public class PassPlayBoardViewModel extends ViewModel {
     private Disposable d, f;
 
     @Inject
-    public PassPlayBoardViewModel(MovesFactory moves, GameState gameState,
-                                  MoveRepository moveRepository, GameRepository gameRepository,
-                                  Application app
+    public PassPlayBoardViewModel(MovesFactory moves, Application app, GamePreferences gamePref,
+                                  MoveRepository moveRepository, GameRepository gameRepository
     ) {
         populateGridLists();
         setDrawables();
         this.moves = moves;
-        this.gameState = gameState;
         this.gameRepository = gameRepository;
         this.moveRepository = moveRepository;
+        this.gamePref = gamePref;
         this.app = app;
         setBeforeGame();
-        winner = LiveDataReactiveStreams.fromPublisher(
-                gameRepository.getWinner().subscribeOn(Schedulers.io()));
-        starter = moveRepository.getFirstMove();
         Log.d(TAG, "PassPlayBoardViewModel: ");
     }
 
@@ -99,18 +93,21 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     public void setBeforeGame() {
         clearOnlineGame();
-        circleScore.setValue(gameState.getCircleScore());
-        crossScore.setValue(gameState.getCrossScore());
+        d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            circleScore.setValue(pref.getCircleScore());
+            crossScore.setValue(pref.getCrossScore());
+            dispose(d);
+        }).subscribe();
     }
 
     public void clearSet() {
-        gameState.newSet();
+        gamePref.newSetJava();
         clearLocalGame();
         circleScore.setValue("0"); crossScore.setValue("0");
     }
 
     public void clearOnlineGame() {
-        gameState.newOnlineGame();
+        gamePref.newOnlineGameJava();
         insertNewGame();
         clearMoves();
         if (gameRepository.getPreviousStarter().toString().equals(app.getString(R.string.circle))) circleTurn();
@@ -120,7 +117,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     public void clearLocalGame() {
         lastPosition = null;
         lastPiecePlayed = 0;
-        gameState.newLocalGame();
+        gamePref.newLocalGameJava();
         insertNewGame();
     }
 
@@ -132,14 +129,14 @@ public class PassPlayBoardViewModel extends ViewModel {
     public void addCircleScore() {
         if (circleScore.getValue() == null) circleScore.setValue("0");
         else circleScore.setValue(String.valueOf(Integer.parseInt(circleScore.getValue()) + 1));
-        gameState.setCircleScore(circleScore.getValue());
+        gamePref.updateCircleScoreJava(circleScore.getValue());
     }
     public MutableLiveData<String> getCircleScore() {return circleScore;}
 
     public void addCrossScore() {
         if (crossScore.getValue() == null) crossScore.setValue("0");
         else crossScore.setValue(String.valueOf(Integer.parseInt(crossScore.getValue()) + 1));
-        gameState.setCrossScore(crossScore.getValue());
+        gamePref.updateCrossScoreJava(crossScore.getValue());
     }
     public MutableLiveData<String> getCrossScore() {return crossScore;}
 
@@ -147,12 +144,13 @@ public class PassPlayBoardViewModel extends ViewModel {
     public String getLastPos() { return lastPos; }
 
     public void newMove(CubeID cubeID) {
-        d = gameRepository.getTurn().subscribeOn(Schedulers.io()).doOnNext(t -> {
-            if (gameState.getStarter() == null) {
-                gameState.setStarter(t);
-                gameRepository.setStarter(t);
+        d = gameRepository.getTurn().subscribeOn(Schedulers.io()).doOnNext(turn -> {
+            String starter = gamePref.getGamePreference().blockingSingle().getStarter();
+            if (starter.isEmpty()) {
+                gamePref.updateStarterJava(turn);
+                gameRepository.setStarter(turn);
             }
-            moves.createMoves(cubeID.getCoordinates(), t, null, false);
+            moves.createMoves(cubeID.getCoordinates(), turn, null, false);
             dispose(d);
         }).subscribe();
     }
@@ -194,43 +192,48 @@ public class PassPlayBoardViewModel extends ViewModel {
     public LiveData<Integer> getoTurn() { return oTurn; }
 
     public LiveData<String> getTurn() {
-        return Transformations.map(getTurnSource(), turnResult -> {
-            if (gameState.isWinner() == null) return turnResult;
-            else return null;
-        });
-    }
-
-    private LiveData<String> getTurnSource() {
         return LiveDataReactiveStreams
-                .fromPublisher(gameRepository.getTurn().subscribeOn(Schedulers.io()));
+            .fromPublisher(gameRepository.getTurn().subscribeOn(Schedulers.io())
+                .map( result -> {
+                    String winner = gamePref.getGamePreference().blockingSingle().getWinner();
+                    if (winner.isEmpty()) return result;
+                    else return null;
+                }));
     }
 
     public LiveData<String> getWinner() {
-        return Transformations.map(winner, winResult -> {
-            if (winResult != null && !winResult.equals("in progress") && gameState.isWinner() != null)
-                return winResult;
-            else return null;
-        });
+        return LiveDataReactiveStreams.fromPublisher(
+            gameRepository.getWinner().subscribeOn(Schedulers.io())
+                .map( result -> {
+                    String winner = gamePref.getGamePreference().blockingSingle().getWinner();
+                    if (result != null && !result.equals("in progress") && !winner.isEmpty())
+                        return result;
+                    else return null;
+                })
+        );
     }
 
     public LiveData<String> getStarter() {
-        return Transformations.map(starter, starterResult -> {
+        return Transformations.map(moveRepository.getFirstMove(), starterResult -> {
             if (starterResult != null) {
-                gameState.setStarter(starterResult);
+                gamePref.updateStarterJava(starterResult);
                 return starterResult;
             } else return null;
         });
     }
 
     public void updateWinners() {
-        List<int[]> tempWinnerLine = new ArrayList<>();
-        for (String i: gameState.getWinnerLine()) {
-            int[] winnerPos = CubeAdapter.getGridAdapter(i);
-            Log.d(TAG, "updateWinners: " + winnerPos[0] + " " + winnerPos[1]);
-            tempWinnerLine.add(winnerPos);
-        }
-        winnerLine.setValue(tempWinnerLine);
-        gameState.clearWinnerLine();
+        d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            List<int[]> tempWinnerLine = new ArrayList<>();
+            for (String i: (pref.getWinnerLine())) {
+                int[] winnerPos = CubeAdapter.getGridAdapter(i);
+                Log.d(TAG, "updateWinners: " + winnerPos[0] + " " + winnerPos[1]);
+                tempWinnerLine.add(winnerPos);
+            }
+            winnerLine.setValue(tempWinnerLine);
+            gamePref.clearWinnerLineJava();
+            dispose(d);
+        }).subscribe();
     }
 
     public LiveData<List<int[]>> getWinnerLine() {

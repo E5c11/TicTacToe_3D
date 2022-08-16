@@ -11,6 +11,7 @@ import static com.esc.test.apps.utils.DatabaseConstants.MOVES;
 import static com.esc.test.apps.utils.DatabaseConstants.STARTER;
 import static com.esc.test.apps.utils.DatabaseConstants.USERS;
 import static com.esc.test.apps.utils.DatabaseConstants.WINNER;
+import static com.esc.test.apps.utils.Utils.dispose;
 
 import android.app.Application;
 import android.util.Log;
@@ -21,7 +22,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.GamePreferences;
 import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
@@ -45,11 +46,12 @@ import javax.inject.Singleton;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Singleton
 public class FirebaseGameRepository {
 
-    private final GameState gameState;
+    private final GamePreferences gamePref;
     private final Application app;
     private final DatabaseReference gamesRef;
     private final DatabaseReference usersRef;
@@ -57,6 +59,7 @@ public class FirebaseGameRepository {
     public final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
     private final FirebaseMoveRepository fbMoveRepo;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
+    private final Random rand;
     private Disposable d;
     private String gameSetID;
     private String friendUID;
@@ -65,17 +68,18 @@ public class FirebaseGameRepository {
     public static final String TAG = "[Firebase]}";
 
     @Inject
-    public FirebaseGameRepository (GameState gameState, Application app,
+    public FirebaseGameRepository (Application app, Random rand, GamePreferences gamePref,
                                    DatabaseReference db, FirebaseMoveRepository fbMoveRepo, UserPreferences userPref
     ) {
-        this.gameState = gameState;
         this.app = app;
+        this.gamePref = gamePref;
         this.fbMoveRepo = fbMoveRepo;
+        this.rand = rand;
         gamesRef = db.child(GAMES);
         usersRef = db.child(USERS);
         d = userPref.getUserPreference().subscribeOn(AndroidSchedulers.mainThread()).doOnNext(prefs -> {
             uid = prefs.getUid();
-            Utils.dispose(d);
+            dispose(d);
         }).subscribe();
     }
 
@@ -109,7 +113,7 @@ public class FirebaseGameRepository {
     public void startGame(UserInfo user, boolean firstPlayer) {
         String gameSetRef = Utils.getGameSetUID(uid, user.getUid(), 0);
         String gameRef = Utils.getGameUID();
-        gameState.setGameID(gameRef);
+        gamePref.updateGameIdJava(gameRef);
         Log.d(TAG, "startGame: " + gameRef);
         if (firstPlayer) {
             String startPlayer = gameSetup(user.getUid(), gameSetRef, gameRef, uid);
@@ -120,7 +124,7 @@ public class FirebaseGameRepository {
     }
 
     private String gameSetup(String guestUid, String gameSetRef, String gameRef, String uid) {
-        String startPlayer = new Random().nextBoolean() ? guestUid : uid;
+        String startPlayer = rand.nextBoolean() ? guestUid : uid;
         Log.d(TAG, "gameSetup: ");
         gamesRef.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer).addOnCompleteListener(task -> {
             Log.d(TAG, "gameSetup: game details sent");
@@ -149,15 +153,17 @@ public class FirebaseGameRepository {
     }
 
     public void endGame(String winner) {
-        if (winner == null) winner = friendUID;
-        else winner = uid;
-        gamesRef.child(gameSetID).child(gameState.getGameID()).child(WINNER).setValue(winner);
+        final String winPlayer = winner == null ? friendUID : uid;
+        d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            gamesRef.child(gameSetID).child(pref.getGameId()).child(WINNER).setValue(winPlayer);
+            dispose(d);
+        }).subscribe();
     }
 
     public void getGameUID(String uids) {
         setEventListener();
         gameSetID = uids;
-        gameState.setGameSetID(uids);
+        gamePref.updateGameSetIdJava(uids);
         String[] players = uids.split("_");
         if (players[0].equals(uid)) {
             usersRef.child(players[1]).child(FRIENDS).child(players[0])
@@ -179,7 +185,7 @@ public class FirebaseGameRepository {
                     String ref = snapshot.getValue().toString();
                     DatabaseReference movesRef = gamesRef.child(gameSetID).child(ref).child(MOVES);
                     fbMoveRepo.checkCurrentGameMoves(movesRef);
-                    gameState.setGameID(ref);
+                    gamePref.updateGameIdJava(ref);
                     Log.d(TAG, "onDataChange: " + Thread.currentThread());
                 }
             }

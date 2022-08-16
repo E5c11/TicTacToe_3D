@@ -2,7 +2,7 @@ package com.esc.test.apps.adapters.move;
 
 import android.util.Log;
 
-import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.GamePreferences;
 import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.data.pojos.MoveInfo;
 import com.esc.test.apps.repositories.FirebaseMoveRepository;
@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 
 public class Moves {
 
-    private final GameState gameState;
+    private final GamePreferences gamePref;
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
     private final FirebaseMoveRepository firebaseMoveRepository;
@@ -32,16 +32,16 @@ public class Moves {
     private static final String TAG = "myT";
     private final ExecutorService executor;
 
-    public Moves(GameState gameState, GameRepository gameRepository, ExecutorService executor,
+    public Moves(GameRepository gameRepository, ExecutorService executor, GamePreferences gamePref,
                  MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository,
                  String coordinates, String playedPiece, String moveId, boolean onlineGame
     ) {
-        this.gameState = gameState;
         this.gameRepository = gameRepository;
         this.executor = executor;
         this.moveRepository = moveRepository;
         this.firebaseMoveRepository = firebaseMoveRepository;
         this.onlineGame = onlineGame;
+        this.gamePref = gamePref;
         executor.execute(() -> findPos(coordinates, playedPiece, moveId));
     }
 
@@ -104,9 +104,8 @@ public class Moves {
         ArrayList<String> winners = new ArrayList<>();
         Log.d(TAG, "game won");
         for (int i: winnerRow) winners.add(String.valueOf(i));
-//        Log.d(TAG, "time: " + ((System.nanoTime() - start) / 1000000) + "ms");
-        gameState.setWinner(playedPiece);
-        gameState.setWinnerLine(winners);
+        gamePref.updateWinnerJava(playedPiece);
+        gamePref.updateWinnerLineJava(winners);
         gameRepository.updateWinner(playedPiece);
     }
 }

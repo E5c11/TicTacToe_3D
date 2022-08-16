@@ -5,24 +5,25 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
-import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.move.MovesFactory;
 import com.esc.test.apps.adapters.move.NormalMoves;
-import com.esc.test.apps.data.datastore.GameState;
+import com.esc.test.apps.data.datastore.GamePreferences;
 import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.data.pojos.CubeID;
 import com.esc.test.apps.repositories.MoveRepository;
 import com.esc.test.apps.utils.ExecutorFactory;
+import com.esc.test.apps.utils.Utils;
 
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
@@ -33,10 +34,10 @@ public class PlayAIViewModel extends ViewModel {
     private final MoveRepository moveRepo;
     private final NormalMoves normalMoves;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
-    private final LiveData<Move> lastMove;
     public final LiveData<String> error;
-    private final GameState gameState;
     private final UserPreferences userPref;
+    private final GamePreferences gamePref;
+    private Disposable d;
     private int moveCount;
     private int userMovePos;
     private String userPiece;
@@ -45,19 +46,16 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           NormalMoves normalMoves, GameState gameState,
-                           UserPreferences userPref
+                           NormalMoves normalMoves, UserPreferences userPref, GamePreferences gamePref
     ) {
         this.movesFactory = movesFactory;
         this.app = app;
         this.moveRepo = moveRepo;
         this.normalMoves = normalMoves;
-        this.gameState = gameState;
         this.userPref = userPref;
+        this.gamePref = gamePref;
         firstMove();
         catchLastMove();
-        lastMove = LiveDataReactiveStreams.fromPublisher(moveRepo.getLastMove()
-                .subscribeOn(Schedulers.io()));
         error = normalMoves.getError();
         normalMoves.newGame();
     }
@@ -87,7 +85,10 @@ public class PlayAIViewModel extends ViewModel {
 
     private void newAIMove(Move move) {
         moveCount++;
-        if (gameState.isWinner() == null) executor.execute(() -> normalMoves.eliminateLines(move));
+        d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+            if (pref.getWinner().isEmpty()) executor.execute(() -> normalMoves.eliminateLines(move));
+            Utils.dispose(d);
+        }).subscribe();
     }
 
     public void catchLastMove() {
@@ -97,13 +98,13 @@ public class PlayAIViewModel extends ViewModel {
     }
 
     public LiveData<Move> getLastMove() {
-        return Transformations.map(lastMove, move -> {
-//            Log.d(TAG, "getLastMove: " + move.getPiece_played());
-            if (userPiece.equals(move.getPiece_played())) {
-                newAIMove(move);
-                return null;
-            } else return move;
-        });
+        return LiveDataReactiveStreams.fromPublisher(moveRepo.getLastMove()
+            .subscribeOn(Schedulers.io()).map( move -> {
+                if (userPiece.equals(move.getPiece_played())) {
+                    newAIMove(move);
+                    return null;
+                } else return move;
+            }));
     }
 
     public void setLevel(CharSequence level) {

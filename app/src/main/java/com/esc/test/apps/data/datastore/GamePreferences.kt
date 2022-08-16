@@ -151,4 +151,5 @@ class GamePreferences @Inject constructor(@ApplicationContext val context: Conte
         val GAME_ID = stringPreferencesKey("game_id")
         val GAME_SET_ID = stringPreferencesKey("game_set_id")
     }
+
 }

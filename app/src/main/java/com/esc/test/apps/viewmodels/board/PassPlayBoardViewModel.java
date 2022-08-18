@@ -30,6 +30,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -44,6 +45,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final MutableLiveData<Integer> oTurn = new MutableLiveData<>();
     private final MutableLiveData<List<int[]>> winnerLine = new MutableLiveData<>();
     public final SingleLiveEvent<MoveUpdate> lastMove = new SingleLiveEvent<>();
+    private final Flowable<String> turn;
     private final GamePreferences gamePref;
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
@@ -54,7 +56,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private int[] lastPosition;
     private int lastPiecePlayed;
     private final Application app;
-    private Disposable d, f;
+    private Disposable d, f, t;
 
     @Inject
     public PassPlayBoardViewModel(MovesFactory moves, Application app, GamePreferences gamePref,
@@ -66,6 +68,7 @@ public class PassPlayBoardViewModel extends ViewModel {
         this.gameRepository = gameRepository;
         this.moveRepository = moveRepository;
         this.gamePref = gamePref;
+        turn = gameRepository.getTurn();
         this.app = app;
         setBeforeGame();
         Log.d(TAG, "PassPlayBoardViewModel: ");
@@ -94,8 +97,8 @@ public class PassPlayBoardViewModel extends ViewModel {
     public void setBeforeGame() {
         clearOnlineGame();
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            circleScore.setValue(pref.getCircleScore());
-            crossScore.setValue(pref.getCrossScore());
+            circleScore.postValue(pref.getCircleScore());
+            crossScore.postValue(pref.getCrossScore());
             dispose(d);
         }).subscribe();
     }
@@ -144,23 +147,26 @@ public class PassPlayBoardViewModel extends ViewModel {
     public String getLastPos() { return lastPos; }
 
     public void newMove(CubeID cubeID) {
-        d = gameRepository.getTurn().subscribeOn(Schedulers.io()).doOnNext(turn -> {
-            String starter = gamePref.getGamePreference().blockingSingle().getStarter();
-            if (starter.isEmpty()) {
-                gamePref.updateStarterJava(turn);
-                gameRepository.setStarter(turn);
-            }
-            moves.createMoves(cubeID.getCoordinates(), turn, null, false);
+        d = turn.subscribeOn(Schedulers.io()).doOnNext(turn -> {
+            t = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
+                if (pref.getStarter().isEmpty()) {
+                    gamePref.updateStarterJava(turn);
+                    gameRepository.setStarter(turn);
+                }
+                moves.createMoves(cubeID.getCoordinates(), turn, null, false);
+                dispose(t);
+            }).subscribe();
             dispose(d);
         }).subscribe();
     }
 
     public void updateView(CubeID cubeID) {
-        f = gameRepository.getTurn().subscribeOn(Schedulers.io()).doOnNext(t -> {
-            lastMove.postValue(new MoveUpdate(cubeID.getArrayPos(), t));
+        f = turn.subscribeOn(Schedulers.io()).doOnNext(turn -> {
+            lastMove.postValue(new MoveUpdate(cubeID.getArrayPos(), turn));
             dispose(f);
         }).subscribe();
     }
+
     public void downloadedMove(MoveInfo move) {
         moves.createMoves(String.valueOf(move.getCoordinates()),
                 String.valueOf(move.getPiece_played()), move.getMoveID(), false);
@@ -193,7 +199,7 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     public LiveData<String> getTurn() {
         return LiveDataReactiveStreams
-            .fromPublisher(gameRepository.getTurn().subscribeOn(Schedulers.io())
+            .fromPublisher(turn.subscribeOn(Schedulers.io())
                 .map( result -> {
                     String winner = gamePref.getGamePreference().blockingSingle().getWinner();
                     if (winner.isEmpty()) return result;
@@ -244,7 +250,7 @@ public class PassPlayBoardViewModel extends ViewModel {
         winnerLine.setValue(null);
     }
 
-    public void updateTurn(String turn) {gameRepository.updateTurn(turn);}
+    public void updateTurn(String turn) { gameRepository.updateTurn(turn); }
 
     public int setCubeMove(String playedPiece) {
         if (app.getString(R.string.circle).equals(playedPiece)) {
@@ -258,8 +264,7 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     public void setCubePos(int[] lastPosition, String lastPiece) {
         this.lastPosition = lastPosition;
-        lastPiecePlayed =
-                lastPiece.equals(app.getString(R.string.cross)) ? crossDrawable : circleDrawable;
+        lastPiecePlayed = lastPiece.equals(app.getString(R.string.cross)) ? crossDrawable : circleDrawable;
     }
 
     public int[] getLastCube() { return lastPosition; }

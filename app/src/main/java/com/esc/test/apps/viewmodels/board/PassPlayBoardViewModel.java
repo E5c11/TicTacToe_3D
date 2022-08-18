@@ -32,6 +32,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.internal.operators.flowable.FlowableScan;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
@@ -130,15 +131,15 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     public void addCircleScore() {
-        if (circleScore.getValue() == null) circleScore.setValue("0");
-        else circleScore.setValue(String.valueOf(Integer.parseInt(circleScore.getValue()) + 1));
+        if (circleScore.getValue() == null) circleScore.postValue("0");
+        else circleScore.postValue(String.valueOf(Integer.parseInt(circleScore.getValue()) + 1));
         gamePref.updateCircleScoreJava(circleScore.getValue());
     }
     public MutableLiveData<String> getCircleScore() {return circleScore;}
 
     public void addCrossScore() {
-        if (crossScore.getValue() == null) crossScore.setValue("0");
-        else crossScore.setValue(String.valueOf(Integer.parseInt(crossScore.getValue()) + 1));
+        if (crossScore.getValue() == null) crossScore.postValue("0");
+        else crossScore.postValue(String.valueOf(Integer.parseInt(crossScore.getValue()) + 1));
         gamePref.updateCrossScoreJava(crossScore.getValue());
     }
     public MutableLiveData<String> getCrossScore() {return crossScore;}
@@ -147,15 +148,14 @@ public class PassPlayBoardViewModel extends ViewModel {
     public String getLastPos() { return lastPos; }
 
     public void newMove(CubeID cubeID) {
-        d = turn.subscribeOn(Schedulers.io()).doOnNext(turn -> {
-            t = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-                if (pref.getStarter().isEmpty()) {
-                    gamePref.updateStarterJava(turn);
-                    gameRepository.setStarter(turn);
-                }
-                moves.createMoves(cubeID.getCoordinates(), turn, null, false);
-                dispose(t);
-            }).subscribe();
+        d = Flowable.combineLatest(turn, gamePref.getGamePreference(), (turn, pref) -> {
+            if (pref.getStarter().isEmpty()) {
+                gamePref.updateStarterJava(turn);
+                gameRepository.setStarter(turn);
+            }
+            return turn;
+        }).subscribeOn(Schedulers.io()).doOnNext( turn -> {
+            moves.createMoves(cubeID.getCoordinates(), turn, null, false);
             dispose(d);
         }).subscribe();
     }
@@ -175,7 +175,7 @@ public class PassPlayBoardViewModel extends ViewModel {
         else crossTurn();
     }
 
-    public void updateScore(String winner) {
+    private void updateScore(String winner) {
         if (winner.equals(app.getString(R.string.cross))) addCrossScore();
         else addCircleScore();
         updateWinners();
@@ -198,24 +198,22 @@ public class PassPlayBoardViewModel extends ViewModel {
     public LiveData<Integer> getoTurn() { return oTurn; }
 
     public LiveData<String> getTurn() {
-        return LiveDataReactiveStreams
-            .fromPublisher(turn.subscribeOn(Schedulers.io())
-                .map( result -> {
-                    String winner = gamePref.getGamePreference().blockingSingle().getWinner();
-                    if (winner.isEmpty()) return result;
-                    else return null;
-                }));
+        return LiveDataReactiveStreams.fromPublisher(
+            Flowable.combineLatest(turn, gamePref.getGamePreference(), (turn, pref) -> {
+                if (pref.getWinner().isEmpty()) return turn;
+                else return "";
+            }).subscribeOn(Schedulers.io())
+        );
     }
 
     public LiveData<String> getWinner() {
         return LiveDataReactiveStreams.fromPublisher(
-            gameRepository.getWinner().subscribeOn(Schedulers.io())
-                .map( result -> {
-                    String winner = gamePref.getGamePreference().blockingSingle().getWinner();
-                    if (result != null && !result.equals("in progress") && !winner.isEmpty())
-                        return result;
-                    else return null;
-                })
+            Flowable.combineLatest(gameRepository.getWinner(), gamePref.getGamePreference(), (winner, pref) -> {
+                if (winner != null && !winner.equals("in progress") && !pref.getWinner().isEmpty()) {
+                    updateScore(winner);
+                    return winner;
+                } else return "";
+            }).subscribeOn(Schedulers.io())
         );
     }
 
@@ -228,7 +226,7 @@ public class PassPlayBoardViewModel extends ViewModel {
         });
     }
 
-    public void updateWinners() {
+    private void updateWinners() {
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
             List<int[]> tempWinnerLine = new ArrayList<>();
             for (String i: (pref.getWinnerLine())) {
@@ -236,7 +234,7 @@ public class PassPlayBoardViewModel extends ViewModel {
                 Log.d(TAG, "updateWinners: " + winnerPos[0] + " " + winnerPos[1]);
                 tempWinnerLine.add(winnerPos);
             }
-            winnerLine.setValue(tempWinnerLine);
+            winnerLine.postValue(tempWinnerLine);
             gamePref.clearWinnerLineJava();
             dispose(d);
         }).subscribe();

@@ -201,9 +201,8 @@ public class Board extends Fragment {
         passPlayViewModel.getStarter().observe(getViewLifecycleOwner(), s -> {
             if (s != null) gameStarted(); });
         passPlayViewModel.getWinner().observe(getViewLifecycleOwner(), winner -> {
-            if (winner != null) {
+            if (!winner.isEmpty()) {
                 Log.d(TAG, "winner : " + winner);
-                passPlayViewModel.updateScore(winner);
                 binding.title.setText(winner + getResources().getString(R.string.game_won));
                 changeGridOnClick(false);
                 if (playFriendViewModel != null) playFriendViewModel.uploadWinner();
@@ -222,7 +221,7 @@ public class Board extends Fragment {
 
     private void setPassPlayObserver() {
         passPlayViewModel.getTurn().observe(getViewLifecycleOwner(), turn -> {
-            if (turn != null) binding.title.setText(turn + "\'s turn");
+            if (!turn.isEmpty()) binding.title.setText(turn + "\'s turn");
         });
     }
 

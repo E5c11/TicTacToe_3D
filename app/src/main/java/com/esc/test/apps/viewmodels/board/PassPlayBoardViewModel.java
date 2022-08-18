@@ -40,8 +40,8 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     private final ArrayList<CubeID[]> layerIDs = new ArrayList<>();
     private String lastPos;
-    private final MutableLiveData<String> circleScore = new MutableLiveData<>();
-    private final MutableLiveData<String> crossScore = new MutableLiveData<>();
+    private final MutableLiveData<String> circleScore = new MutableLiveData<>("0");
+    private final MutableLiveData<String> crossScore = new MutableLiveData<>("0");
     private final MutableLiveData<Integer> xTurn = new MutableLiveData<>();
     private final MutableLiveData<Integer> oTurn = new MutableLiveData<>();
     private final MutableLiveData<List<int[]>> winnerLine = new MutableLiveData<>();
@@ -52,12 +52,13 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final MoveRepository moveRepository;
     private final MovesFactory moves;
     private static final String TAG = "myT";
+    private boolean isEnd = true;
     private int turnColor, notTurnColor;
     private int crossDrawable, circleDrawable, lastCross, lastCircle;
     private int[] lastPosition;
     private int lastPiecePlayed;
     private final Application app;
-    private Disposable d, f, t;
+    private Disposable d, f;
 
     @Inject
     public PassPlayBoardViewModel(MovesFactory moves, Application app, GamePreferences gamePref,
@@ -131,18 +132,18 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     public void addCircleScore() {
-        if (circleScore.getValue() == null) circleScore.postValue("0");
-        else circleScore.postValue(String.valueOf(Integer.parseInt(circleScore.getValue()) + 1));
+        Log.d(TAG, "addCircleScore: " + circleScore.getValue());
+        circleScore.postValue(String.valueOf(Integer.parseInt(circleScore.getValue()) + 1));
         gamePref.updateCircleScoreJava(circleScore.getValue());
     }
-    public MutableLiveData<String> getCircleScore() {return circleScore;}
+    public MutableLiveData<String> getCircleScore() { return circleScore; }
 
     public void addCrossScore() {
-        if (crossScore.getValue() == null) crossScore.postValue("0");
-        else crossScore.postValue(String.valueOf(Integer.parseInt(crossScore.getValue()) + 1));
+        Log.d(TAG, "addCrossScore: " + crossScore.getValue());
+        crossScore.postValue(String.valueOf(Integer.parseInt(crossScore.getValue()) + 1));
         gamePref.updateCrossScoreJava(crossScore.getValue());
     }
-    public MutableLiveData<String> getCrossScore() {return crossScore;}
+    public MutableLiveData<String> getCrossScore() { return crossScore; }
 
     public void setLastPos(String tag) { lastPos = tag; }
     public String getLastPos() { return lastPos; }
@@ -209,7 +210,8 @@ public class PassPlayBoardViewModel extends ViewModel {
     public LiveData<String> getWinner() {
         return LiveDataReactiveStreams.fromPublisher(
             Flowable.combineLatest(gameRepository.getWinner(), gamePref.getGamePreference(), (winner, pref) -> {
-                if (winner != null && !winner.equals("in progress") && !pref.getWinner().isEmpty()) {
+                if (winner != null && !winner.equals("in progress") && !pref.getWinner().isEmpty() && !isEnd) {
+                    isEnd = true;
                     updateScore(winner);
                     return winner;
                 } else return "";
@@ -268,5 +270,8 @@ public class PassPlayBoardViewModel extends ViewModel {
     public int[] getLastCube() { return lastPosition; }
     public int getLastPiecePlayed() { return lastPiecePlayed; }
 
-    public void clearMoves() { moveRepository.deleteGameMoves(); }
+    public void clearMoves() {
+        isEnd = false;
+        moveRepository.deleteGameMoves();
+    }
 }

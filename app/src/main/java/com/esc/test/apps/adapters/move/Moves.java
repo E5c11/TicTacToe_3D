@@ -46,8 +46,6 @@ public class Moves {
     }
 
     private void findPos(String tempCube, String playedPiece, String moveId) {
-//        Log.d(TAG, "moves " +  tempCube);
-//        start = System.nanoTime();
         numCube = MoveUtils.numValue(tempCube);
 
         cubePos = MoveUtils.getCubePos(numCube);
@@ -67,10 +65,8 @@ public class Moves {
     }
 
     private void checkOtherCubes() {
-//        Log.d(TAG, "before check: " + (System.nanoTime() - start) + " ns");
         List<Move> list = moveRepository.getAllMoves();
         outer : for(int[] line: lines2check) {
-//            Log.d(TAG, "checkOtherCubes: " + Arrays.toString(line));
             numInRow = 1;
             int i = 0;
             for (int pos : line) {

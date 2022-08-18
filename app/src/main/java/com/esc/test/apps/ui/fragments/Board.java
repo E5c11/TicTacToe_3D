@@ -54,7 +54,6 @@ public class Board extends Fragment {
         passPlayViewModel = new ViewModelProvider(this).get(PassPlayBoardViewModel.class);
         setBoard();
         checkExtras();
-
     }
 
     private void setBoard() {

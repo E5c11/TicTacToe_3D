@@ -1,6 +1,5 @@
 package com.esc.test.apps.utils;
 
-import android.app.Application;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -15,7 +14,9 @@ import com.google.android.material.snackbar.Snackbar;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -101,4 +102,6 @@ public class Utils {
     public static void dispose(Disposable d) {
         d.dispose();
     }
+
+    public static List<String> setToList(Set<String> set) { return new ArrayList<String>(set);}
 }

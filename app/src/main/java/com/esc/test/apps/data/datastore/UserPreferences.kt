@@ -62,16 +62,6 @@ class UserPreferences @Inject constructor(@ApplicationContext context: Context){
         return UserDetails(name, email, password, uid, token, loggedIn, didTutorial)
     }
 
-    suspend fun updateUserData(userDetails: UserDetails) = userData.edit { preferences ->
-        preferences[PreferenceKeys.USER_NAME] = userDetails.name
-        preferences[PreferenceKeys.USER_EMAIL] = userDetails.email
-        preferences[PreferenceKeys.USER_PASSWORD] = userDetails.password
-        preferences[PreferenceKeys.USER_UID] = userDetails.uid
-        preferences[PreferenceKeys.USER_TOKEN] = userDetails.token
-        preferences[PreferenceKeys.USER_LOGGED_IN] = userDetails.loggedIn
-        preferences[PreferenceKeys.USER_DID_TUTORIAL] = userDetails.didTutorial
-    }
-
     suspend fun updatePassword(password: String) =
         userData.edit { it[PreferenceKeys.USER_PASSWORD] = password }
 
@@ -129,9 +119,9 @@ class UserPreferences @Inject constructor(@ApplicationContext context: Context){
         Single.just(prefs)
     }
 
-    suspend fun updateNewUser(displayName: String, uid: String, email: String, password: String) =
+    suspend fun updateNewUser(uid: String, email: String, password: String) =
         userData.edit { preferences ->
-            preferences[PreferenceKeys.USER_NAME] = displayName
+//            preferences[PreferenceKeys.USER_NAME] = displayName
             preferences[PreferenceKeys.USER_EMAIL] = email
             preferences[PreferenceKeys.USER_PASSWORD] = password
             preferences[PreferenceKeys.USER_UID] = uid

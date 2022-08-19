@@ -9,12 +9,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.GridView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
@@ -54,6 +56,7 @@ public class Board extends Fragment {
         passPlayViewModel = new ViewModelProvider(this).get(PassPlayBoardViewModel.class);
         setBoard();
         checkExtras();
+        onBackPressed();
     }
 
     private void setBoard() {
@@ -316,6 +319,23 @@ public class Board extends Fragment {
 
     private void firstTimeInstructions() {
         levelPopup(binding.level);
+    }
+
+    private void onBackPressed() {
+        requireActivity().getOnBackPressedDispatcher()
+            .addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    if (playFriendViewModel != null)
+                        NavHostFragment.findNavController(Board.this)
+                                .navigate(BoardDirections.actionBoardActivityToAlertDialogFragment
+                                        (getString(
+                                                R.string.confirm_quit), getString(R.string.quit_msg), AlertType.QUIT));
+                    else NavHostFragment.findNavController(Board.this)
+                            .navigate(BoardDirections.actionBoardActivityToHome());
+                }
+            }
+        );
     }
 
     @Override

@@ -115,6 +115,8 @@
     <string name="in_progress">in progress</string>
     <string name="game_won">\ has won the game</string>
 
+    <string name="quit_error">Quit failed, try again.</string>
+
     <string name="your_turn">Your turn</string>
     <string name="their_turn">Their turn</string>
 

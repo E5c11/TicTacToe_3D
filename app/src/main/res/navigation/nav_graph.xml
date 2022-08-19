@@ -94,6 +94,9 @@
         <action
             android:id="@+id/action_alertDialogFragment_to_profileManagement"
             app:destination="@id/profileManagement" />
+        <action
+            android:id="@+id/action_alertDialogFragment_to_playWithFriend"
+            app:destination="@id/playWithFriend" />
     </dialog><action android:id="@+id/action_global_alertDialogFragment" app:destination="@id/alertDialogFragment"/>
     <fragment
         android:id="@+id/tutorial"

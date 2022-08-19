@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import com.esc.test.apps.repositories.FirebaseGameRepository;
 import com.esc.test.apps.repositories.FirebaseUserRepository;
 import com.esc.test.apps.utils.AlertType;
+import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
 
 import javax.inject.Inject;
@@ -20,6 +21,7 @@ public class DialogViewModel extends ViewModel {
     private final FirebaseGameRepository fbGameRepo;
     private final MediatorLiveData<String> _error = new MediatorLiveData<>();
     public final LiveData<String> error = _error;
+    public final SingleLiveEvent<Boolean> quit;
     private AlertType type;
     private String input;
 
@@ -28,6 +30,7 @@ public class DialogViewModel extends ViewModel {
     ) {
         this.fbUserRepo = fbUserRepo;
         this.fbGameRepo = fbGameRepo;
+        quit = fbGameRepo.quit;
         addErrorObservers();
     }
 
@@ -37,6 +40,7 @@ public class DialogViewModel extends ViewModel {
             else _error.postValue(error);
         });
         _error.addSource(fbUserRepo.getDisplayNameExists(), _error::postValue);
+        _error.addSource(fbGameRepo.error, _error::postValue);
     }
 
     private void confirmQuit() {

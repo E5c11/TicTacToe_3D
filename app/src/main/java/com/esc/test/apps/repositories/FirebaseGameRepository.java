@@ -57,6 +57,10 @@ public class FirebaseGameRepository {
     private final DatabaseReference usersRef;
     public final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
     public final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Boolean> _quit = new SingleLiveEvent<>();
+    public final SingleLiveEvent<Boolean> quit = _quit;
+    private final SingleLiveEvent<String> _error = new SingleLiveEvent<>();
+    public final SingleLiveEvent<String> error = _error;
     private final FirebaseMoveRepository fbMoveRepo;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final Random rand;
@@ -155,7 +159,9 @@ public class FirebaseGameRepository {
     public void endGame(String winner) {
         final String winPlayer = winner == null ? friendUID : uid;
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            gamesRef.child(gameSetID).child(pref.getGameId()).child(WINNER).setValue(winPlayer);
+            gamesRef.child(gameSetID).child(pref.getGameId()).child(WINNER).setValue(winPlayer)
+                .addOnCompleteListener( task -> _quit.postValue(true))
+                .addOnFailureListener( task -> _error.postValue(app.getString(R.string.quit_error)));
             dispose(d);
         }).subscribe();
     }

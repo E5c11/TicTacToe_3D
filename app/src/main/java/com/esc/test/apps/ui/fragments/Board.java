@@ -167,7 +167,7 @@ public class Board extends Fragment {
             if (playFriendViewModel != null)
                 NavHostFragment.findNavController(this)
                     .navigate(BoardDirections.actionBoardActivityToAlertDialogFragment
-                            (getString(
+                        (getString(
                             R.string.confirm_quit), getString(R.string.quit_msg), AlertType.QUIT));
         });
     }

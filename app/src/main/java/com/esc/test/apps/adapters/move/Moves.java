@@ -1,7 +1,5 @@
 package com.esc.test.apps.adapters.move;
 
-import android.util.Log;
-
 import com.esc.test.apps.data.datastore.GamePreferences;
 import com.esc.test.apps.data.entities.Move;
 import com.esc.test.apps.data.pojos.MoveInfo;

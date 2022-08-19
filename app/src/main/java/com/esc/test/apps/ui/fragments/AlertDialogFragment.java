@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.EditTextBinding;
@@ -85,7 +86,7 @@ public class AlertDialogFragment extends DialogFragment {
     private void setObservers() {
         viewModel.error.observe(this, error -> {
             if (error.isEmpty()) binding.confirm.setVisibility(View.VISIBLE);
-            else if (error.equals("success")) {
+            else if (error.equals("success") || error.equals(getString(R.string.quit_error)))  {
                 binding.progressbar.setVisibility(View.GONE);
                 dismiss();
             } else {
@@ -93,5 +94,9 @@ public class AlertDialogFragment extends DialogFragment {
                 binding.editInput.setError(error);
             }
         });
+        viewModel.quit.observe(this, quit ->
+            NavHostFragment.findNavController(this).navigate(AlertDialogFragmentDirections
+                .actionAlertDialogFragmentToPlayWithFriend())
+        );
     }
 }

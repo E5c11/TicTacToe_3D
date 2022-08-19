@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.internal.operators.flowable.FlowableScan;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
@@ -132,14 +131,12 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     public void addCircleScore() {
-        Log.d(TAG, "addCircleScore: " + circleScore.getValue());
         circleScore.postValue(String.valueOf(Integer.parseInt(circleScore.getValue()) + 1));
         gamePref.updateCircleScoreJava(circleScore.getValue());
     }
     public MutableLiveData<String> getCircleScore() { return circleScore; }
 
     public void addCrossScore() {
-        Log.d(TAG, "addCrossScore: " + crossScore.getValue());
         crossScore.postValue(String.valueOf(Integer.parseInt(crossScore.getValue()) + 1));
         gamePref.updateCrossScoreJava(crossScore.getValue());
     }
@@ -179,7 +176,6 @@ public class PassPlayBoardViewModel extends ViewModel {
     private void updateScore(String winner) {
         if (winner.equals(app.getString(R.string.cross))) addCrossScore();
         else addCircleScore();
-        updateWinners();
     }
 
     public void crossTurn() {
@@ -213,6 +209,7 @@ public class PassPlayBoardViewModel extends ViewModel {
                 if (winner != null && !winner.equals("in progress") && !pref.getWinner().isEmpty() && !isEnd) {
                     isEnd = true;
                     updateScore(winner);
+                    updateWinners();
                     return winner;
                 } else return "";
             }).subscribeOn(Schedulers.io())
@@ -231,7 +228,8 @@ public class PassPlayBoardViewModel extends ViewModel {
     private void updateWinners() {
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
             List<int[]> tempWinnerLine = new ArrayList<>();
-            for (String i: (pref.getWinnerLine())) {
+            Log.d(TAG, "updateWinners: " + pref.getWinnerLine());
+            for (String i: pref.getWinnerLine()) {
                 int[] winnerPos = CubeAdapter.getGridAdapter(i);
                 Log.d(TAG, "updateWinners: " + winnerPos[0] + " " + winnerPos[1]);
                 tempWinnerLine.add(winnerPos);

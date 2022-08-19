@@ -21,12 +21,16 @@ import com.esc.test.apps.repositories.FirebaseGameRepository;
 import com.esc.test.apps.repositories.FirebaseMoveRepository;
 import com.esc.test.apps.repositories.GameRepository;
 import com.esc.test.apps.repositories.MoveRepository;
+import com.esc.test.apps.utils.SingleLiveEvent;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -35,6 +39,8 @@ public class PlayFriendBoardViewModel extends ViewModel {
 
     public final LiveData<List<MoveInfo>> existingMoves;
     public LiveData<MoveInfo> moveInfo;
+    private final SingleLiveEvent<Boolean> _movesReady = new SingleLiveEvent<>();
+    public final SingleLiveEvent<Boolean> movesReady = _movesReady;
     private String friendGamePiece;
     private Disposable d;
     private int moveCount = 0;
@@ -50,11 +56,10 @@ public class PlayFriendBoardViewModel extends ViewModel {
     public static final String TAG = "myT";
 
     @Inject
-    public PlayFriendBoardViewModel(MoveRepository moveRepository,
-                                    GameRepository gameRepository, Application app,
-                                    FirebaseGameRepository fbGameRepo, GamePreferences gamePref,
-                                    FirebaseMoveRepository fbMoveRepo, MovesFactory moves,
-                                    ConnectionLiveData network, UserPreferences userPref
+    public PlayFriendBoardViewModel(MoveRepository moveRepository, GameRepository gameRepository,
+                                    Application app, FirebaseGameRepository fbGameRepo,
+                                    GamePreferences gamePref, FirebaseMoveRepository fbMoveRepo,
+                                    MovesFactory moves, ConnectionLiveData network, UserPreferences userPref
     ) {
         this.app = app;
         this.moveRepository = moveRepository;
@@ -66,9 +71,11 @@ public class PlayFriendBoardViewModel extends ViewModel {
         this.network = network;
         existingMoves = fbMoveRepo.getExistingMoves();
         this.userPref = userPref;
-        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            String gameSetId = gamePref.getGamePreference().blockingSingle().getGameSetId();
-            moveInfo = getMoveInfo(pref.getUid(), gameSetId);
+        d = Flowable.combineLatest(userPref.getUserPreference(), gamePref.getGamePreference(), (user, game) ->
+            Map.of("uid", user.getUid(), "gameSetId", game.getGameSetId())
+        ).subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread()).doOnNext(pref -> {
+            moveInfo = getMoveInfo(pref.get("uid"), pref.get("gameSetId"));
+            _movesReady.postValue(true);
             dispose(d);
         }).subscribe();
     }
@@ -104,14 +111,14 @@ public class PlayFriendBoardViewModel extends ViewModel {
     }
 
     public LiveData<Turn> getTurn() {
-        return LiveDataReactiveStreams.fromPublisher(gameRepository.getTurn()
-            .subscribeOn(Schedulers.io()).map( result -> {
-                String winner = gamePref.getGamePreference().blockingSingle().getWinner();
-                if (result.equals(friendGamePiece) && winner.isEmpty())
-                    return new Turn(result, true);
-                else if (winner.isEmpty()) return new Turn(result, false);
-                else return null;
-            }));
+        return LiveDataReactiveStreams.fromPublisher(
+            Flowable.combineLatest(gameRepository.getTurn(), gamePref.getGamePreference(), (turn, pref) -> {
+                if (turn.equals(friendGamePiece) && pref.getWinner().isEmpty())
+                    return new Turn(turn, true);
+                else if (pref.getWinner().isEmpty()) return new Turn(turn, false);
+                else return new Turn("", false);
+            }).subscribeOn(Schedulers.io())
+        );
     }
 
     public LiveData<MoveInfo> getMoveInfo(String uid, String gameSetId) {

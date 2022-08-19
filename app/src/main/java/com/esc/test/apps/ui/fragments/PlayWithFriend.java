@@ -83,7 +83,6 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
                 NavDirections action =
                         PlayWithFriendDirections.actionPlayWithFriendToBoardActivity(s[0], s[1]);
                 NavHostFragment.findNavController(this).navigate(action);
-                Log.d(TAG, "setObservers: ");
             }
         });
         friendsModelView.listsReady.observe(getViewLifecycleOwner(), ready -> {
@@ -99,7 +98,6 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     private void setListeners() {
         binding.friendSearchButton.setOnClickListener(v -> {
             String input = binding.friendSearch.getEditText().getText().toString().trim();
-            Log.d(TAG, "setListeners: " + input);
             friendsModelView.findFriend(input);
         });
         onBackPressed();
@@ -118,21 +116,19 @@ public class PlayWithFriend extends Fragment implements ActiveFriendsAdapter.OnC
     @Override
     public void onItemClick(UserInfo user, String fromList, String btnText) {
         if (fromList.equals(ActiveFriendsAdapter.ACTIVE_LIST)) {
-            int resourceId = this.getResources().
-                    getIdentifier(btnText, "string", requireContext().getPackageName());
-            switch (resourceId) {
-                case R.string.start:
+            switch (btnText) {
+                case "Start":
                     friendsModelView.startGame(user, false);
-                    Log.d(TAG, "onItemClick: ");
                     break;
-                case R.string.accept:
+                case "Accept":
                     friendsModelView.startGame(user, true);
                     break;
-                case R.string.cancel:
+                case "Cancel":
                     friendsModelView.sendGameInvite(user, false);
                     break;
-                case R.string.play:
+                case "Play":
                     friendsModelView.sendGameInvite(user, true);
+                    break;
             }
         } else friendsModelView.acceptInvite(user);
     }

@@ -98,10 +98,9 @@ public class Moves {
 
     private void saveWinnerRow() {
         ArrayList<String> winners = new ArrayList<>();
-        Log.d(TAG, "game won");
         for (int i: winnerRow) winners.add(String.valueOf(i));
-        gamePref.updateWinnerJava(playedPiece);
         gamePref.updateWinnerLineJava(winners);
+        gamePref.updateWinnerJava(playedPiece);
         gameRepository.updateWinner(playedPiece);
     }
 }

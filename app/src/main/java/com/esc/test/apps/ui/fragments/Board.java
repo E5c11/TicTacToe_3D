@@ -237,7 +237,7 @@ public class Board extends Fragment {
 
     private void setOpponentUIDObserver() {
         playFriendViewModel.getTurn().observe(getViewLifecycleOwner(), turn -> {
-            if (turn != null) {
+            if (!turn.getTurn().isEmpty()) {
                 if (turn.isFriendsTurn()) {
                     binding.title.setText(getResources().getString(R.string.their_turn));
                     changeGridOnClick(false);
@@ -256,12 +256,8 @@ public class Board extends Fragment {
                 }
             }
         });
-        playFriendViewModel.moveInfo.observe(getViewLifecycleOwner(), s -> {
-            if (s != null) {
-                updateGridView(s.getPosition(), s.getPiece_played());
-                passPlayViewModel.downloadedMove(s);
-                Log.d(TAG, "downloaded move view update: ");
-            }
+        playFriendViewModel.movesReady.observe(getViewLifecycleOwner(), ready -> {
+            if (ready) observeFriendMoves();
         });
         playFriendViewModel.network.observe(getViewLifecycleOwner(), s -> {
             if (s != null)
@@ -276,6 +272,16 @@ public class Board extends Fragment {
                 }
         });
         getNewMoves();
+    }
+
+    private void observeFriendMoves() {
+        playFriendViewModel.moveInfo.observe(getViewLifecycleOwner(), s -> {
+            if (s != null) {
+                updateGridView(s.getPosition(), s.getPiece_played());
+                passPlayViewModel.downloadedMove(s);
+                Log.d(TAG, "downloaded move view update: ");
+            }
+        });
     }
 
     private void getNewMoves() {

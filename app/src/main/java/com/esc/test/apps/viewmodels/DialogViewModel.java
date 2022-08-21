@@ -86,6 +86,9 @@ public class DialogViewModel extends ViewModel {
             case QUIT:
                 confirmQuit();
                 break;
+            case WINNER:
+                _error.postValue("close");
+                break;
         }
     }
 

@@ -1,6 +1,7 @@
 package com.esc.test.apps.ui.fragments;
 
 import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
+import static com.esc.test.apps.utils.AlertType.WINNER;
 import static com.esc.test.apps.viewmodels.board.PlayAIViewModel.AI_GAME;
 
 import android.graphics.drawable.ColorDrawable;
@@ -250,7 +251,7 @@ public class Board extends Fragment {
                 }
             }
         });
-        playFriendViewModel.existingMoves.observe(getViewLifecycleOwner(), s -> {
+        playFriendViewModel.getExistingMoves().observe(getViewLifecycleOwner(), s -> {
 //            Log.d(TAG, "setOpponentUIDObserver: get moves");
             if (s != null) {
                 if (!s.isEmpty()) {
@@ -261,6 +262,9 @@ public class Board extends Fragment {
         });
         playFriendViewModel.movesReady.observe(getViewLifecycleOwner(), ready -> {
             if (ready) observeFriendMoves();
+        });
+        playFriendViewModel.winReady.observe(getViewLifecycleOwner(), ready -> {
+            if (ready) observeGameState();
         });
         playFriendViewModel.network.observe(getViewLifecycleOwner(), s -> {
             if (s != null)
@@ -283,6 +287,18 @@ public class Board extends Fragment {
                 updateGridView(s.getPosition(), s.getPiece_played());
                 passPlayViewModel.downloadedMove(s);
                 Log.d(TAG, "downloaded move view update: ");
+            }
+        });
+    }
+
+    private void observeGameState() {
+        playFriendViewModel.winState.observe(getViewLifecycleOwner(), winnerInfo -> {
+            if (!winnerInfo.get("winner").isEmpty()) {
+                NavHostFragment.findNavController(this)
+                        .navigate(BoardDirections.actionBoardActivityToAlertDialogFragment(
+                                winnerInfo.get("player") + " won",
+                                "Start another game in the friends page", WINNER));
+                playFriendViewModel.winState.removeObservers(getViewLifecycleOwner());
             }
         });
     }

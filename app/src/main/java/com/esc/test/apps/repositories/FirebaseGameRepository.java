@@ -19,6 +19,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.R;
@@ -33,11 +34,14 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 
@@ -45,6 +49,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -61,6 +68,7 @@ public class FirebaseGameRepository {
     public final SingleLiveEvent<Boolean> quit = _quit;
     private final SingleLiveEvent<String> _error = new SingleLiveEvent<>();
     public final SingleLiveEvent<String> error = _error;
+    private FirebaseQueryLiveData gameActive;
     private final FirebaseMoveRepository fbMoveRepo;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final Random rand;
@@ -188,11 +196,11 @@ public class FirebaseGameRepository {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.getValue() != null) {
-                    String ref = snapshot.getValue().toString();
-                    DatabaseReference movesRef = gamesRef.child(gameSetID).child(ref).child(MOVES);
+                    String gameId = snapshot.getValue().toString();
+                    setGameActiveState(gameId);
+                    DatabaseReference movesRef = gamesRef.child(gameSetID).child(gameId).child(MOVES);
                     fbMoveRepo.checkCurrentGameMoves(movesRef);
-                    gamePref.updateGameIdJava(ref);
-                    Log.d(TAG, "onDataChange: " + Thread.currentThread());
+                    gamePref.updateGameIdJava(gameId);
                 }
             }
             @Override
@@ -210,6 +218,19 @@ public class FirebaseGameRepository {
     public LiveData<List<UserInfo>> getFriendRequests(String uid) {
         FirebaseQueryLiveData requests = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIEND_REQUEST));
         return Transformations.map(requests, this::getFriends);
+    }
+
+    public void setGameActiveState(String gameID) {
+        gameActive = new FirebaseQueryLiveData(gamesRef.child(gameSetID).child(gameID).child(WINNER));
+    }
+
+    public LiveData<Map<String, String>> getGameActiveState() {
+        return Transformations.map(gameActive, snapshot -> {
+            String winner = snapshot.getValue(String.class);
+            if (winner == null) winner = "";
+            String player = !Objects.equals(winner, uid) ? "Your friend" : "You";
+            return Map.of("winner", winner, "player", player);
+        });
     }
 
     private List<UserInfo> getFriends(DataSnapshot dataSnapshot) {

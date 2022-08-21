@@ -3,6 +3,7 @@ package com.esc.test.apps.ui.fragments;
 import static com.esc.test.apps.utils.AlertType.DISPLAY_NAME;
 import static com.esc.test.apps.utils.AlertType.EMAIL;
 import static com.esc.test.apps.utils.AlertType.PASSWORD;
+import static com.esc.test.apps.utils.AlertType.WINNER;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -59,6 +60,7 @@ public class AlertDialogFragment extends DialogFragment {
             binding.editInput.setVisibility(View.GONE);
             binding.text.setVisibility(View.VISIBLE);
             binding.text.setText(args.getMessage());
+            if (args.getType().equals(WINNER)) binding.cancel.setVisibility(View.GONE);
         }
         return dialogBuilder.create();
     }
@@ -89,7 +91,9 @@ public class AlertDialogFragment extends DialogFragment {
             else if (error.equals("success") || error.equals(getString(R.string.quit_error)))  {
                 binding.progressbar.setVisibility(View.GONE);
                 dismiss();
-            } else {
+            } else if (error.equals("close")) NavHostFragment.findNavController(this)
+                    .navigate(AlertDialogFragmentDirections.actionAlertDialogFragmentToPlayWithFriend());
+            else {
                 binding.confirm.setVisibility(View.INVISIBLE);
                 binding.editInput.setError(error);
             }

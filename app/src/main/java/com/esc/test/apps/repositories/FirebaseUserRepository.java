@@ -85,38 +85,38 @@ public class FirebaseUserRepository {
     }
 
     public void connectLogin(String email, String password) {
-            firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                executor.execute(() -> {
-                    if (task.isSuccessful()) {
-                        String uid = task.getResult().getUser().getUid();
-                        userPrefs.updateUserJava(uid, email, password);
-                        getDisplayNameFromDB(uid);
-                        d = userPrefs.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( prefs -> {
-                            setToken(prefs.getToken());
-                            Utils.dispose(d);
-                        }).subscribe();
-                        setUserOnline(uid);
-                        this.uid = uid;
-                        loggedIn.postValue(true);
-                        Log.d(TAG, "after set token: " + loggedIn.getValue());
-                    } else {
-                        try {
-                            throw Objects.requireNonNull(task.getException());
-                        } catch (FirebaseAuthInvalidCredentialsException e) {
-                            error.postValue("Password is incorrect");
-                        } catch (FirebaseTooManyRequestsException e) {
-                            error.postValue(app.getString(R.string.excessive_requests));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Log.d("myT", "user not logged in: " + task.getException());
-                            if (attempt < 3) {
-                                attempt++;
-                                connectLogin(email, password);
-                            } else error.postValue(app.getString(R.string.not_logged_in));
-                        }
+        firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            executor.execute(() -> {
+                if (task.isSuccessful()) {
+                    String uid = task.getResult().getUser().getUid();
+                    userPrefs.updateUserJava(uid, email, password);
+                    getDisplayNameFromDB(uid);
+                    d = userPrefs.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( prefs -> {
+                        setToken(prefs.getToken());
+                        Utils.dispose(d);
+                    }).subscribe();
+                    setUserOnline(uid);
+                    this.uid = uid;
+                    loggedIn.postValue(true);
+                    Log.d(TAG, "after set token: " + loggedIn.getValue());
+                } else {
+                    try {
+                        throw Objects.requireNonNull(task.getException());
+                    } catch (FirebaseAuthInvalidCredentialsException e) {
+                        error.postValue("Password is incorrect");
+                    } catch (FirebaseTooManyRequestsException e) {
+                        error.postValue(app.getString(R.string.excessive_requests));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.d("myT", "user not logged in: " + task.getException());
+                        if (attempt < 3) {
+                            attempt++;
+                            connectLogin(email, password);
+                        } else error.postValue(app.getString(R.string.not_logged_in));
                     }
-                });
+                }
             });
+        });
     }
 
     private void getDisplayNameFromDB(String uid) {
@@ -192,27 +192,27 @@ public class FirebaseUserRepository {
     }
 
     public void checkDisplayNameExist(CharSequence ds) {
-            Query query = users.orderByChild(DISPLAY_NAME).equalTo(ds.toString());
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.getValue() == null) displayNameExists.setValue("");
-                    else {
-                        executor.execute(() -> {
-                            for(DataSnapshot snap: snapshot.getChildren()) {
-                                String tempDisplay = (String) snap.child(DISPLAY_NAME).getValue();
-                                if (tempDisplay.equals(ds.toString())) {
-                                    displayNameExists.postValue(app.getString(R.string.display_name_exists));
-                                }
+        Query query = users.orderByChild(DISPLAY_NAME).equalTo(ds.toString());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.getValue() == null) displayNameExists.setValue("");
+                else {
+                    executor.execute(() -> {
+                        for(DataSnapshot snap: snapshot.getChildren()) {
+                            String tempDisplay = (String) snap.child(DISPLAY_NAME).getValue();
+                            if (tempDisplay.equals(ds.toString())) {
+                                displayNameExists.postValue(app.getString(R.string.display_name_exists));
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError e) {
-                    error.postValue(app.getString(R.string.network_error));
-                }
-            });
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError e) {
+                error.postValue(app.getString(R.string.network_error));
+            }
+        });
     }
 
     public void updateEmail(String email) {

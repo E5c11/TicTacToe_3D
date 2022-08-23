@@ -17,15 +17,13 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavDirections;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.adapters.CubeAdapter;
-import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.data.pojos.CubeID;
+import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.utils.AlertType;
-import com.esc.test.apps.utils.Utils;
 import com.esc.test.apps.viewmodels.board.PassPlayBoardViewModel;
 import com.esc.test.apps.viewmodels.board.PlayAIViewModel;
 import com.esc.test.apps.viewmodels.board.PlayFriendBoardViewModel;
@@ -251,8 +249,7 @@ public class Board extends Fragment {
                 }
             }
         });
-        playFriendViewModel.getExistingMoves().observe(getViewLifecycleOwner(), s -> {
-//            Log.d(TAG, "setOpponentUIDObserver: get moves");
+        playFriendViewModel.existingMoves.observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
                 if (!s.isEmpty()) {
                     playFriendViewModel.addExistingMoves(s);

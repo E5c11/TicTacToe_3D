@@ -3,7 +3,6 @@ package com.esc.test.apps.viewmodels.board;
 import static com.esc.test.apps.utils.Utils.dispose;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
@@ -32,7 +31,6 @@ import javax.inject.Inject;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -45,6 +43,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private final SingleLiveEvent<Boolean> _winReady = new SingleLiveEvent<>();
     public final SingleLiveEvent<Boolean> winReady = _winReady;
     public LiveData<Map<String, String>> winState;
+    public final LiveData<List<MoveInfo>> existingMoves;
     private String friendGamePiece;
     private Disposable d, f;
     private int moveCount = 0;
@@ -74,6 +73,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
         this.moves = moves;
         this.network = network;
         this.userPref = userPref;
+        existingMoves = fbMoveRepo.getExistingMoves();
 
         d = Flowable.combineLatest(userPref.getUserPreference(), gamePref.getGamePreference(), (user, game) ->
             Map.of("uid", user.getUid(), "gameSetId", game.getGameSetId())
@@ -81,6 +81,12 @@ public class PlayFriendBoardViewModel extends ViewModel {
             moveInfo = getMoveInfo(pref.get("uid"), pref.get("gameSetId"));
             _movesReady.postValue(true);
             dispose(d);
+        }).subscribe();
+
+        f = fbGameRepo.gameId.subscribeOn(Schedulers.io()).doOnNext( quit -> {
+            _winReady.postValue(true);
+            winState = fbGameRepo.getGameActiveState();
+            dispose(f);
         }).subscribe();
     }
 
@@ -130,16 +136,6 @@ public class PlayFriendBoardViewModel extends ViewModel {
             if (friendMove != null)
                 moveCount = Integer.parseInt(friendMove.getMoveID()) + 1;
             return friendMove;
-        });
-    }
-
-    public LiveData<List<MoveInfo>> getExistingMoves() {
-        return Transformations.map(fbMoveRepo.getExistingMoves(), existingMoves -> {
-            if (winState == null) {
-                winReady.postValue(true);
-                winState = fbGameRepo.getGameActiveState();
-            }
-            return existingMoves;
         });
     }
 

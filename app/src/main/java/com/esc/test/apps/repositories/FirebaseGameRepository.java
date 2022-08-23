@@ -19,7 +19,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.R;
@@ -27,6 +26,7 @@ import com.esc.test.apps.data.datastore.GamePreferences;
 import com.esc.test.apps.data.datastore.UserPreferences;
 import com.esc.test.apps.data.pojos.UserInfo;
 import com.esc.test.apps.network.FirebaseQueryLiveData;
+import com.esc.test.apps.network.FirebaseQuerySingleData;
 import com.esc.test.apps.utils.ExecutorFactory;
 import com.esc.test.apps.utils.SingleLiveEvent;
 import com.esc.test.apps.utils.Utils;
@@ -34,7 +34,6 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -49,11 +48,11 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.PublishSubject;
 
 @Singleton
 public class FirebaseGameRepository {
@@ -68,7 +67,9 @@ public class FirebaseGameRepository {
     public final SingleLiveEvent<Boolean> quit = _quit;
     private final SingleLiveEvent<String> _error = new SingleLiveEvent<>();
     public final SingleLiveEvent<String> error = _error;
-    private FirebaseQueryLiveData gameActive;
+    private final PublishSubject<String> _gameId = PublishSubject.create();
+    public final Flowable<String> gameId = _gameId.toFlowable(BackpressureStrategy.LATEST);
+    private FirebaseQuerySingleData gameActive;
     private final FirebaseMoveRepository fbMoveRepo;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final Random rand;
@@ -138,9 +139,8 @@ public class FirebaseGameRepository {
     private String gameSetup(String guestUid, String gameSetRef, String gameRef, String uid) {
         String startPlayer = rand.nextBoolean() ? guestUid : uid;
         Log.d(TAG, "gameSetup: ");
-        gamesRef.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer).addOnCompleteListener(task -> {
-            Log.d(TAG, "gameSetup: game details sent");
-        });
+        gamesRef.child(gameSetRef).child(gameRef).child(STARTER).setValue(startPlayer)
+                .addOnCompleteListener(task -> Log.d(TAG, "gameSetup: game details sent"));
         return startPlayer;
     }
 
@@ -220,8 +220,10 @@ public class FirebaseGameRepository {
         return Transformations.map(requests, this::getFriends);
     }
 
-    public void setGameActiveState(String gameID) {
-        gameActive = new FirebaseQueryLiveData(gamesRef.child(gameSetID).child(gameID).child(WINNER));
+    public void setGameActiveState(String gameId) {
+        gameActive = new FirebaseQuerySingleData(gamesRef.child(gameSetID).child(gameId).child(WINNER));
+        _gameId.onNext(gameId);
+        _gameId.onComplete();
     }
 
     public LiveData<Map<String, String>> getGameActiveState() {

@@ -60,7 +60,10 @@ public class AlertDialogFragment extends DialogFragment {
             binding.editInput.setVisibility(View.GONE);
             binding.text.setVisibility(View.VISIBLE);
             binding.text.setText(args.getMessage());
-            if (args.getType().equals(WINNER)) binding.cancel.setVisibility(View.GONE);
+            if (args.getType().equals(WINNER)) {
+                binding.cancel.setVisibility(View.GONE);
+                binding.title.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+            }
         }
         return dialogBuilder.create();
     }

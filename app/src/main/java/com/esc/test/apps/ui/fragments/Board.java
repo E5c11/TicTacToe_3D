@@ -1,8 +1,8 @@
 package com.esc.test.apps.ui.fragments;
 
-import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
-import static com.esc.test.apps.utils.AlertType.WINNER;
-import static com.esc.test.apps.viewmodels.board.PlayAIViewModel.AI_GAME;
+import static com.esc.test.apps.common.adaptors.CubeAdapter.getGridAdapter;
+import static com.esc.test.apps.common.utils.AlertType.WINNER;
+import static com.esc.test.apps.domain.viewmodels.board.PlayAIViewModel.AI_GAME;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -20,13 +20,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.adapters.CubeAdapter;
-import com.esc.test.apps.data.pojos.CubeID;
+import com.esc.test.apps.common.adaptors.CubeAdapter;
+import com.esc.test.apps.data.objects.pojos.CubeID;
 import com.esc.test.apps.databinding.BoardActivityBinding;
-import com.esc.test.apps.utils.AlertType;
-import com.esc.test.apps.viewmodels.board.PassPlayBoardViewModel;
-import com.esc.test.apps.viewmodels.board.PlayAIViewModel;
-import com.esc.test.apps.viewmodels.board.PlayFriendBoardViewModel;
+import com.esc.test.apps.common.utils.AlertType;
+import com.esc.test.apps.domain.viewmodels.board.PassPlayBoardViewModel;
+import com.esc.test.apps.domain.viewmodels.board.PlayAIViewModel;
+import com.esc.test.apps.domain.viewmodels.board.PlayFriendBoardViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;

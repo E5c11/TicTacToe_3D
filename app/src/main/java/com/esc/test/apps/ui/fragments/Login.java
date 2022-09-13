@@ -13,14 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavDirections;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.LoginActivityBinding;
-import com.esc.test.apps.utils.AlertType;
-import com.esc.test.apps.utils.LetterWatcher;
-import com.esc.test.apps.viewmodels.LoginViewModel;
+import com.esc.test.apps.common.utils.AlertType;
+import com.esc.test.apps.common.utils.LetterWatcher;
+import com.esc.test.apps.domain.viewmodels.LoginViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;

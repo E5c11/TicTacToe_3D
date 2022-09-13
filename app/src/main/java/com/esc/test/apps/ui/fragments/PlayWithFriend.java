@@ -15,13 +15,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.esc.test.apps.R;
-import com.esc.test.apps.adapters.ActiveFriendsAdapter;
-import com.esc.test.apps.adapters.FriendRequestAdapter;
-import com.esc.test.apps.data.datastore.UserPreferences;
-import com.esc.test.apps.data.pojos.UserInfo;
+import com.esc.test.apps.common.adaptors.ActiveFriendsAdapter;
+import com.esc.test.apps.common.adaptors.FriendRequestAdapter;
+import com.esc.test.apps.data.persistence.UserPreferences;
+import com.esc.test.apps.data.objects.pojos.UserInfo;
 import com.esc.test.apps.databinding.FriendListBinding;
 import com.esc.test.apps.databinding.FriendsActivityBinding;
-import com.esc.test.apps.viewmodels.FriendsModelView;
+import com.esc.test.apps.domain.viewmodels.FriendsModelView;
 
 import javax.inject.Inject;
 

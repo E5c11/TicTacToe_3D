@@ -55,7 +55,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 @Singleton
-public class FirebaseGameRepository {
+public class FirebaseGameRepository implements FbGameRepo {
 
     private final GamePreferences gamePref;
     private final Application app;
@@ -71,7 +71,6 @@ public class FirebaseGameRepository {
     public final Flowable<String> gameId = _gameId.toFlowable(BackpressureStrategy.LATEST);
     private FirebaseQuerySingleData gameActive;
     private final FirebaseMoveRepository fbMoveRepo;
-    private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final Random rand;
     private Disposable d;
     private String gameSetID;
@@ -96,7 +95,8 @@ public class FirebaseGameRepository {
         }).subscribe();
     }
 
-    public void findFriend(String friend_name) {
+    @Override
+    public void findFriend(@NonNull String friend_name) {
         Query findFriend = usersRef.orderByChild(DISPLAY_NAME).equalTo(friend_name);
         findFriend.addChildEventListener(new ChildEventListener() {
             @Override
@@ -119,10 +119,12 @@ public class FirebaseGameRepository {
         });
     }
 
+    @Override
     public void acceptInvite(UserInfo user) {
         usersRef.child(uid).child(FRIENDS).child(user.getUid()).child(DISPLAY_NAME).setValue(user.getDisplay_name());
     }
 
+    @Override
     public void startGame(UserInfo user, boolean firstPlayer) {
         String gameSetRef = Utils.getGameSetUID(uid, user.getUid(), 0);
         String gameRef = Utils.getGameUID();
@@ -152,11 +154,13 @@ public class FirebaseGameRepository {
         return friendStart ? app.getString(R.string.cross) : app.getString(R.string.circle);
     }
 
+    @Override
     public void sendGameInvite(UserInfo user, boolean startGame) {
         usersRef.child(user.getUid()).child(FRIENDS).child(uid)
                 .child(GAME_REQUEST).setValue(startGame);
     }
 
+    @Override
     public void inviteNewFriend() {
         UserInfo userInfo = newFriend.getValue();
         Log.d(TAG, "sendInvite: " + userInfo.getUid());
@@ -164,6 +168,7 @@ public class FirebaseGameRepository {
                 .child(DISPLAY_NAME).setValue(userInfo.getDisplay_name());
     }
 
+    @Override
     public void endGame(String winner) {
         final String winPlayer = winner == null ? friendUID : uid;
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
@@ -174,7 +179,8 @@ public class FirebaseGameRepository {
         }).subscribe();
     }
 
-    public void getGameUID(String uids) {
+    @Override
+    public void getGameUID(@NonNull String uids) {
         setEventListener();
         gameSetID = uids;
         gamePref.updateGameSetIdJava(uids);
@@ -210,22 +216,26 @@ public class FirebaseGameRepository {
         };
     }
 
+    @Override
     public LiveData<List<UserInfo>> getActiveFriends(String uid) {
         FirebaseQueryLiveData friends = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIENDS));
         return Transformations.map(friends, this::getFriends);
     }
 
+    @Override
     public LiveData<List<UserInfo>> getFriendRequests(String uid) {
         FirebaseQueryLiveData requests = new FirebaseQueryLiveData(usersRef.child(uid).child(FRIEND_REQUEST));
         return Transformations.map(requests, this::getFriends);
     }
 
-    public void setGameActiveState(String gameId) {
+    @Override
+    public void setGameActiveState(@NonNull String gameId) {
         gameActive = new FirebaseQuerySingleData(gamesRef.child(gameSetID).child(gameId).child(WINNER));
         _gameId.onNext(gameId);
         _gameId.onComplete();
     }
 
+    @Override
     public LiveData<Map<String, String>> getGameActiveState() {
         return Transformations.map(gameActive, snapshot -> {
             String winner = snapshot.getValue(String.class);

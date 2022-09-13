@@ -36,7 +36,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Singleton
-public class FirebaseMoveRepository {
+public class FirebaseMoveRepository implements FbMoveRepo{
 
     private final DatabaseReference ref;
     private final GamePreferences gamePref;
@@ -59,6 +59,7 @@ public class FirebaseMoveRepository {
         }).subscribe();
     }
 
+    @Override
     public void addMove(MoveInfo move) {
         move.setUid(uid);
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
@@ -69,6 +70,7 @@ public class FirebaseMoveRepository {
         }).subscribe();
     }
 
+    @Override
     public LiveData<MoveInfo> getMoveInfo(String uid, String gameSetId) {
         DatabaseReference moveRef = ref.child(USERS).child(uid).child(FRIENDS)
                 .child(getFriendUid(gameSetId)).child(MOVE);
@@ -91,6 +93,7 @@ public class FirebaseMoveRepository {
         });
     }
 
+    @Override
     public void checkCurrentGameMoves(DatabaseReference movesRef) {
         movesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -109,5 +112,6 @@ public class FirebaseMoveRepository {
         return uids[0].equals(uid) ? uids[1] : uids[0];
     }
 
+    @Override
     public LiveData<List<MoveInfo>> getExistingMoves() { return existingMoves; }
 }

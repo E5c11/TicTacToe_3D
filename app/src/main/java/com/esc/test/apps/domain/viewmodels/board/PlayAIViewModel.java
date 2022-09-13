@@ -14,7 +14,7 @@ import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.objects.entities.Move;
 import com.esc.test.apps.data.objects.pojos.CubeID;
-import com.esc.test.apps.data.repositories.MoveRepository;
+import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.common.utils.Utils;
 

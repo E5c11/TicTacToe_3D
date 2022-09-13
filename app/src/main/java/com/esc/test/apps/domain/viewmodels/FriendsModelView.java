@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.objects.pojos.UserInfo;
-import com.esc.test.apps.data.repositories.FirebaseGameRepository;
+import com.esc.test.apps.data.repositories.implementations.remote.FirebaseGameRepository;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
 

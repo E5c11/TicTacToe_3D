@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.repositories;
+package com.esc.test.apps.data.repositories.implementations.local;
 
 import androidx.lifecycle.LiveData;
 

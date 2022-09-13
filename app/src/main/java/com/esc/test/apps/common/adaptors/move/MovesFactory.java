@@ -1,9 +1,9 @@
 package com.esc.test.apps.common.adaptors.move;
 
 import com.esc.test.apps.data.persistence.GamePreferences;
-import com.esc.test.apps.data.repositories.FirebaseMoveRepository;
-import com.esc.test.apps.data.repositories.GameRepository;
-import com.esc.test.apps.data.repositories.MoveRepository;
+import com.esc.test.apps.data.repositories.implementations.remote.FirebaseMoveRepository;
+import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
+import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 
 import java.util.concurrent.ExecutorService;

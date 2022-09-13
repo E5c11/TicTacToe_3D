@@ -17,10 +17,10 @@ import com.esc.test.apps.data.objects.pojos.CubeID;
 import com.esc.test.apps.data.objects.pojos.MoveInfo;
 import com.esc.test.apps.data.objects.pojos.Turn;
 import com.esc.test.apps.common.network.ConnectionLiveData;
-import com.esc.test.apps.data.repositories.FirebaseGameRepository;
-import com.esc.test.apps.data.repositories.FirebaseMoveRepository;
-import com.esc.test.apps.data.repositories.GameRepository;
-import com.esc.test.apps.data.repositories.MoveRepository;
+import com.esc.test.apps.data.repositories.implementations.remote.FirebaseGameRepository;
+import com.esc.test.apps.data.repositories.implementations.remote.FirebaseMoveRepository;
+import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
+import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 
 import java.util.List;

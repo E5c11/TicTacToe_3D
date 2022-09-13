@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.common.network.ConnectionLiveData;
-import com.esc.test.apps.data.repositories.FirebaseUserRepository;
+import com.esc.test.apps.data.repositories.implementations.remote.FirebaseUserRepository;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
 

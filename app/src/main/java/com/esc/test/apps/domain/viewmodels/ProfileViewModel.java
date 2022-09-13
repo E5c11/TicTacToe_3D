@@ -5,7 +5,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.common.network.ConnectionLiveData;
-import com.esc.test.apps.data.repositories.FirebaseUserRepository;
+import com.esc.test.apps.data.repositories.implementations.remote.FirebaseUserRepository;
 import com.esc.test.apps.common.utils.Utils;
 
 import javax.inject.Inject;

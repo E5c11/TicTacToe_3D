@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.esc.test.apps.data.repositories.FirebaseGameRepository;
-import com.esc.test.apps.data.repositories.FirebaseUserRepository;
+import com.esc.test.apps.data.repositories.implementations.remote.FirebaseGameRepository;
+import com.esc.test.apps.data.repositories.implementations.remote.FirebaseUserRepository;
 import com.esc.test.apps.common.utils.AlertType;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;

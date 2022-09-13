@@ -20,8 +20,8 @@ import com.esc.test.apps.data.objects.entities.Game;
 import com.esc.test.apps.data.objects.pojos.CubeID;
 import com.esc.test.apps.data.objects.pojos.MoveInfo;
 import com.esc.test.apps.data.objects.pojos.MoveUpdate;
-import com.esc.test.apps.data.repositories.GameRepository;
-import com.esc.test.apps.data.repositories.MoveRepository;
+import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
+import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 
 import java.util.ArrayList;

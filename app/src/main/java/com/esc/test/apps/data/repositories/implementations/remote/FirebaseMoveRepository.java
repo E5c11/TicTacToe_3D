@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.repositories;
+package com.esc.test.apps.data.repositories.implementations.remote;
 
 import static com.esc.test.apps.common.utils.DatabaseConstants.FRIENDS;
 import static com.esc.test.apps.common.utils.DatabaseConstants.GAMES;
@@ -16,6 +16,7 @@ import androidx.lifecycle.Transformations;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.objects.pojos.MoveInfo;
+import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.source.remote.FirebaseQueryLiveData;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
@@ -36,7 +37,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Singleton
-public class FirebaseMoveRepository implements FbMoveRepo{
+public class FirebaseMoveRepository implements FbMoveRepo {
 
     private final DatabaseReference ref;
     private final GamePreferences gamePref;

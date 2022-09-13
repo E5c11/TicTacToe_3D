@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.repositories;
+package com.esc.test.apps.data.repositories.implementations.remote;
 
 import static com.esc.test.apps.common.utils.DatabaseConstants.DISPLAY_NAME;
 import static com.esc.test.apps.common.utils.DatabaseConstants.STATUS;
@@ -16,6 +16,7 @@ import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
+import com.esc.test.apps.data.repositories.FbUserRepo;
 import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;

@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.repositories;
+package com.esc.test.apps.data.repositories.implementations.remote;
 
 import static com.esc.test.apps.common.utils.DatabaseConstants.ACTIVE_GAME;
 import static com.esc.test.apps.common.utils.DatabaseConstants.DISPLAY_NAME;
@@ -25,9 +25,9 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.objects.pojos.UserInfo;
+import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.source.remote.FirebaseQueryLiveData;
 import com.esc.test.apps.data.source.remote.FirebaseQuerySingleData;
-import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
 import com.google.firebase.database.ChildEventListener;
@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

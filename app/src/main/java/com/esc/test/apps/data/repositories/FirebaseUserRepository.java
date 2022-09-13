@@ -37,12 +37,13 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Singleton
-public class FirebaseUserRepository {
+public class FirebaseUserRepository implements FbUserRepo {
 
     private final FirebaseAuth firebaseAuth;
     private final UserPreferences userPrefs;
     private final DatabaseReference users;
     private final Application app;
+    private final FirebaseUser user;
     private Disposable d;
     private String uid;
     private final SingleLiveEvent<Boolean> loggedIn = new SingleLiveEvent<>();
@@ -60,6 +61,7 @@ public class FirebaseUserRepository {
         this.firebaseAuth = firebaseAuth;
         this.app = app;
         this.userPrefs = userPref;
+        this.user = firebaseAuth.getCurrentUser();
 
         d = userPref.getUserPreference().subscribeOn(AndroidSchedulers.mainThread()).doOnNext(prefs -> {
             uid = prefs.getUid();
@@ -68,7 +70,8 @@ public class FirebaseUserRepository {
         users = db.child(USERS);
     }
 
-    public void isEmailValid(String viewEmail) {
+    @Override
+    public void isEmailValid(@NonNull String viewEmail) {
         firebaseAuth.fetchSignInMethodsForEmail(viewEmail).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 attempt = 0;
@@ -84,7 +87,8 @@ public class FirebaseUserRepository {
         });
     }
 
-    public void connectLogin(String email, String password) {
+    @Override
+    public void connectLogin(@NonNull String email, @NonNull String password) {
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             executor.execute(() -> {
                 if (task.isSuccessful()) {
@@ -138,8 +142,8 @@ public class FirebaseUserRepository {
         });
     }
 
-    public void createUser(String email, String password, String displayName) {
-        if (email != null && password != null)
+    @Override
+    public void createUser(@NonNull String email, @NonNull String password, @NonNull String displayName) {
             firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> executor.execute(() -> {
                 if (task.isSuccessful()) {
                     attempt = 0;
@@ -173,8 +177,9 @@ public class FirebaseUserRepository {
         users.child(uid).child(STATUS).onDisconnect().setValue(app.getString(R.string.offline));
     }
 
+    @Override
     public void deleteAccount() {
-        getUser().delete()
+        user.delete()
             .addOnCompleteListener(task -> {
                 error.postValue(app.getString(R.string.network_success));
                 userPrefs.clearDataJava();
@@ -182,7 +187,8 @@ public class FirebaseUserRepository {
             .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 
-    public void updateDisplayName(String displayName) {
+    @Override
+    public void updateDisplayName(@NonNull String displayName) {
         users.child(uid).child(DISPLAY_NAME).setValue(displayName)
             .addOnCompleteListener(task -> {
                 error.postValue(app.getString(R.string.network_success));
@@ -191,6 +197,7 @@ public class FirebaseUserRepository {
             .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 
+    @Override
     public void checkDisplayNameExist(CharSequence ds) {
         Query query = users.orderByChild(DISPLAY_NAME).equalTo(ds.toString());
         query.addValueEventListener(new ValueEventListener() {
@@ -215,8 +222,9 @@ public class FirebaseUserRepository {
         });
     }
 
-    public void updateEmail(String email) {
-        getUser().updateEmail(email)
+    @Override
+    public void updateEmail(@NonNull String email) {
+        user.updateEmail(email)
                 .addOnCompleteListener(task -> {
                     error.postValue(app.getString(R.string.network_success));
                     userPrefs.updateEmailJava(email);
@@ -224,8 +232,9 @@ public class FirebaseUserRepository {
                 .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 
-    public void updatePassword(String password) {
-        getUser().updatePassword(password)
+    @Override
+    public void updatePassword(@NonNull String password) {
+        user.updatePassword(password)
                 .addOnCompleteListener(task -> {
                     error.postValue(app.getString(R.string.network_success));
                     userPrefs.updatePasswordJava(password);
@@ -233,19 +242,24 @@ public class FirebaseUserRepository {
                 .addOnFailureListener(fail -> error.postValue(fail.getMessage()));
     }
 
-    private FirebaseUser getUser() {
-        return firebaseAuth.getCurrentUser();
-    }
-
+    @NonNull
+    @Override
     public SingleLiveEvent<Boolean> getLoggedIn() { return loggedIn; }
 
+    @NonNull
+    @Override
     public MutableLiveData<String> getEmailError() {return emailError;}
 
+    @NonNull
+    @Override
     public MutableLiveData<String> getDisplayNameExists() {return displayNameExists;}
 
+    @NonNull
+    @Override
     public SingleLiveEvent<String> getError() { return error;}
 
-    public void setToken(String s) {
+    @Override
+    public void setToken(@NonNull String s) {
         users.child(uid).child(TOKEN).setValue(s).addOnCompleteListener(task -> {
             if (task.isSuccessful()) Log.d(TAG, "setToken: ");
         });

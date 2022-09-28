@@ -1,10 +1,10 @@
 package com.esc.test.apps.common.adaptors.move;
 
+import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.data.persistence.GamePreferences;
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseMoveRepository;
+import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
 import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
-import com.esc.test.apps.common.utils.ExecutorFactory;
 
 import java.util.concurrent.ExecutorService;
 
@@ -18,11 +18,11 @@ public class MovesFactory {
     private final GamePreferences gamePref;
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
-    private final FirebaseMoveRepository firebaseMoveRepository;
+    private final FbMoveRepo firebaseMoveRepository;
 
     @Inject
     public MovesFactory(GameRepository gameRepository, MoveRepository moveRepository,
-                        FirebaseMoveRepository firebaseMoveRepository, GamePreferences gamePref
+                        FbMoveRepo firebaseMoveRepository, GamePreferences gamePref
     ) {
         this.gameRepository = gameRepository;
         this.moveRepository = moveRepository;

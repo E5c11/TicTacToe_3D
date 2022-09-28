@@ -11,17 +11,17 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.common.adaptors.move.MovesFactory;
-import com.esc.test.apps.data.persistence.GamePreferences;
-import com.esc.test.apps.data.persistence.UserPreferences;
+import com.esc.test.apps.common.network.ConnectionLiveData;
+import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.data.objects.pojos.CubeID;
 import com.esc.test.apps.data.objects.pojos.MoveInfo;
 import com.esc.test.apps.data.objects.pojos.Turn;
-import com.esc.test.apps.common.network.ConnectionLiveData;
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseGameRepository;
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseMoveRepository;
+import com.esc.test.apps.data.persistence.GamePreferences;
+import com.esc.test.apps.data.persistence.UserPreferences;
+import com.esc.test.apps.data.repositories.FbGameRepo;
+import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
 import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
-import com.esc.test.apps.common.utils.SingleLiveEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -53,15 +53,15 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private final MoveRepository moveRepository;
     private final GameRepository gameRepository;
     private final MovesFactory moves;
-    private final FirebaseGameRepository fbGameRepo;
-    private final FirebaseMoveRepository fbMoveRepo;
+    private final FbGameRepo fbGameRepo;
+    private final FbMoveRepo fbMoveRepo;
     public final ConnectionLiveData network;
     public static final String TAG = "myT";
 
     @Inject
     public PlayFriendBoardViewModel(MoveRepository moveRepository, GameRepository gameRepository,
-                                    Application app, FirebaseGameRepository fbGameRepo,
-                                    GamePreferences gamePref, FirebaseMoveRepository fbMoveRepo,
+                                    Application app, FbGameRepo fbGameRepo,
+                                    GamePreferences gamePref, FbMoveRepo fbMoveRepo,
                                     MovesFactory moves, ConnectionLiveData network, UserPreferences userPref
     ) {
         this.app = app;
@@ -83,7 +83,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
             dispose(d);
         }).subscribe();
 
-        f = fbGameRepo.gameId.subscribeOn(Schedulers.io()).doOnNext( quit -> {
+        f = fbGameRepo.getGameId().subscribeOn(Schedulers.io()).doOnNext( quit -> {
             _winReady.postValue(true);
             winState = fbGameRepo.getGameActiveState();
             dispose(f);

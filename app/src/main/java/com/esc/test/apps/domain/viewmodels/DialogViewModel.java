@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseGameRepository;
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseUserRepository;
 import com.esc.test.apps.common.utils.AlertType;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
+import com.esc.test.apps.data.repositories.FbGameRepo;
+import com.esc.test.apps.data.repositories.FbUserRepo;
 
 import javax.inject.Inject;
 
@@ -17,8 +17,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 @HiltViewModel
 public class DialogViewModel extends ViewModel {
 
-    private final FirebaseUserRepository fbUserRepo;
-    private final FirebaseGameRepository fbGameRepo;
+    private final FbUserRepo fbUserRepo;
+    private final FbGameRepo fbGameRepo;
     private final MediatorLiveData<String> _error = new MediatorLiveData<>();
     public final LiveData<String> error = _error;
     public final SingleLiveEvent<Boolean> quit;
@@ -26,11 +26,11 @@ public class DialogViewModel extends ViewModel {
     private String input;
 
     @Inject
-    public DialogViewModel(FirebaseUserRepository fbUserRepo, FirebaseGameRepository fbGameRepo
+    public DialogViewModel(FbUserRepo fbUserRepo, FbGameRepo fbGameRepo
     ) {
         this.fbUserRepo = fbUserRepo;
         this.fbGameRepo = fbGameRepo;
-        quit = fbGameRepo.quit;
+        quit = fbGameRepo.getQuit();
         addErrorObservers();
     }
 
@@ -40,7 +40,7 @@ public class DialogViewModel extends ViewModel {
             else _error.postValue(error);
         });
         _error.addSource(fbUserRepo.getDisplayNameExists(), _error::postValue);
-        _error.addSource(fbGameRepo.error, _error::postValue);
+        _error.addSource(fbGameRepo.getError(), _error::postValue);
     }
 
     private void confirmQuit() {

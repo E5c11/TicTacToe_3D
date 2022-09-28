@@ -26,6 +26,7 @@ import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.objects.pojos.UserInfo;
 import com.esc.test.apps.data.repositories.FbGameRepo;
+import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.source.remote.FirebaseQueryLiveData;
 import com.esc.test.apps.data.source.remote.FirebaseQuerySingleData;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
@@ -48,7 +49,6 @@ import javax.inject.Singleton;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.BackpressureStrategy;
-import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -60,16 +60,13 @@ public class FirebaseGameRepository implements FbGameRepo {
     private final Application app;
     private final DatabaseReference gamesRef;
     private final DatabaseReference usersRef;
-    public final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
-    public final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
-    private final SingleLiveEvent<Boolean> _quit = new SingleLiveEvent<>();
-    public final SingleLiveEvent<Boolean> quit = _quit;
-    private final SingleLiveEvent<String> _error = new SingleLiveEvent<>();
-    public final SingleLiveEvent<String> error = _error;
-    private final PublishSubject<String> _gameId = PublishSubject.create();
-    public final Flowable<String> gameId = _gameId.toFlowable(BackpressureStrategy.LATEST);
+    private final SingleLiveEvent<UserInfo> newFriend = new SingleLiveEvent<>();
+    private final SingleLiveEvent<String[]> startGame = new SingleLiveEvent<>();
+    private final SingleLiveEvent<Boolean> quit = new SingleLiveEvent<>();
+    private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
+    private final PublishSubject<String> gameId = PublishSubject.create();
     private FirebaseQuerySingleData gameActive;
-    private final FirebaseMoveRepository fbMoveRepo;
+    private final FbMoveRepo fbMoveRepo;
     private final Random rand;
     private Disposable d;
     private String gameSetID;
@@ -80,7 +77,7 @@ public class FirebaseGameRepository implements FbGameRepo {
 
     @Inject
     public FirebaseGameRepository (Application app, Random rand, GamePreferences gamePref,
-                                   DatabaseReference db, FirebaseMoveRepository fbMoveRepo, UserPreferences userPref
+                                   DatabaseReference db, FbMoveRepo fbMoveRepo, UserPreferences userPref
     ) {
         this.app = app;
         this.gamePref = gamePref;
@@ -172,8 +169,8 @@ public class FirebaseGameRepository implements FbGameRepo {
         final String winPlayer = winner == null ? friendUID : uid;
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
             gamesRef.child(gameSetID).child(pref.getGameId()).child(WINNER).setValue(winPlayer)
-                .addOnCompleteListener( task -> _quit.postValue(true))
-                .addOnFailureListener( task -> _error.postValue(app.getString(R.string.quit_error)));
+                .addOnCompleteListener( task -> quit.postValue(true))
+                .addOnFailureListener( task -> error.postValue(app.getString(R.string.quit_error)));
             dispose(d);
         }).subscribe();
     }
@@ -230,8 +227,8 @@ public class FirebaseGameRepository implements FbGameRepo {
     @Override
     public void setGameActiveState(@NonNull String gameId) {
         gameActive = new FirebaseQuerySingleData(gamesRef.child(gameSetID).child(gameId).child(WINNER));
-        _gameId.onNext(gameId);
-        _gameId.onComplete();
+        this.gameId.onNext(gameId);
+        this.gameId.onComplete();
     }
 
     @Override
@@ -255,5 +252,33 @@ public class FirebaseGameRepository implements FbGameRepo {
             }
         }
         return friendsList;
+    }
+
+    @NonNull
+    @Override
+    public SingleLiveEvent<UserInfo> getNewFriend() {
+        return newFriend;
+    }
+
+    @NonNull
+    @Override
+    public SingleLiveEvent<String[]> getStartGame() {
+        return startGame;
+    }
+
+    @NonNull
+    @Override
+    public final PublishSubject<String> getGameId() { return gameId; }
+
+    @NonNull
+    @Override
+    public SingleLiveEvent<Boolean> getQuit() {
+        return null;
+    }
+
+    @NonNull
+    @Override
+    public SingleLiveEvent<String> getError() {
+        return null;
     }
 }

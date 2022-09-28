@@ -9,11 +9,11 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.common.network.ConnectionLiveData;
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseUserRepository;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
+import com.esc.test.apps.data.persistence.UserPreferences;
+import com.esc.test.apps.data.repositories.FbUserRepo;
 
 import javax.inject.Inject;
 
@@ -38,12 +38,12 @@ public class LoginViewModel extends ViewModel {
     private String email;
     private boolean login = true;
     private final UserPreferences userPref;
-    private final FirebaseUserRepository fbUserRepo;
+    private final FbUserRepo fbUserRepo;
     private static final String TAG = "myT";
 
     @Inject
-    public LoginViewModel(FirebaseUserRepository fbUserRepo,
-                          ConnectionLiveData network, UserPreferences userPref
+    public LoginViewModel(
+            FbUserRepo fbUserRepo, ConnectionLiveData network, UserPreferences userPref
     ) {
         this.fbUserRepo = fbUserRepo;
         this.network = network;

@@ -1,9 +1,9 @@
 package com.esc.test.apps.common.adaptors.move;
 
-import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.objects.entities.Move;
 import com.esc.test.apps.data.objects.pojos.MoveInfo;
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseMoveRepository;
+import com.esc.test.apps.data.persistence.GamePreferences;
+import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
 import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
 
@@ -18,7 +18,7 @@ public class Moves {
     private final GamePreferences gamePref;
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
-    private final FirebaseMoveRepository firebaseMoveRepository;
+    private final FbMoveRepo firebaseMoveRepository;
     private final List<int[]> lines2check = new ArrayList<>();
     private int[] winnerRow = new int[4];
     private int[] numCube;
@@ -31,7 +31,7 @@ public class Moves {
     private final ExecutorService executor;
 
     public Moves(GameRepository gameRepository, ExecutorService executor, GamePreferences gamePref,
-                 MoveRepository moveRepository, FirebaseMoveRepository firebaseMoveRepository,
+                 MoveRepository moveRepository, FbMoveRepo firebaseMoveRepository,
                  String coordinates, String playedPiece, String moveId, boolean onlineGame
     ) {
         this.gameRepository = gameRepository;

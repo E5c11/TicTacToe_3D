@@ -1,6 +1,6 @@
 package com.esc.test.apps.ui.fragments;
 
-import static com.esc.test.apps.viewmodels.board.PlayAIViewModel.AI_GAME;
+import static com.esc.test.apps.domain.viewmodels.board.PlayAIViewModel.AI_GAME;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,10 +17,10 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.data.datastore.UserPreferences;
+import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.databinding.HomeActivityBinding;
-import com.esc.test.apps.utils.AlertType;
-import com.esc.test.apps.utils.Utils;
+import com.esc.test.apps.common.utils.AlertType;
+import com.esc.test.apps.common.utils.Utils;
 import com.google.android.material.snackbar.Snackbar;
 
 import javax.inject.Inject;

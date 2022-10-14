@@ -1,9 +1,9 @@
 package com.esc.test.apps.ui.fragments;
 
-import static com.esc.test.apps.utils.AlertType.DISPLAY_NAME;
-import static com.esc.test.apps.utils.AlertType.EMAIL;
-import static com.esc.test.apps.utils.AlertType.PASSWORD;
-import static com.esc.test.apps.utils.AlertType.WINNER;
+import static com.esc.test.apps.common.utils.AlertType.DISPLAY_NAME;
+import static com.esc.test.apps.common.utils.AlertType.EMAIL;
+import static com.esc.test.apps.common.utils.AlertType.PASSWORD;
+import static com.esc.test.apps.common.utils.AlertType.WINNER;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -19,8 +19,8 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.EditTextBinding;
-import com.esc.test.apps.utils.LetterWatcher;
-import com.esc.test.apps.viewmodels.DialogViewModel;
+import com.esc.test.apps.common.utils.LetterWatcher;
+import com.esc.test.apps.domain.viewmodels.DialogViewModel;
 
 import java.util.Arrays;
 

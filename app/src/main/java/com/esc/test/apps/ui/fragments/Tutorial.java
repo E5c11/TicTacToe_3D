@@ -1,9 +1,9 @@
 package com.esc.test.apps.ui.fragments;
 
-import static com.esc.test.apps.adapters.CubeAdapter.getGridAdapter;
-import static com.esc.test.apps.utils.TutAction.FLASH;
-import static com.esc.test.apps.utils.Utils.getFlashAnimation;
-import static com.esc.test.apps.viewmodels.board.PlayAIViewModel.AI_GAME;
+import static com.esc.test.apps.common.adaptors.CubeAdapter.getGridAdapter;
+import static com.esc.test.apps.common.utils.TutAction.FLASH;
+import static com.esc.test.apps.common.utils.Utils.getFlashAnimation;
+import static com.esc.test.apps.domain.viewmodels.board.PlayAIViewModel.AI_GAME;
 
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -19,11 +19,11 @@ import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.adapters.CubeAdapter;
+import com.esc.test.apps.common.adaptors.CubeAdapter;
 import com.esc.test.apps.databinding.TutorialFragmentBinding;
-import com.esc.test.apps.data.entities.PlayerInstruction;
-import com.esc.test.apps.data.pojos.CubeID;
-import com.esc.test.apps.viewmodels.TutorialViewModel;
+import com.esc.test.apps.data.objects.entities.PlayerInstruction;
+import com.esc.test.apps.data.objects.pojos.CubeID;
+import com.esc.test.apps.domain.viewmodels.TutorialViewModel;
 
 import java.util.ArrayList;
 import java.util.Objects;

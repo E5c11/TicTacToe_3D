@@ -1,9 +1,9 @@
 package com.esc.test.apps.ui.fragments;
 
-import static com.esc.test.apps.utils.AlertType.DELETE;
-import static com.esc.test.apps.utils.AlertType.DISPLAY_NAME;
-import static com.esc.test.apps.utils.AlertType.EMAIL;
-import static com.esc.test.apps.utils.AlertType.PASSWORD;
+import static com.esc.test.apps.common.utils.AlertType.DELETE;
+import static com.esc.test.apps.common.utils.AlertType.DISPLAY_NAME;
+import static com.esc.test.apps.common.utils.AlertType.EMAIL;
+import static com.esc.test.apps.common.utils.AlertType.PASSWORD;
 
 import android.os.Bundle;
 import android.view.View;
@@ -16,8 +16,8 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.databinding.ProfileLayoutBinding;
-import com.esc.test.apps.utils.AlertType;
-import com.esc.test.apps.viewmodels.ProfileViewModel;
+import com.esc.test.apps.common.utils.AlertType;
+import com.esc.test.apps.domain.viewmodels.ProfileViewModel;
 import com.google.android.material.snackbar.Snackbar;
 
 import dagger.hilt.android.AndroidEntryPoint;

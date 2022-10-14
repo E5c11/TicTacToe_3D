@@ -3,7 +3,7 @@ package com.esc.test.apps;
 import android.app.Application;
 import android.content.res.Resources;
 
-import com.esc.test.apps.utils.ExecutorFactory;
+import com.esc.test.apps.common.utils.ExecutorFactory;
 
 import dagger.hilt.android.HiltAndroidApp;
 

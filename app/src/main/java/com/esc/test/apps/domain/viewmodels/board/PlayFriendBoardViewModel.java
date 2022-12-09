@@ -10,7 +10,7 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.common.adaptors.move.MovesFactory;
+import com.esc.test.apps.common.helpers.move.MovesFactory;
 import com.esc.test.apps.common.network.ConnectionLiveData;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.data.objects.pojos.CubeID;

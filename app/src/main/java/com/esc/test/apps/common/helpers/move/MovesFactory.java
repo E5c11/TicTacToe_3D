@@ -1,4 +1,4 @@
-package com.esc.test.apps.common.adaptors.move;
+package com.esc.test.apps.common.helpers.move;
 
 import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.data.persistence.GamePreferences;
@@ -31,7 +31,7 @@ public class MovesFactory {
     }
 
     public void createMoves(String coordinates, String playedPiece, String moveId, boolean onlineGame) {
-        new Moves(gameRepository, executor, gamePref, moveRepository, firebaseMoveRepository,
+        new CheckNewMove(gameRepository, executor, gamePref, moveRepository, firebaseMoveRepository,
                 coordinates, playedPiece, moveId, onlineGame);
     }
 }

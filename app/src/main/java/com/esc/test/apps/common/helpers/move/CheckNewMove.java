@@ -1,5 +1,6 @@
-package com.esc.test.apps.common.adaptors.move;
+package com.esc.test.apps.common.helpers.move;
 
+import com.esc.test.apps.common.utils.moves.MoveUtils;
 import com.esc.test.apps.data.objects.entities.Move;
 import com.esc.test.apps.data.objects.pojos.MoveInfo;
 import com.esc.test.apps.data.persistence.GamePreferences;
@@ -13,7 +14,7 @@ import java.util.OptionalInt;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.IntStream;
 
-public class Moves {
+public class CheckNewMove {
 
     private final GamePreferences gamePref;
     private final GameRepository gameRepository;
@@ -30,9 +31,9 @@ public class Moves {
     private static final String TAG = "myT";
     private final ExecutorService executor;
 
-    public Moves(GameRepository gameRepository, ExecutorService executor, GamePreferences gamePref,
-                 MoveRepository moveRepository, FbMoveRepo firebaseMoveRepository,
-                 String coordinates, String playedPiece, String moveId, boolean onlineGame
+    public CheckNewMove(GameRepository gameRepository, ExecutorService executor, GamePreferences gamePref,
+                        MoveRepository moveRepository, FbMoveRepo firebaseMoveRepository,
+                        String coordinates, String playedPiece, String moveId, boolean onlineGame
     ) {
         this.gameRepository = gameRepository;
         this.executor = executor;

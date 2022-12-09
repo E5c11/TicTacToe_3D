@@ -1,4 +1,4 @@
-package com.esc.test.apps.common.utils;
+package com.esc.test.apps.common.utils.tutorial;
 
 import com.esc.test.apps.App;
 import com.esc.test.apps.R;

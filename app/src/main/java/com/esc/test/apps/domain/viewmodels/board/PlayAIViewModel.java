@@ -8,8 +8,8 @@ import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.common.adaptors.move.MovesFactory;
-import com.esc.test.apps.common.adaptors.move.NormalMoves;
+import com.esc.test.apps.common.helpers.move.MovesFactory;
+import com.esc.test.apps.common.helpers.move.BotMoveGenerator;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.objects.entities.Move;
@@ -32,7 +32,7 @@ public class PlayAIViewModel extends ViewModel {
     private final MovesFactory movesFactory;
     private final Application app;
     private final MoveRepository moveRepo;
-    private final NormalMoves normalMoves;
+    private final BotMoveGenerator botMoveGenerator;
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     public final LiveData<String> error;
     private final UserPreferences userPref;
@@ -46,18 +46,18 @@ public class PlayAIViewModel extends ViewModel {
 
     @Inject
     public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
-                           NormalMoves normalMoves, UserPreferences userPref, GamePreferences gamePref
+                           BotMoveGenerator botMoveGenerator, UserPreferences userPref, GamePreferences gamePref
     ) {
         this.movesFactory = movesFactory;
         this.app = app;
         this.moveRepo = moveRepo;
-        this.normalMoves = normalMoves;
+        this.botMoveGenerator = botMoveGenerator;
         this.userPref = userPref;
         this.gamePref = gamePref;
         firstMove();
         catchLastMove();
-        error = normalMoves.getError();
-        normalMoves.newGame();
+        error = botMoveGenerator.getError();
+        botMoveGenerator.newGame();
     }
 
     public void firstMove() {
@@ -70,12 +70,12 @@ public class PlayAIViewModel extends ViewModel {
 //            Log.d(TAG, "firstMove: ai " + pos);
 //        } else {
          userPiece = app.getString(R.string.cross);
-         normalMoves.setPiece(app.getString(R.string.circle), 1);
+         botMoveGenerator.setPiece(app.getString(R.string.circle), 1);
          Log.d(TAG, "firstMove: user ");
 //        }
     }
 
-    public void newGame() { normalMoves.newGame(); }
+    public void newGame() { botMoveGenerator.newGame(); }
 
     public void newMove(CubeID cube) {
         moveCount++;
@@ -86,7 +86,7 @@ public class PlayAIViewModel extends ViewModel {
     private void newAIMove(Move move) {
         moveCount++;
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            if (pref.getWinner().isEmpty()) executor.execute(() -> normalMoves.eliminateLines(move));
+            if (pref.getWinner().isEmpty()) executor.execute(() -> botMoveGenerator.eliminateLines(move));
             Utils.dispose(d);
         }).subscribe();
     }

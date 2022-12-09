@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.datastore.preferences.rxjava3.RxPreferenceDataStoreBuilder
 import androidx.datastore.rxjava3.RxDataStore
-import com.esc.test.apps.common.adaptors.move.NormalMoves.NORMAL
+import com.esc.test.apps.common.helpers.move.BotMoveGenerator.NORMAL
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.flow.catch

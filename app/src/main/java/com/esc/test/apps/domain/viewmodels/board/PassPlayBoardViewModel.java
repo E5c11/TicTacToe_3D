@@ -1,6 +1,6 @@
 package com.esc.test.apps.domain.viewmodels.board;
 
-import static com.esc.test.apps.common.adaptors.move.MoveUtils.getCubeIds;
+import static com.esc.test.apps.common.utils.moves.MoveUtils.getCubeIds;
 import static com.esc.test.apps.common.utils.Utils.dispose;
 
 import android.app.Application;
@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.common.adaptors.CubeAdapter;
-import com.esc.test.apps.common.adaptors.move.MovesFactory;
+import com.esc.test.apps.common.helpers.move.MovesFactory;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.objects.entities.Game;
 import com.esc.test.apps.data.objects.pojos.CubeID;

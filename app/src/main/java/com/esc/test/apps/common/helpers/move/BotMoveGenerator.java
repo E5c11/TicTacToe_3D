@@ -1,13 +1,14 @@
-package com.esc.test.apps.common.adaptors.move;
+package com.esc.test.apps.common.helpers.move;
 
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
+import com.esc.test.apps.common.utils.moves.MoveUtils;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.objects.entities.Move;
 import com.esc.test.apps.common.utils.ExecutorFactory;
-import com.esc.test.apps.common.utils.Lines;
+import com.esc.test.apps.common.utils.moves.Lines;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
 
@@ -26,7 +27,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @Singleton
-public class NormalMoves {
+public class BotMoveGenerator {
     //AI lines
     private final List<int[]> possibleLines = new ArrayList<>();
     private final List<int[]> oneCubeLine = new ArrayList<>();
@@ -60,7 +61,7 @@ public class NormalMoves {
     public static final String DIFFICULT = "Hard";
 
     @Inject
-    public NormalMoves(MovesFactory movesFactory, Random rand, UserPreferences userPref) {
+    public BotMoveGenerator(MovesFactory movesFactory, Random rand, UserPreferences userPref) {
         this.movesFactory = movesFactory;
         this.rand = rand;
         this.userPref = userPref;

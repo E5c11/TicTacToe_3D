@@ -18,7 +18,7 @@ import com.esc.test.apps.R;
 import com.esc.test.apps.common.adaptors.ActiveFriendsAdapter;
 import com.esc.test.apps.common.adaptors.FriendRequestAdapter;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.objects.pojos.UserInfo;
+import com.esc.test.apps.data.models.pojos.UserInfo;
 import com.esc.test.apps.databinding.FriendListBinding;
 import com.esc.test.apps.databinding.FriendsActivityBinding;
 import com.esc.test.apps.domain.viewmodels.FriendsModelView;

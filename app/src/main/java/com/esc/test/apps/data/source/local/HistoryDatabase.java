@@ -3,8 +3,8 @@ package com.esc.test.apps.data.source.local;
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 
-import com.esc.test.apps.data.objects.entities.Game;
-import com.esc.test.apps.data.objects.entities.Move;
+import com.esc.test.apps.data.models.entities.Game;
+import com.esc.test.apps.data.models.entities.Move;
 
 @Database(entities = {Move.class, Game.class}, version = 2)
 public abstract class HistoryDatabase extends RoomDatabase {

@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.objects.pojos;
+package com.esc.test.apps.data.models.pojos;
 
 import com.google.gson.annotations.SerializedName;
 

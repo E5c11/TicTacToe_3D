@@ -21,8 +21,8 @@ import androidx.navigation.Navigation;
 import com.esc.test.apps.R;
 import com.esc.test.apps.common.adaptors.CubeAdapter;
 import com.esc.test.apps.databinding.TutorialFragmentBinding;
-import com.esc.test.apps.data.objects.entities.PlayerInstruction;
-import com.esc.test.apps.data.objects.pojos.CubeID;
+import com.esc.test.apps.data.models.entities.PlayerInstruction;
+import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.domain.viewmodels.TutorialViewModel;
 
 import java.util.ArrayList;

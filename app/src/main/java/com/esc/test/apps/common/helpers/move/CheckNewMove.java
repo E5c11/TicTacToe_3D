@@ -1,8 +1,8 @@
 package com.esc.test.apps.common.helpers.move;
 
 import com.esc.test.apps.common.utils.moves.MoveUtils;
-import com.esc.test.apps.data.objects.entities.Move;
-import com.esc.test.apps.data.objects.pojos.MoveInfo;
+import com.esc.test.apps.data.models.entities.Move;
+import com.esc.test.apps.data.models.pojos.MoveInfo;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;

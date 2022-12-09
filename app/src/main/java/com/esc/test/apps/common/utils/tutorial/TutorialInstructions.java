@@ -2,8 +2,8 @@ package com.esc.test.apps.common.utils.tutorial;
 
 import com.esc.test.apps.App;
 import com.esc.test.apps.R;
-import com.esc.test.apps.data.objects.entities.PlayerInstruction;
-import com.esc.test.apps.data.objects.entities.PcInstruction;
+import com.esc.test.apps.data.models.entities.PlayerInstruction;
+import com.esc.test.apps.data.models.entities.PcInstruction;
 
 import java.util.ArrayList;
 import java.util.Arrays;

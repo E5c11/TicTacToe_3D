@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData;
 
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
-import com.esc.test.apps.data.objects.pojos.UserInfo;
+import com.esc.test.apps.data.models.pojos.UserInfo;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.repositories.FbGameRepo;
 

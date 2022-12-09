@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.objects.entities;
+package com.esc.test.apps.data.models.entities;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

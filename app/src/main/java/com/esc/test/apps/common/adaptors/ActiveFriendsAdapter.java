@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.databinding.FriendListBinding;
-import com.esc.test.apps.data.objects.pojos.UserInfo;
+import com.esc.test.apps.data.models.pojos.UserInfo;
 import com.esc.test.apps.common.utils.Utils;
 
 import java.util.Objects;

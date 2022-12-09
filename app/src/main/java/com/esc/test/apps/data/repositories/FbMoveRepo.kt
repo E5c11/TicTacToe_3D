@@ -1,7 +1,7 @@
 package com.esc.test.apps.data.repositories
 
 import androidx.lifecycle.LiveData
-import com.esc.test.apps.data.objects.pojos.MoveInfo
+import com.esc.test.apps.data.models.pojos.MoveInfo
 import com.google.firebase.database.DatabaseReference
 
 interface FbMoveRepo {

@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class MovesFactory {
+public class CheckMoveFactory {
 
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final GamePreferences gamePref;
@@ -21,8 +21,8 @@ public class MovesFactory {
     private final FbMoveRepo firebaseMoveRepository;
 
     @Inject
-    public MovesFactory(GameRepository gameRepository, MoveRepository moveRepository,
-                        FbMoveRepo firebaseMoveRepository, GamePreferences gamePref
+    public CheckMoveFactory(GameRepository gameRepository, MoveRepository moveRepository,
+                            FbMoveRepo firebaseMoveRepository, GamePreferences gamePref
     ) {
         this.gameRepository = gameRepository;
         this.moveRepository = moveRepository;

@@ -13,9 +13,9 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.esc.test.apps.data.objects.entities.Move;
+import com.esc.test.apps.data.models.entities.Move;
 import com.esc.test.apps.data.source.local.GameMovesDao;
-import com.esc.test.apps.data.objects.pojos.MoveInfo;
+import com.esc.test.apps.data.models.pojos.MoveInfo;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 
 import io.reactivex.rxjava3.core.Flowable;

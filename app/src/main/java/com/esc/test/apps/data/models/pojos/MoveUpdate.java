@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.objects.pojos;
+package com.esc.test.apps.data.models.pojos;
 
 public class MoveUpdate {
 

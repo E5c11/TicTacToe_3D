@@ -2,7 +2,7 @@ package com.esc.test.apps.data.repositories.implementations.local;
 
 import androidx.lifecycle.LiveData;
 
-import com.esc.test.apps.data.objects.entities.Game;
+import com.esc.test.apps.data.models.entities.Game;
 import com.esc.test.apps.data.source.local.GamesDao;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 

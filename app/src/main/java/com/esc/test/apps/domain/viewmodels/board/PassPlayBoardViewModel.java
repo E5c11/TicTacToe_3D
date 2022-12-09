@@ -14,12 +14,12 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.common.adaptors.CubeAdapter;
-import com.esc.test.apps.common.helpers.move.MovesFactory;
+import com.esc.test.apps.common.helpers.move.CheckMoveFactory;
 import com.esc.test.apps.data.persistence.GamePreferences;
-import com.esc.test.apps.data.objects.entities.Game;
-import com.esc.test.apps.data.objects.pojos.CubeID;
-import com.esc.test.apps.data.objects.pojos.MoveInfo;
-import com.esc.test.apps.data.objects.pojos.MoveUpdate;
+import com.esc.test.apps.data.models.entities.Game;
+import com.esc.test.apps.data.models.pojos.CubeID;
+import com.esc.test.apps.data.models.pojos.MoveInfo;
+import com.esc.test.apps.data.models.pojos.MoveUpdate;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
 import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
@@ -49,7 +49,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final GamePreferences gamePref;
     private final GameRepository gameRepository;
     private final MoveRepository moveRepository;
-    private final MovesFactory moves;
+    private final CheckMoveFactory moves;
     private static final String TAG = "myT";
     private boolean isEnd = true;
     private int turnColor, notTurnColor;
@@ -60,7 +60,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private Disposable d, f;
 
     @Inject
-    public PassPlayBoardViewModel(MovesFactory moves, Application app, GamePreferences gamePref,
+    public PassPlayBoardViewModel(CheckMoveFactory moves, Application app, GamePreferences gamePref,
                                   MoveRepository moveRepository, GameRepository gameRepository
     ) {
         populateGridLists();

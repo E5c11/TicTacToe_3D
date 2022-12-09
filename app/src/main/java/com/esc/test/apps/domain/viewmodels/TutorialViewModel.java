@@ -15,8 +15,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.objects.entities.PlayerInstruction;
-import com.esc.test.apps.data.objects.pojos.CubeID;
+import com.esc.test.apps.data.models.entities.PlayerInstruction;
+import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.tutorial.TutorialInstructions;
 

@@ -2,7 +2,7 @@ package com.esc.test.apps.data.repositories
 
 import androidx.lifecycle.LiveData
 import com.esc.test.apps.common.utils.SingleLiveEvent
-import com.esc.test.apps.data.objects.pojos.UserInfo
+import com.esc.test.apps.data.models.pojos.UserInfo
 import io.reactivex.rxjava3.subjects.PublishSubject
 
 interface FbGameRepo {

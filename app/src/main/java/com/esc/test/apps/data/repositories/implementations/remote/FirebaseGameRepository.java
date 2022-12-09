@@ -24,7 +24,7 @@ import androidx.lifecycle.Transformations;
 import com.esc.test.apps.R;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.objects.pojos.UserInfo;
+import com.esc.test.apps.data.models.pojos.UserInfo;
 import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.source.remote.FirebaseQueryLiveData;
@@ -48,7 +48,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.PublishSubject;
@@ -73,7 +72,7 @@ public class FirebaseGameRepository implements FbGameRepo {
     private String friendUID;
     private String uid;
     private ValueEventListener playerUIDsListener;
-    public static final String TAG = "[Firebase]}";
+    public static final String TAG = "[Firebase]";
 
     @Inject
     public FirebaseGameRepository (Application app, Random rand, GamePreferences gamePref,

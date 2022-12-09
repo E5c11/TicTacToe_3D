@@ -4,7 +4,7 @@ import static com.esc.test.apps.common.utils.Utils.addNonNull;
 
 import android.util.Log;
 
-import com.esc.test.apps.data.objects.pojos.CubeID;
+import com.esc.test.apps.data.models.pojos.CubeID;
 
 import java.util.ArrayList;
 import java.util.Arrays;

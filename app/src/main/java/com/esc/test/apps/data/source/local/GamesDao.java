@@ -7,7 +7,7 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import com.esc.test.apps.data.objects.entities.Game;
+import com.esc.test.apps.data.models.entities.Game;
 
 import io.reactivex.rxjava3.core.Flowable;
 

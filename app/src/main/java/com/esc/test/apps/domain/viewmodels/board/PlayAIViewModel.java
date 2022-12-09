@@ -8,12 +8,12 @@ import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
-import com.esc.test.apps.common.helpers.move.MovesFactory;
+import com.esc.test.apps.common.helpers.move.CheckMoveFactory;
 import com.esc.test.apps.common.helpers.move.BotMoveGenerator;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.objects.entities.Move;
-import com.esc.test.apps.data.objects.pojos.CubeID;
+import com.esc.test.apps.data.models.entities.Move;
+import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.common.utils.Utils;
@@ -29,7 +29,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 @HiltViewModel
 public class PlayAIViewModel extends ViewModel {
 
-    private final MovesFactory movesFactory;
+    private final CheckMoveFactory checkMoveFactory;
     private final Application app;
     private final MoveRepository moveRepo;
     private final BotMoveGenerator botMoveGenerator;
@@ -45,10 +45,10 @@ public class PlayAIViewModel extends ViewModel {
     public static final String AI_GAME = "play_ai";
 
     @Inject
-    public PlayAIViewModel(MovesFactory movesFactory, Application app, MoveRepository moveRepo,
+    public PlayAIViewModel(CheckMoveFactory checkMoveFactory, Application app, MoveRepository moveRepo,
                            BotMoveGenerator botMoveGenerator, UserPreferences userPref, GamePreferences gamePref
     ) {
-        this.movesFactory = movesFactory;
+        this.checkMoveFactory = checkMoveFactory;
         this.app = app;
         this.moveRepo = moveRepo;
         this.botMoveGenerator = botMoveGenerator;
@@ -79,7 +79,7 @@ public class PlayAIViewModel extends ViewModel {
 
     public void newMove(CubeID cube) {
         moveCount++;
-        movesFactory.createMoves(
+        checkMoveFactory.createMoves(
                 cube.getCoordinates(), userPiece, String.valueOf(moveCount), false);
     }
 

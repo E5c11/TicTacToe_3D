@@ -15,7 +15,7 @@ import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.objects.pojos.MoveInfo;
+import com.esc.test.apps.data.models.pojos.MoveInfo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.source.remote.FirebaseQueryLiveData;
 import com.esc.test.apps.common.utils.ExecutorFactory;

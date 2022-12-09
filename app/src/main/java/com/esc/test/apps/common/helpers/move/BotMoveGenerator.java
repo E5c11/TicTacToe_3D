@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.esc.test.apps.common.utils.moves.MoveUtils;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.objects.entities.Move;
+import com.esc.test.apps.data.models.entities.Move;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.common.utils.moves.Lines;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
@@ -44,7 +44,7 @@ public class BotMoveGenerator {
     private final List<Integer> userCubes = new ArrayList<>();
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
-    private final MovesFactory movesFactory;
+    private final CheckMoveFactory checkMoveFactory;
     private final Random rand;
     private UserPreferences userPref;
     private Disposable d;
@@ -61,8 +61,8 @@ public class BotMoveGenerator {
     public static final String DIFFICULT = "Hard";
 
     @Inject
-    public BotMoveGenerator(MovesFactory movesFactory, Random rand, UserPreferences userPref) {
-        this.movesFactory = movesFactory;
+    public BotMoveGenerator(CheckMoveFactory checkMoveFactory, Random rand, UserPreferences userPref) {
+        this.checkMoveFactory = checkMoveFactory;
         this.rand = rand;
         this.userPref = userPref;
     }
@@ -324,7 +324,7 @@ public class BotMoveGenerator {
         Log.d(TAG, "sendMove: " + pos);
         aICubes.add(pos);
 //        lastAIMove = pos;
-        movesFactory.createMoves(MoveUtils.getStringCoord(pos), aIPiece,
+        checkMoveFactory.createMoves(MoveUtils.getStringCoord(pos), aIPiece,
                 String.valueOf(moveCount), false);
         addMoveToLines(pos);
     }

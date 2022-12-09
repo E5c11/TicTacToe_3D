@@ -21,7 +21,7 @@ import androidx.navigation.fragment.NavHostFragment;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.common.adaptors.CubeAdapter;
-import com.esc.test.apps.data.objects.pojos.CubeID;
+import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.databinding.BoardActivityBinding;
 import com.esc.test.apps.common.utils.AlertType;
 import com.esc.test.apps.domain.viewmodels.board.PassPlayBoardViewModel;

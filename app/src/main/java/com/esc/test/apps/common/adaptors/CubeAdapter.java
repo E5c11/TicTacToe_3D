@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.esc.test.apps.data.objects.pojos.CubeID;
+import com.esc.test.apps.data.models.pojos.CubeID;
 
 public class CubeAdapter extends BaseAdapter {
 

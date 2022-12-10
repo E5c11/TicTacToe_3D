@@ -15,7 +15,6 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 const val GUEST_EMAIL = "guest@email.com"
 
 data class UserDetails(val name: String = "guest", val email: String = GUEST_EMAIL,
@@ -38,7 +37,7 @@ class UserPreferences @Inject constructor(@ApplicationContext context: Context){
         .catch {
             if (it is IOException) {
                 it.printStackTrace()
-                emit(emptyPreferences())
+                emptyPreferences()
             } else throw it
         }.map { preferences -> getData(preferences) }
 

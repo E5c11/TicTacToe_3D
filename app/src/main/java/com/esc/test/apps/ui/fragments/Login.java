@@ -3,6 +3,7 @@ package com.esc.test.apps.ui.fragments;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -119,15 +120,13 @@ public class Login extends Fragment {
         binding.submit.setOnClickListener(v -> {
             String email = binding.emailInput.getText().toString().trim();
             if (binding.submit.getText().equals(getResources().getString(R.string.register))) {
-                loginViewModel.setDisplayName(binding.displayNameInput.getText().toString().trim());
-                loginViewModel.setEmail(email);
-                loginViewModel.submitNewUser();
                 setProgressBar();
+                String displayName = binding.displayNameInput.getText().toString().trim();
+                loginViewModel.submitNewUser(email, displayName);
             } else if (binding.submit.getText().equals(getString(R.string.login))) {
-                loginViewModel.setEmail(email);
-                loginViewModel.setPassword(binding.passInput.getText().toString().trim());
-                loginViewModel.loginUser();
                 setProgressBar();
+                String password = binding.passInput.getText().toString().trim();
+                loginViewModel.loginUser(email, password);
             }
         });
     }

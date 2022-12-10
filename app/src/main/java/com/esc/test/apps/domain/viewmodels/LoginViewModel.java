@@ -1,6 +1,9 @@
 package com.esc.test.apps.domain.viewmodels;
 
-import static com.esc.test.apps.data.persistence.UserPreferencesKt.GUEST_EMAIL;
+import static com.esc.test.apps.common.utils.ExtensionsKt.validEmail;
+import static com.esc.test.apps.common.utils.ResourceKt.isError;
+import static com.esc.test.apps.common.utils.ResourceKt.isLoading;
+import static com.esc.test.apps.common.utils.ResourceKt.isSuccess;
 
 import android.util.Log;
 
@@ -12,12 +15,13 @@ import androidx.lifecycle.ViewModel;
 import com.esc.test.apps.common.network.ConnectionLiveData;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
-import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.repositories.FbUserRepo;
+import com.esc.test.apps.domain.usecases.login.LoginUsecase;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -25,6 +29,10 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class LoginViewModel extends ViewModel {
 
     private final SingleLiveEvent<Boolean> loggedIn;
+    private Single<Boolean> _loginState;
+    public final Single<Boolean> loginState = _loginState;
+    private Single<Boolean> _loadingState;
+    public final Single<Boolean> loadingState = _loadingState;
     public final SingleLiveEvent<String> error;
     public final ConnectionLiveData network;
     private final MutableLiveData<String> displayNameExists;
@@ -37,13 +45,13 @@ public class LoginViewModel extends ViewModel {
     private String password;
     private String email;
     private boolean login = true;
-    private final UserPreferences userPref;
     private final FbUserRepo fbUserRepo;
+    private final LoginUsecase loginUsecase;
     private static final String TAG = "myT";
 
     @Inject
     public LoginViewModel(
-            FbUserRepo fbUserRepo, ConnectionLiveData network, UserPreferences userPref
+            FbUserRepo fbUserRepo, ConnectionLiveData network, LoginUsecase loginUsecase
     ) {
         this.fbUserRepo = fbUserRepo;
         this.network = network;
@@ -51,30 +59,32 @@ public class LoginViewModel extends ViewModel {
         error = fbUserRepo.getError();
         emailError = fbUserRepo.getEmailError();
         displayNameExists = fbUserRepo.getDisplayNameExists();
-        this.userPref = userPref;
+        this.loginUsecase = loginUsecase;
         logUserIn();
     }
 
     private void logUserIn() {
-        d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            if (!pref.getEmail().equals(GUEST_EMAIL))
-                fbUserRepo.connectLogin(pref.getEmail(), pref.getPassword());
-            else {
-                Log.d("myT", "first launch");
-                loggedIn.postValue(false);
+        d = loginUsecase.invoke().observeOn(Schedulers.io()).subscribe( resource -> {
+            _loadingState = Single.just(isLoading(resource));
+            if (isSuccess(resource)) {
+                if (resource.component2()) loggedIn.postValue(true);
+                else loggedIn.postValue(false);
+                _loginState = Single.just(true);
+                d.dispose();
             }
-            Utils.dispose(d);
-        }).subscribe();
+            else if (isError(resource)) {
+                error.postValue(resource.getError().getMessage());
+                d.dispose();
+            }
+        });
     }
 
     public void getUserDetails() {
-        userPref.clearDataJava();
-        Log.d(TAG, "getUserDetails: ");
-        fbUserRepo.connectLogin(email, password);
+        loginUsecase.invoke(email, password);
     }
 
     public void isEmailValid(String viewEmail) {
-        if (Utils.validEmail(viewEmail)) fbUserRepo.isEmailValid(viewEmail);
+        if (validEmail(viewEmail)) fbUserRepo.isEmailValid(viewEmail);
         else emailError.setValue("Enter a valid email");
     }
 
@@ -82,23 +92,19 @@ public class LoginViewModel extends ViewModel {
         fbUserRepo.checkDisplayNameExist(ds);
     }
 
-    public void submitNewUser() {
+    public void submitNewUser(String email, String displayName) {
+        setEmail(email);
+        setDisplayName(displayName);
         if (!validDisplayName() | !validateEmail() | !validatePassCon()) {
             error.setValue("kill login");
-            return;
         } else fbUserRepo.createUser(email, password, displayName);
     }
 
-    public void loginUser() {
-        Log.d(TAG, "loginUser: " + !password.isEmpty());
-        if (!validateEmail() | password.isEmpty()) {
-            error.setValue("kill login");
-            return;
-        }
-        else {
-            Log.d(TAG, "loginUser: yes");
-            getUserDetails();
-        }
+    public void loginUser(String email, String password) {
+        setEmail(email);
+        setPassword(password);
+        if (!validateEmail() | password.isEmpty()) error.setValue("kill login");
+        else getUserDetails();
     }
 
     private boolean validDisplayName() {
@@ -180,10 +186,7 @@ public class LoginViewModel extends ViewModel {
     }
 
     public LiveData<Boolean> getLoggedIn() {
-        return Transformations.map(loggedIn, s -> {
-            Log.d(TAG, "getLoggedIn: " + s);
-            return s;
-        });
+        return loggedIn;
     }
 
     public LiveData<String> getDisplayNameExists() { return displayNameExists; }

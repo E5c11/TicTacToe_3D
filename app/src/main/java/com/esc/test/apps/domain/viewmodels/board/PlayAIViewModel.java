@@ -102,7 +102,7 @@ public class PlayAIViewModel extends ViewModel {
             .subscribeOn(Schedulers.io()).map( move -> {
                 if (userPiece.equals(move.getPiece_played())) {
                     newAIMove(move);
-                    return null;
+                    return move.emptyMove();
                 } else return move;
             }));
     }

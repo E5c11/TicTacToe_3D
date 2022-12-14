@@ -36,7 +36,6 @@ public class PlayAIViewModel extends ViewModel {
     private final Application app;
     private final MoveRepository moveRepo;
     private final BotMoveGenerator botMoveGenerator;
-    private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     public final LiveData<String> error;
     private final UserPreferences userPref;
     private final GamePreferences gamePref;
@@ -76,10 +75,7 @@ public class PlayAIViewModel extends ViewModel {
 
     private void newAIMove(Move move) {
         moveCount++;
-        d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            if (pref.getWinner().isEmpty()) executor.execute(() -> botMoveGenerator.eliminateLines(move));
-            dispose(d);
-        }).subscribe();
+        movesUsecase.invoke(move);
     }
 
     public LiveData<Move> getLastMove() {

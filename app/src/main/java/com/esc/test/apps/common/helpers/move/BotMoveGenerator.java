@@ -2,6 +2,8 @@ package com.esc.test.apps.common.helpers.move;
 
 import static com.esc.test.apps.common.utils.Utils.dispose;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 
 import com.esc.test.apps.common.utils.SingleLiveEvent;
@@ -80,7 +82,7 @@ public class BotMoveGenerator {
         newGame();
     }
 
-    public void eliminateLines(Move move) {
+    public void eliminateLines(Move move) throws Exception {
         int userPos = Integer.parseInt(move.getPosition());
         List<int[]> remove = new ArrayList<>();
         possibleLines.forEach(line -> {
@@ -93,7 +95,7 @@ public class BotMoveGenerator {
         userLines();
     }
 
-    private void userLines() {
+    private void userLines() throws Exception {
         List<int[]> userLines = MoveUtils.addLinesToCheck(lastUserMove, MoveUtils.numValue(MoveUtils.getStringCoord(lastUserMove)));
         possibleLines.removeAll(userLines);
         oneCubeLine.removeAll(userLines);
@@ -101,7 +103,7 @@ public class BotMoveGenerator {
         blockUser(userLines);
     }
 
-    private void blockUser(List<int[]> userLine) {
+    private void blockUser(List<int[]> userLine) throws Exception {
         List<int[]> duplicates = new ArrayList<>(userLine);
         duplicates.retainAll(threeLineBlock);
         //noinspection SuspiciousMethodCalls
@@ -131,7 +133,7 @@ public class BotMoveGenerator {
         newMove();
     }
 
-    private void newMove() {
+    private void newMove() throws Exception {
         if (!threeCubeLine.isEmpty()) { //check to win
             if (level.equals(NORMAL) || level.equals(DIFFICULT)) chooseMove(threeCubeLine, null);
             else {
@@ -148,7 +150,7 @@ public class BotMoveGenerator {
         else checkPossibleMoves();
     }
 
-    private void checkPossibleMoves() {
+    private void checkPossibleMoves() throws Exception {
         if (possibleLines.isEmpty()) anywhereMove();
         else {
             if (!twoCubeLine.isEmpty()) {
@@ -166,17 +168,17 @@ public class BotMoveGenerator {
         }
     }
 
-    private int anywhereMove() {
+    private int anywhereMove() throws Exception {
         List<Integer> occupiedCubes = new ArrayList<>();
         occupiedCubes.addAll(aICubes);
         occupiedCubes.addAll(userCubes);
         int newMove = MoveUtils.getRandomCube(occupiedCubes);
-        if (newMove == MoveUtils.NO_MOVES) error.postValue("No moves available");
+        if (newMove == MoveUtils.NO_MOVES) throw new Exception("No moves available");
         sendMove(newMove);
         return newMove;
     }
 
-    private void chooseMove(List<int[]> first, List<int[]> second) {
+    private void chooseMove(List<int[]> first, List<int[]> second) throws Exception {
         if (level.equals(EASY) && second != null) first.addAll(second);
         int[] moveLine = first.get(rand.nextInt(first.size()));
         List<Integer> newPos = new ArrayList<>();
@@ -192,18 +194,18 @@ public class BotMoveGenerator {
         else anywhereMove();
     }
 
-    private void playMergeCube(List<Integer> commonCube) {
+    private void playMergeCube(List<Integer> commonCube) throws Exception {
         if (commonCube.isEmpty() && !twoCubeLine.isEmpty()) {
             blockMergeCube(MoveUtils.checkMergeCube(twoLineBlock, userCubes, aICubes));
         } else sendMergeCube(commonCube);
     }
 
-    private void blockMergeCube(List<Integer> commonCube) {
+    private void blockMergeCube(List<Integer> commonCube) throws Exception {
         if (commonCube.isEmpty() && !twoLineBlock.isEmpty()) createMergeLines();
         else sendMergeCube(commonCube);
     }
 
-    private void createMergeLines() {
+    private void createMergeLines() throws Exception {
         boolean oneInLine = true;
         List<Integer> possibleCubes = MoveUtils.checkAnyMergeCubes(twoCubeLine, aICubes, oneCubeLine);
         if (possibleCubes.isEmpty()) {
@@ -272,7 +274,7 @@ public class BotMoveGenerator {
         oneCubeLine.removeAll(list);
     }
 
-    private void sendMergeCube(List<Integer> commonCube) {
+    private void sendMergeCube(List<Integer> commonCube) throws Exception {
         if (commonCube.isEmpty()) {
             if (twoCubeLine.isEmpty()) chooseMove(oneCubeLine.isEmpty() ? possibleLines : oneCubeLine, null);
             else createMergeLines();
@@ -301,7 +303,7 @@ public class BotMoveGenerator {
         threeCubeLine.add(line);
     }
 
-    private int randPos(List<Integer> cubes) {
+    private int randPos(List<Integer> cubes) throws Exception {
         if (cubes.isEmpty()) return anywhereMove();
         else return cubes.get(rand.nextInt(cubes.size()));
     }

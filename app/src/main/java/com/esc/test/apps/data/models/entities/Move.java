@@ -48,4 +48,8 @@ public class Move {
     public void setCoordinates(String coordinates) {this.coordinates = coordinates;}
 
     public void setPiece_played(String piece_played) {this.piece_played = piece_played;}
+
+    public Move emptyMove() {
+        return new Move("", "", "");
+    }
 }

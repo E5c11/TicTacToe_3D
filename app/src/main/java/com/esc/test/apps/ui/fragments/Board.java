@@ -228,10 +228,7 @@ public class Board extends Fragment {
 
     private void setPlayAIObserver() {
         playAIViewModel.getLastMove().observe(getViewLifecycleOwner(), move -> {
-            if (move != null) {
-//                Log.d(TAG, "setPlayAIObserver: " + move.getPosition() + " " + move.getPiece_played());
-                updateGridView(move.getPosition(), move.getPiece_played());
-            }
+            if (!move.getPosition().isEmpty()) updateGridView(move.getPosition(), move.getPiece_played());
         });
         playAIViewModel.error.observe(getViewLifecycleOwner(), error -> Snackbar.make(
                 binding.getRoot(), error, Snackbar.LENGTH_LONG).show());

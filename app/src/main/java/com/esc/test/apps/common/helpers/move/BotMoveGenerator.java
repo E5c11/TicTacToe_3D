@@ -1,23 +1,21 @@
 package com.esc.test.apps.common.helpers.move;
 
-import android.util.Log;
+import static com.esc.test.apps.common.utils.Utils.dispose;
 
 import androidx.lifecycle.LiveData;
 
-import com.esc.test.apps.common.utils.moves.MoveUtils;
-import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.models.entities.Move;
-import com.esc.test.apps.common.utils.ExecutorFactory;
-import com.esc.test.apps.common.utils.moves.Lines;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.common.utils.Utils;
+import com.esc.test.apps.common.utils.moves.Lines;
+import com.esc.test.apps.common.utils.moves.MoveUtils;
+import com.esc.test.apps.data.models.entities.Move;
+import com.esc.test.apps.data.persistence.UserPreferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -42,13 +40,11 @@ public class BotMoveGenerator {
 
     private final List<Integer> aICubes = new ArrayList<>();
     private final List<Integer> userCubes = new ArrayList<>();
-    private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private final SingleLiveEvent<String> error = new SingleLiveEvent<>();
     private final CheckMoveFactory checkMoveFactory;
     private final Random rand;
-    private UserPreferences userPref;
+    private final UserPreferences userPref;
     private Disposable d;
-    //    private int lastAIMove;
     private int lastUserMove;
     private int moveCount;
     private String aIPiece;
@@ -72,25 +68,16 @@ public class BotMoveGenerator {
         threeLineBlock.clear(); aICubes.clear(); userCubes.clear();
         openLines.clear();
         for (int[] line : Lines.lines) openLines.add(Arrays.copyOf(line, line.length));
-//        level = user.getLevel();
         d = userPref.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
             level = pref.getLevel();
-            Utils.dispose(d);
+            dispose(d);
         }).subscribe();
-        Log.d(TAG, "newGame: " + level + " " + openLines.size());
     }
-
-//    public void setFirstMove(int pos, String piece, int count) {
-//        lastAIMove = pos;
-//        aIPiece = piece;
-//        moveCount = count;
-//        sendMove(pos);
-//        executor.execute(this::createLines);
-//    }
 
     public void setPiece(String piece, int mCount) {
         aIPiece = piece;
         moveCount = mCount;
+        newGame();
     }
 
     public void eliminateLines(Move move) {
@@ -108,7 +95,6 @@ public class BotMoveGenerator {
 
     private void userLines() {
         List<int[]> userLines = MoveUtils.addLinesToCheck(lastUserMove, MoveUtils.numValue(MoveUtils.getStringCoord(lastUserMove)));
-        userLines.forEach(x -> Log.d(TAG, "userLines: " + Arrays.toString(x)));
         possibleLines.removeAll(userLines);
         oneCubeLine.removeAll(userLines);
         openLines = MoveUtils.compareArrayContent(userLines, openLines, true);
@@ -125,7 +111,6 @@ public class BotMoveGenerator {
             for (int i : line) {
                 if (aICubes.contains(i)) break;
                 if (userCubes.contains(i)) {
-//                    Log.d(TAG, "blockUser: " + i);
                     cubeInLine++;
                 }
                 if (cubeInLine == 1) {
@@ -148,7 +133,6 @@ public class BotMoveGenerator {
 
     private void newMove() {
         if (!threeCubeLine.isEmpty()) { //check to win
-            Log.d(TAG, "newMove: 3");
             if (level.equals(NORMAL) || level.equals(DIFFICULT)) chooseMove(threeCubeLine, null);
             else {
                 if (threeCubeLine.isEmpty() && threeLineBlock.isEmpty()) checkPossibleMoves();
@@ -158,7 +142,6 @@ public class BotMoveGenerator {
             }
         }
         else if (!threeLineBlock.isEmpty()) { // check to block win
-            Log.d(TAG, "newMove: block");
             if (level.equals(NORMAL) || level.equals(DIFFICULT)) chooseMove(threeLineBlock, null);
             else chooseMove(threeLineBlock, twoCubeLine.isEmpty() ? possibleLines : twoCubeLine);
         }
@@ -166,22 +149,15 @@ public class BotMoveGenerator {
     }
 
     private void checkPossibleMoves() {
-        if (possibleLines.isEmpty()) {
-            Log.d(TAG, "newMove: anywhere");
-            anywhereMove();
-        }
+        if (possibleLines.isEmpty()) anywhereMove();
         else {
             if (!twoCubeLine.isEmpty()) {
-                Log.d(TAG, "newMove: 2");
                 if (level.equals(NORMAL)) chooseMove(twoCubeLine, null);
                 else if (level.equals(DIFFICULT)) playMergeCube(MoveUtils.checkMergeCube(twoCubeLine, aICubes, userCubes));
                 else chooseMove(twoCubeLine, oneCubeLine.isEmpty() ? possibleLines : oneCubeLine);
             }
             else if (!oneCubeLine.isEmpty()) {
-                Log.d(TAG, "newMove: 1 ");
-                if (level.equals(NORMAL) || level.equals(DIFFICULT)) {
-                    chooseMove(oneCubeLine, null);
-                }
+                if (level.equals(NORMAL) || level.equals(DIFFICULT)) chooseMove(oneCubeLine, null);
                 else {
                     if (rand.nextBoolean()) chooseMove(oneCubeLine, null);
                     else anywhereMove();
@@ -191,7 +167,6 @@ public class BotMoveGenerator {
     }
 
     private int anywhereMove() {
-        Log.d(TAG, "anywhereMove: ");
         List<Integer> occupiedCubes = new ArrayList<>();
         occupiedCubes.addAll(aICubes);
         occupiedCubes.addAll(userCubes);
@@ -210,7 +185,6 @@ public class BotMoveGenerator {
                 newPos.add(cube);
         }
         first.remove(moveLine);
-        Log.d(TAG, "chooseMove: ");
         if (newPos.size() != 0) {
             int newMove = randPos(newPos);
             sendMove(newMove);
@@ -219,14 +193,12 @@ public class BotMoveGenerator {
     }
 
     private void playMergeCube(List<Integer> commonCube) {
-        Log.d(TAG, "playMergeCube: " + commonCube.toString());
         if (commonCube.isEmpty() && !twoCubeLine.isEmpty()) {
             blockMergeCube(MoveUtils.checkMergeCube(twoLineBlock, userCubes, aICubes));
         } else sendMergeCube(commonCube);
     }
 
     private void blockMergeCube(List<Integer> commonCube) {
-        Log.d(TAG, "blockMergeCube: " + commonCube.toString());
         if (commonCube.isEmpty() && !twoLineBlock.isEmpty()) createMergeLines();
         else sendMergeCube(commonCube);
     }
@@ -238,7 +210,6 @@ public class BotMoveGenerator {
             possibleCubes = MoveUtils.checkAnyMergeCubes(twoCubeLine, aICubes, openLines);
             oneInLine = false;
         }
-        Log.d(TAG, "createMergeLines: " + possibleCubes.toString());
         int mergePos = randPos(possibleCubes);
         List<int[]> mergeLines = MoveUtils.addLinesToCheck(mergePos, MoveUtils.numValue(MoveUtils.getStringCoord(mergePos)));
         if (!oneInLine) mergeLines = MoveUtils.compareArrayContent(mergeLines, openLines, false);
@@ -252,12 +223,10 @@ public class BotMoveGenerator {
                 possibleMoves.remove(Integer.valueOf(mergePos));
                 if (temp.size() == 1 && oneInLine) {
                     possibleMoves.remove(temp.get(0));
-                    Log.d(TAG, "one in line: " + possibleMoves.toString());
                     sendMove(possibleMoves.get(rand.nextBoolean() ? 0 : 1));
                     break;
                 } else if (temp.isEmpty() && !oneInLine) {
                     int move = rand.nextInt(3);
-                    Log.d(TAG, "zero in line: " + possibleMoves.toString());
                     sendMove(possibleMoves.get(move));
                     break;
                 }
@@ -275,7 +244,6 @@ public class BotMoveGenerator {
         newLines.forEach(line -> {
             if (oneCubeLine.contains(line) || twoCubeLine.contains(line) || threeCubeLine.contains(line)) {
                 remove.add(line);
-                Log.d(TAG, "removePossibleLines: ");
             } else {
                 int i = 0;
                 for (int cube : line) {
@@ -297,13 +265,6 @@ public class BotMoveGenerator {
         removePossibleLines(remove);
     }
 
-//    private void createLines() {
-//        List<int[]> newLines = addLinesToCheck(lastAIMove, numValue(getStringCoord(lastAIMove)));
-//        possibleLines.addAll(newLines);
-//        oneCubeLine.addAll(newLines);
-//        aICubes.add(lastAIMove);
-//    }
-
     private void removePossibleLines(List<int[]> list) {
         possibleLines.removeAll(list);
         threeCubeLine.removeAll(list);
@@ -312,7 +273,6 @@ public class BotMoveGenerator {
     }
 
     private void sendMergeCube(List<Integer> commonCube) {
-        Log.d(TAG, "sendMergeCube: ");
         if (commonCube.isEmpty()) {
             if (twoCubeLine.isEmpty()) chooseMove(oneCubeLine.isEmpty() ? possibleLines : oneCubeLine, null);
             else createMergeLines();
@@ -321,9 +281,7 @@ public class BotMoveGenerator {
     }
 
     private void sendMove(int pos) {
-        Log.d(TAG, "sendMove: " + pos);
         aICubes.add(pos);
-//        lastAIMove = pos;
         checkMoveFactory.createMoves(MoveUtils.getStringCoord(pos), aIPiece,
                 String.valueOf(moveCount), false);
         addMoveToLines(pos);

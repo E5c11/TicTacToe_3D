@@ -1,5 +1,7 @@
 package com.esc.test.apps.domain.viewmodels.board;
 
+import static com.esc.test.apps.common.utils.Utils.dispose;
+
 import android.app.Application;
 import android.util.Log;
 
@@ -17,6 +19,7 @@ import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.common.utils.Utils;
+import com.esc.test.apps.domain.usecases.moves.MovesUsecase;
 
 import java.util.concurrent.ExecutorService;
 
@@ -37,16 +40,17 @@ public class PlayAIViewModel extends ViewModel {
     public final LiveData<String> error;
     private final UserPreferences userPref;
     private final GamePreferences gamePref;
+    private final MovesUsecase movesUsecase;
     private Disposable d;
     private int moveCount;
-    private int userMovePos;
     private String userPiece;
     private static final String TAG = "myT";
     public static final String AI_GAME = "play_ai";
 
     @Inject
     public PlayAIViewModel(CheckMoveFactory checkMoveFactory, Application app, MoveRepository moveRepo,
-                           BotMoveGenerator botMoveGenerator, UserPreferences userPref, GamePreferences gamePref
+                           BotMoveGenerator botMoveGenerator, UserPreferences userPref,
+                           GamePreferences gamePref, MovesUsecase movesUsecase
     ) {
         this.checkMoveFactory = checkMoveFactory;
         this.app = app;
@@ -54,46 +58,27 @@ public class PlayAIViewModel extends ViewModel {
         this.botMoveGenerator = botMoveGenerator;
         this.userPref = userPref;
         this.gamePref = gamePref;
+        this.movesUsecase = movesUsecase;
         firstMove();
-        catchLastMove();
         error = botMoveGenerator.getError();
-        botMoveGenerator.newGame();
     }
 
     public void firstMove() {
-//        boolean firstMove = false;
-//        moveCount = firstMove ? 0 : 1;
-//        if (firstMove) {
-//         userPiece = app.getString(R.string.circle);
-//            int pos = getRandomPos();
-//         executor.execute(() -> aiMoves.setFirstMove(pos, app.getString(R.string.cross), moveCount));
-//            Log.d(TAG, "firstMove: ai " + pos);
-//        } else {
-         userPiece = app.getString(R.string.cross);
-         botMoveGenerator.setPiece(app.getString(R.string.circle), 1);
-         Log.d(TAG, "firstMove: user ");
-//        }
+        userPiece = app.getString(R.string.cross);
+        movesUsecase.invoke(app.getString(R.string.circle), 1);
     }
 
-    public void newGame() { botMoveGenerator.newGame(); }
+    public void newGame() { movesUsecase.invoke(); }
 
     public void newMove(CubeID cube) {
-        moveCount++;
-        checkMoveFactory.createMoves(
-                cube.getCoordinates(), userPiece, String.valueOf(moveCount), false);
+        movesUsecase.invoke(cube.getCoordinates(), userPiece, ++moveCount, false);
     }
 
     private void newAIMove(Move move) {
         moveCount++;
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
             if (pref.getWinner().isEmpty()) executor.execute(() -> botMoveGenerator.eliminateLines(move));
-            Utils.dispose(d);
-        }).subscribe();
-    }
-
-    public void catchLastMove() {
-        moveRepo.getLastMove().subscribeOn(Schedulers.io()).doOnNext(move -> {
-
+            dispose(d);
         }).subscribe();
     }
 

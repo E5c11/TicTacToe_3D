@@ -28,7 +28,7 @@ class MovesUsecase @Inject constructor(private val checkMoveFactory: CheckMoveFa
         }, {
             Log.d("myT", "invoke: no moves")
             it.stackTrace
-        }, { d.dispose() })
+        }, { })
     }
 
 }

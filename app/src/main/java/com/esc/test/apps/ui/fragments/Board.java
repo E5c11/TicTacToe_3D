@@ -292,7 +292,7 @@ public class Board extends Fragment {
                         .navigate(BoardDirections.actionBoardActivityToAlertDialogFragment(
                                 winnerInfo.get("player") + " won",
                                 "Start another game in the friends page", WINNER));
-                playFriendViewModel.winState.removeObservers(getViewLifecycleOwner());
+//                playFriendViewModel.winState.removeObservers(getViewLifecycleOwner());
             }
         });
     }

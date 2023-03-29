@@ -15,10 +15,11 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class GameDetails(val winner: String = "", val winnerLine: Set<String> = emptySet(),
-                       val starter: String = "cross", val circleScore: String = "0",
-                       val crossScore: String = "0", val gameId: String = "deleted",
-                       val gameSetId: String = ""
+data class GameDetails(
+    val winner: String = "", val winnerLine: Set<String> = emptySet(),
+    val starter: String = "cross", val circleScore: String = "0",
+    val crossScore: String = "0", val id: String = "deleted",
+    val setId: String = ""
 )
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "game_details")

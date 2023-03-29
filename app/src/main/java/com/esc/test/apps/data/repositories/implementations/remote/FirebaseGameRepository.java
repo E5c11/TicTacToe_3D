@@ -167,7 +167,7 @@ public class FirebaseGameRepository implements FbGameRepo {
     public void endGame(String winner) {
         final String winPlayer = winner == null ? friendUID : uid;
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            gamesRef.child(gameSetID).child(pref.getGameId()).child(WINNER).setValue(winPlayer)
+            gamesRef.child(gameSetID).child(pref.getId()).child(WINNER).setValue(winPlayer)
                 .addOnCompleteListener( task -> quit.postValue(true))
                 .addOnFailureListener( task -> error.postValue(app.getString(R.string.quit_error)));
             dispose(d);

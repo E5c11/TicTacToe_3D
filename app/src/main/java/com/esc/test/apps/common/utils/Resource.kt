@@ -1,6 +1,8 @@
 package com.esc.test.apps.common.utils
 
-data class Resource<out T>(val status: Status, val data: T? = null, val error: Throwable?) {
+import com.esc.test.apps.common.utils.Constants.LOADING
+
+data class Resource<out T>(val status: Status, val data: T? = null, val error: Throwable?, val loading: String = LOADING) {
 
     enum class Status {
         SUCCESS,
@@ -17,8 +19,8 @@ data class Resource<out T>(val status: Status, val data: T? = null, val error: T
             return Resource(Status.ERROR, data, error)
         }
 
-        fun <T> loading(data: T? = null): Resource<T> {
-            return Resource(Status.LOADING, data, null)
+        fun <T> loading(loading: String = LOADING, data: T? = null): Resource<T> {
+            return Resource(Status.LOADING, data, null, loading)
         }
     }
 }

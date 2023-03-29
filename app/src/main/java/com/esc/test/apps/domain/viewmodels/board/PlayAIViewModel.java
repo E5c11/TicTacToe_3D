@@ -8,18 +8,15 @@ import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
 import com.esc.test.apps.common.helpers.move.BotMoveGenerator;
-import com.esc.test.apps.common.helpers.move.CheckMoveFactory;
 import com.esc.test.apps.data.models.entities.Move;
 import com.esc.test.apps.data.models.pojos.CubeID;
-import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
+import com.esc.test.apps.board.moves.MoveRepository;
 import com.esc.test.apps.domain.usecases.moves.MovesUsecase;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
-import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel

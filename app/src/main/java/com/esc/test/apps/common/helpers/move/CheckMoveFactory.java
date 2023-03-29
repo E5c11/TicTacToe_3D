@@ -4,7 +4,7 @@ import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
-import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
+import com.esc.test.apps.board.moves.MoveRepository;
 
 import java.util.concurrent.ExecutorService;
 

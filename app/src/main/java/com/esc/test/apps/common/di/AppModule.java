@@ -12,7 +12,7 @@ import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.FbUserRepo;
 import com.esc.test.apps.data.repositories.implementations.remote.FirebaseGameRepository;
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseMoveRepository;
+import com.esc.test.apps.board.moves.FirebaseMoveRepository;
 import com.esc.test.apps.data.repositories.implementations.remote.FirebaseUserRepository;
 import com.esc.test.apps.data.source.local.GameMovesDao;
 import com.esc.test.apps.data.source.local.GamesDao;
@@ -23,8 +23,6 @@ import com.esc.test.apps.domain.usecases.moves.MovesUsecase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import org.checkerframework.checker.nullness.compatqual.PolyNullDecl;
 
 import java.util.Random;
 

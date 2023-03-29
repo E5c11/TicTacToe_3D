@@ -6,7 +6,7 @@ import com.esc.test.apps.data.models.pojos.MoveInfo;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
-import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
+import com.esc.test.apps.board.moves.MoveRepository;
 
 import java.util.ArrayList;
 import java.util.List;

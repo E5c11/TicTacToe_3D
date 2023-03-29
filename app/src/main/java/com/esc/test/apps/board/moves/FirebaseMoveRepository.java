@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.repositories.implementations.remote;
+package com.esc.test.apps.board.moves;
 
 import static com.esc.test.apps.common.utils.DatabaseConstants.FRIENDS;
 import static com.esc.test.apps.common.utils.DatabaseConstants.GAMES;
@@ -64,15 +64,16 @@ public class FirebaseMoveRepository implements FbMoveRepo {
     public void addMove(MoveInfo move) {
         move.setUid(uid);
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
-            ref.child(GAMES).child(pref.getGameSetId()).child(pref.getGameId()).child(MOVES)
-                    .child(String.valueOf(move.getMoveID())).setValue(move).addOnCompleteListener(task ->
-                            Log.d(TAG, "Move " + move.getPosition() + " uploaded"));
+            ref.child(GAMES).child(pref.getSetId()).child(pref.getId()).child(MOVES)
+                    .child(String.valueOf(move.getMoveID()))
+                    .setValue(move)
+                    .addOnCompleteListener(task -> Log.d(TAG, "Move " + move.getPosition() + " uploaded"));
             dispose(d);
         }).subscribe();
     }
 
     @Override
-    public LiveData<MoveInfo> getMoveInfo(String uid, String gameSetId) {
+    public LiveData<MoveInfo> getMoveInfo(@NonNull String uid, String gameSetId) {
         DatabaseReference moveRef = ref.child(USERS).child(uid).child(FRIENDS)
                 .child(getFriendUid(gameSetId)).child(MOVE);
         FirebaseQueryLiveData moveLiveData = new FirebaseQueryLiveData(moveRef);

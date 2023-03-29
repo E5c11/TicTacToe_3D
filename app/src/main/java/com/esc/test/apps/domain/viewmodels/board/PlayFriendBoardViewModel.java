@@ -21,7 +21,7 @@ import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
-import com.esc.test.apps.data.repositories.implementations.local.MoveRepository;
+import com.esc.test.apps.board.moves.MoveRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -76,7 +76,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
         existingMoves = fbMoveRepo.getExistingMoves();
 
         d = Flowable.combineLatest(userPref.getUserPreference(), gamePref.getGamePreference(), (user, game) ->
-            Map.of("uid", user.getUid(), "gameSetId", game.getGameSetId())
+            Map.of("uid", user.getUid(), "gameSetId", game.getSetId())
         ).subscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread()).doOnNext(pref -> {
             moveInfo = getMoveInfo(pref.get("uid"), pref.get("gameSetId"));
             _movesReady.postValue(true);

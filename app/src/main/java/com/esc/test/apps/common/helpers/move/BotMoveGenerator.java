@@ -2,15 +2,12 @@ package com.esc.test.apps.common.helpers.move;
 
 import static com.esc.test.apps.common.utils.Utils.dispose;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 
 import com.esc.test.apps.common.utils.SingleLiveEvent;
-import com.esc.test.apps.common.utils.Utils;
 import com.esc.test.apps.common.utils.moves.Lines;
 import com.esc.test.apps.common.utils.moves.MoveUtils;
-import com.esc.test.apps.data.models.entities.Move;
+import com.esc.test.apps.board.moves.data.MoveEntity;
 import com.esc.test.apps.data.persistence.UserPreferences;
 
 import java.util.ArrayList;
@@ -82,8 +79,8 @@ public class BotMoveGenerator {
         newGame();
     }
 
-    public void eliminateLines(Move move) throws Exception {
-        int userPos = Integer.parseInt(move.getPosition());
+    public void eliminateLines(MoveEntity moveEntity) throws Exception {
+        int userPos = Integer.parseInt(moveEntity.getPosition());
         List<int[]> remove = new ArrayList<>();
         possibleLines.forEach(line -> {
             if (Arrays.stream(line).anyMatch(pos -> pos == userPos))

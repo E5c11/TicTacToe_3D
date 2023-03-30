@@ -45,7 +45,7 @@
     <string name="normal">Normal</string>
     <string name="difficult">Difficult</string>
 
-    <string name="moves">moves</string>
+    <string name="moveEntities">moveEntities</string>
     <string name="cross">cross</string>
     <string name="circle">circle</string>
     <string name="winner">winner</string>
@@ -56,14 +56,14 @@
     <string name="tutorial_welcome">Welcome to Tic Tac Toe in 3D</string>
     <string name="four_to_win">Get 4 in a row to win!!</string>
     <string name="error_prompt">Try again, check the hint.</string>
-    <string name="confirm_prompt">Don\'t forget to confirm your move!</string>
-    <string name="first_instruction">Tap the square to make your first move.</string>
+    <string name="confirm_prompt">Don\'t forget to confirm your moveEntity!</string>
+    <string name="first_instruction">Tap the square to make your first moveEntity.</string>
     <string name="second_instruction">Tap again on the highlighted square to confirm.</string>
     <string name="third_instruction">You can also win across grids.</string>
     <string name="fourth_instruction">Look at the grid formation to complete your row.</string>
-    <string name="fifth_instruction">Are you sure this move will complete your row?</string>
-    <string name="sixth_instruction">Can you find your winning move?</string>
-    <string name="seventh_instruction">Are you sure this is the winning move?</string>
+    <string name="fifth_instruction">Are you sure this moveEntity will complete your row?</string>
+    <string name="sixth_instruction">Can you find your winning moveEntity?</string>
+    <string name="seventh_instruction">Are you sure this is the winning moveEntity?</string>
     <string name="eighth_instruction">Well done, you have won your first game!!</string>
     <string name="ninth_instruction">Let\'s try to win in a different way.</string>
     <string name="tenth_instruction">Start in the same position.</string>
@@ -72,9 +72,9 @@
     <string name="thirteenth_instruction">Find the final square to win.</string>
     <string name="fourteenth_instruction">Well done, you have won your second game!!</string>
     <string name="fifteenth_instruction">Choose a square a step down in all 3 dimensions.</string>
-    <string name="sixteenth_instruction">See if you can find the next 3 dimensional move.</string>
-    <string name="seventeenth_instruction">Find the final 3D move to win!</string>
-    <string name="eighteenth_instruction">You have won the game using all 3 dimension in each move!!!</string>
+    <string name="sixteenth_instruction">See if you can find the next 3 dimensional moveEntity.</string>
+    <string name="seventeenth_instruction">Find the final 3D moveEntity to win!</string>
+    <string name="eighteenth_instruction">You have won the game using all 3 dimension in each moveEntity!!!</string>
     <string name="nineteenth_instruction">You are now ready to proceed to play on your own.</string>
 
     <!--Network-->

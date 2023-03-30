@@ -14,7 +14,7 @@ import com.esc.test.apps.common.helpers.move.CheckMoveFactory;
 import com.esc.test.apps.common.network.ConnectionLiveData;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.data.models.pojos.CubeID;
-import com.esc.test.apps.data.models.pojos.MoveInfo;
+import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.models.pojos.Turn;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
@@ -37,13 +37,13 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 @HiltViewModel
 public class PlayFriendBoardViewModel extends ViewModel {
 
-    public LiveData<MoveInfo> moveInfo;
+    public LiveData<MoveResponse> moveInfo;
     private final SingleLiveEvent<Boolean> _movesReady = new SingleLiveEvent<>();
     public final SingleLiveEvent<Boolean> movesReady = _movesReady;
     private final SingleLiveEvent<Boolean> _winReady = new SingleLiveEvent<>();
     public final SingleLiveEvent<Boolean> winReady = _winReady;
     public LiveData<Map<String, String>> winState;
-    public final LiveData<List<MoveInfo>> existingMoves;
+    public final LiveData<List<MoveResponse>> existingMoves;
     private String friendGamePiece;
     private Disposable d, f;
     private int moveCount = 0;
@@ -106,8 +106,8 @@ public class PlayFriendBoardViewModel extends ViewModel {
         }).subscribe();
     }
 
-    public void addExistingMoves(List<MoveInfo> previousMoves) {
-        MoveInfo[] moves = new MoveInfo[previousMoves.size()];
+    public void addExistingMoves(List<MoveResponse> previousMoves) {
+        MoveResponse[] moves = new MoveResponse[previousMoves.size()];
         moveRepository.insertMultipleMoves(previousMoves.toArray(moves));
     }
 
@@ -131,7 +131,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
         );
     }
 
-    public LiveData<MoveInfo> getMoveInfo(String uid, String gameSetId) {
+    public LiveData<MoveResponse> getMoveInfo(String uid, String gameSetId) {
         return Transformations.map(fbMoveRepo.getMoveInfo(uid, gameSetId), friendMove -> {
             if (friendMove != null)
                 moveCount = Integer.parseInt(friendMove.getMoveID()) + 1;

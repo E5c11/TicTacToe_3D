@@ -1,4 +1,4 @@
-package com.esc.test.apps.board.moves.io
+package com.esc.test.apps.board.moves
 
 import com.esc.test.apps.board.moves.io.exception.MoveNotRetrievedException
 import com.esc.test.apps.common.utils.Constants.FETCHING_DATA
@@ -7,7 +7,7 @@ import com.esc.test.apps.common.utils.DatabaseConstants.*
 import com.esc.test.apps.common.utils.Resource
 import com.esc.test.apps.common.utils.awaitsSingle
 import com.esc.test.apps.common.utils.observeValue
-import com.esc.test.apps.data.models.pojos.MoveInfo
+import com.esc.test.apps.board.moves.data.MoveResponse
 import com.esc.test.apps.data.persistence.GamePreferences
 import com.esc.test.apps.data.persistence.UserPreferences
 import com.google.firebase.database.DatabaseReference
@@ -23,7 +23,7 @@ class RemoteMoveDataSource @Inject constructor(
     private val gamePrefs: GamePreferences
 ): MoveDataSource {
 
-    override fun add(move: MoveInfo): Flow<Resource<MoveInfo>> = flow {
+    override fun add(move: MoveResponse): Flow<Resource<MoveResponse>> = flow {
         emit(Resource.loading(SAVING))
         try {
             val uid = userPrefs.userPref.first().uid
@@ -38,7 +38,7 @@ class RemoteMoveDataSource @Inject constructor(
         }
     }
 
-    override fun getMove(): Flow<Resource<MoveInfo>> = callbackFlow {
+    override fun getMove(): Flow<Resource<MoveResponse>> = callbackFlow {
         trySend(Resource.loading(FETCHING_DATA))
         try {
             val uid = userPrefs.userPref.first().uid
@@ -47,7 +47,7 @@ class RemoteMoveDataSource @Inject constructor(
                 .child(getFriendUid(game.setId, uid))
                 .child(MOVE)
                 .observeValue().map { snapshot ->
-                    val move = snapshot?.getValue(MoveInfo::class.java)
+                    val move = snapshot?.getValue(MoveResponse::class.java)
                     if (move != null) trySend(Resource.success(move))
                     else trySend(Resource.error(MoveNotRetrievedException()))
                 }
@@ -56,15 +56,15 @@ class RemoteMoveDataSource @Inject constructor(
         }
     }
 
-    override fun getAllMoves(): Flow<Resource<List<MoveInfo>>> = callbackFlow {
+    override fun getAllMoves(): Flow<Resource<List<MoveResponse>>> = callbackFlow {
         trySend(Resource.loading(FETCHING_DATA))
         try {
-            val list = mutableListOf<MoveInfo>()
+            val list = mutableListOf<MoveResponse>()
             val game = gamePrefs.gamePref.first()
             val moves = dbRef.child(GAMES).child(game.setId).child(game.id).child(MOVES)
                 .awaitsSingle()?.children
             moves?.forEach { snapshot ->
-                val move = snapshot.getValue(MoveInfo::class.java)
+                val move = snapshot.getValue(MoveResponse::class.java)
                 move?.let { list.add(move) }
             }
             trySend(Resource.success(list))

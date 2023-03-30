@@ -15,7 +15,7 @@ import androidx.lifecycle.Transformations;
 
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.data.models.pojos.MoveInfo;
+import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.source.remote.FirebaseQueryLiveData;
 import com.esc.test.apps.common.utils.ExecutorFactory;
@@ -41,8 +41,8 @@ public class FirebaseMoveRepository implements FbMoveRepo {
 
     private final DatabaseReference ref;
     private final GamePreferences gamePref;
-    private final SingleLiveEvent<List<MoveInfo>> existingMoves = new SingleLiveEvent<>();
-    private final List<MoveInfo> tempItems = new ArrayList<>();
+    private final SingleLiveEvent<List<MoveResponse>> existingMoves = new SingleLiveEvent<>();
+    private final List<MoveResponse> tempItems = new ArrayList<>();
     private final ExecutorService executor = ExecutorFactory.getSingleExecutor();
     private Disposable d;
     private String uid;
@@ -61,7 +61,7 @@ public class FirebaseMoveRepository implements FbMoveRepo {
     }
 
     @Override
-    public void addMove(MoveInfo move) {
+    public void addMove(MoveResponse move) {
         move.setUid(uid);
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
             ref.child(GAMES).child(pref.getSetId()).child(pref.getId()).child(MOVES)
@@ -73,12 +73,12 @@ public class FirebaseMoveRepository implements FbMoveRepo {
     }
 
     @Override
-    public LiveData<MoveInfo> getMoveInfo(@NonNull String uid, String gameSetId) {
+    public LiveData<MoveResponse> getMoveInfo(@NonNull String uid, String gameSetId) {
         DatabaseReference moveRef = ref.child(USERS).child(uid).child(FRIENDS)
                 .child(getFriendUid(gameSetId)).child(MOVE);
         FirebaseQueryLiveData moveLiveData = new FirebaseQueryLiveData(moveRef);
         return Transformations.map(moveLiveData, snapshot -> {
-           MoveInfo move = snapshot.getValue(MoveInfo.class);
+           MoveResponse move = snapshot.getValue(MoveResponse.class);
            if (move != null && !move.getUid().equals(uid)) return move;
            else return null;
         });
@@ -88,7 +88,7 @@ public class FirebaseMoveRepository implements FbMoveRepo {
         executor.execute(() -> {
             tempItems.clear();
             for(DataSnapshot snap : dataSnapshot.getChildren()){
-                MoveInfo msg = snap.getValue(MoveInfo.class);
+                MoveResponse msg = snap.getValue(MoveResponse.class);
                 if (msg != null) tempItems.add(msg);
             }
             existingMoves.postValue(tempItems);
@@ -115,5 +115,5 @@ public class FirebaseMoveRepository implements FbMoveRepo {
     }
 
     @Override
-    public LiveData<List<MoveInfo>> getExistingMoves() { return existingMoves; }
+    public LiveData<List<MoveResponse>> getExistingMoves() { return existingMoves; }
 }

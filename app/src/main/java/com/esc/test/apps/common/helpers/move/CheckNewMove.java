@@ -1,8 +1,9 @@
 package com.esc.test.apps.common.helpers.move;
 
+import com.esc.test.apps.board.moves.data.Move;
 import com.esc.test.apps.common.utils.moves.MoveUtils;
-import com.esc.test.apps.data.models.entities.Move;
-import com.esc.test.apps.data.models.pojos.MoveInfo;
+import com.esc.test.apps.board.moves.data.MoveEntity;
+import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
@@ -53,7 +54,7 @@ public class CheckNewMove {
 
         moveRepository.insertMove(new Move(tempCube, String.valueOf(cubePos), playedPiece));
         if (onlineGame) firebaseMoveRepository.addMove(
-                new MoveInfo(tempCube, String.valueOf(cubePos), playedPiece, moveId, null));
+                new MoveResponse(tempCube, String.valueOf(cubePos), playedPiece, moveId, null));
 
        executor.execute(this::getLinesToCheck);
     }
@@ -64,7 +65,7 @@ public class CheckNewMove {
     }
 
     private void checkOtherCubes() {
-        List<Move> list = moveRepository.getAllMoves();
+        List<MoveEntity> list = moveRepository.getAllMoves();
         outer : for(int[] line: lines2check) {
             numInRow = 1;
             int i = 0;
@@ -75,7 +76,7 @@ public class CheckNewMove {
                             .filter(item -> String.valueOf(pos).equals(list.get(item).getPosition()))
                             .findFirst();
                     String posType =
-                            index.isPresent() ? list.get(index.getAsInt()).getPiece_played() : null;
+                            index.isPresent() ? list.get(index.getAsInt()).getPiecePlayed() : null;
                     if (posType != null) {
                         if (posType.equals(playedPiece)) {
                             numInRow++;

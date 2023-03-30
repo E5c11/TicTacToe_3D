@@ -18,7 +18,7 @@ import com.esc.test.apps.common.helpers.move.CheckMoveFactory;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.models.entities.Game;
 import com.esc.test.apps.data.models.pojos.CubeID;
-import com.esc.test.apps.data.models.pojos.MoveInfo;
+import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.models.pojos.MoveUpdate;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
 import com.esc.test.apps.board.moves.MoveRepository;
@@ -165,10 +165,10 @@ public class PassPlayBoardViewModel extends ViewModel {
         }).subscribe();
     }
 
-    public void downloadedMove(MoveInfo move) {
+    public void downloadedMove(MoveResponse move) {
         moves.createMoves(String.valueOf(move.getCoordinates()),
-                String.valueOf(move.getPiece_played()), move.getMoveID(), false);
-        if (String.valueOf(move.getPiece_played()).equals(app.getString(R.string.cross)))
+                String.valueOf(move.getPiecePlayed()), move.getMoveID(), false);
+        if (String.valueOf(move.getPiecePlayed()).equals(app.getString(R.string.cross)))
             circleTurn();
         else crossTurn();
     }

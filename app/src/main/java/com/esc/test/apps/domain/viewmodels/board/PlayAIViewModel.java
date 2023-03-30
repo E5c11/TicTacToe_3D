@@ -7,8 +7,8 @@ import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.board.moves.data.MoveEntity;
 import com.esc.test.apps.common.helpers.move.BotMoveGenerator;
-import com.esc.test.apps.data.models.entities.Move;
 import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.board.moves.MoveRepository;
@@ -55,15 +55,15 @@ public class PlayAIViewModel extends ViewModel {
         movesUsecase.invoke(cube.getCoordinates(), userPiece, ++moveCount, false);
     }
 
-    private void newAIMove(Move move) {
+    private void newAIMove(MoveEntity moveEntity) {
         moveCount++;
-        movesUsecase.invoke(move);
+        movesUsecase.invoke(moveEntity);
     }
 
-    public LiveData<Move> getLastMove() {
+    public LiveData<MoveEntity> getLastMove() {
         return LiveDataReactiveStreams.fromPublisher(moveRepo.getLastMove()
             .subscribeOn(Schedulers.io()).map( move -> {
-                if (userPiece.equals(move.getPiece_played())) {
+                if (userPiece.equals(move.getPiecePlayed())) {
                     newAIMove(move);
                     return move.emptyMove();
                 } else return move;

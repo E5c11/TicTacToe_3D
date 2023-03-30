@@ -13,9 +13,10 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.esc.test.apps.data.models.entities.Move;
-import com.esc.test.apps.data.source.local.GameMovesDao;
-import com.esc.test.apps.data.models.pojos.MoveInfo;
+import com.esc.test.apps.board.moves.data.Move;
+import com.esc.test.apps.board.moves.data.MoveEntity;
+import com.esc.test.apps.board.moves.io.GameMovesDao;
+import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 
 import io.reactivex.rxjava3.core.Flowable;
@@ -34,14 +35,14 @@ public class MoveRepository {
         service.submit(() -> gameMovesDao.insert(move));
     }
 
-    public void insertMultipleMoves(MoveInfo...moves) {
+    public void insertMultipleMoves(MoveResponse...moves) {
         service.submit(() -> {
-            Move[] changed = new Move[moves.length];
+            MoveEntity[] changed = new MoveEntity[moves.length];
             int i = 0;
-            for (MoveInfo move : moves) {
+            for (MoveResponse move : moves) {
 
                 changed[i] =
-                        new Move(move.getCoordinates(), move.getPosition(), move.getPiece_played());
+                        new MoveEntity(move.getCoordinates(), move.getPosition(), move.getPiecePlayed());
                 i++;
             }
             gameMovesDao.insertMoves(changed);
@@ -53,15 +54,15 @@ public class MoveRepository {
     }
 
     public LiveData<String> getMovePosition(String position) {
-        return gameMovesDao.getPosition(position);
+        return gameMovesDao.getPositionLd(position);
     }
 
     public LiveData<String> getFirstMove() {
-        return gameMovesDao.getFirstMove();
+        return gameMovesDao.getFirstMoveLd();
     }
 
-    public Flowable<Move> getLastMove() {
-        return gameMovesDao.getMove();
+    public Flowable<MoveEntity> getLastMove() {
+        return gameMovesDao.getMoveRx();
     }
 
     public String getOccupiedWith(String position) {
@@ -76,10 +77,10 @@ public class MoveRepository {
         }
     }
 
-    public List<Move> getAllMoves() {
+    public List<MoveEntity> getAllMoves() {
 //        long start = System.nanoTime();
-        Callable<List<Move>> call = gameMovesDao::getAllMoves;
-        Future<List<Move>> checkAllMoves = service.submit(call);
+        Callable<List<MoveEntity>> call = gameMovesDao::getAllMoves;
+        Future<List<MoveEntity>> checkAllMoves = service.submit(call);
 
         try {
             return checkAllMoves.get(100, TimeUnit.MILLISECONDS);
@@ -100,7 +101,7 @@ public class MoveRepository {
 
         @Override
         public String call() {
-            return gameMovesDao.getPiece_played(position);
+            return gameMovesDao.getPiecePlayed(position);
         }
     }
 

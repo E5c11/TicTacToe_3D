@@ -14,7 +14,7 @@ import com.esc.test.apps.data.repositories.FbUserRepo;
 import com.esc.test.apps.data.repositories.implementations.remote.FirebaseGameRepository;
 import com.esc.test.apps.board.moves.FirebaseMoveRepository;
 import com.esc.test.apps.data.repositories.implementations.remote.FirebaseUserRepository;
-import com.esc.test.apps.data.source.local.GameMovesDao;
+import com.esc.test.apps.board.moves.io.GameMovesDao;
 import com.esc.test.apps.data.source.local.GamesDao;
 import com.esc.test.apps.data.source.local.HistoryDatabase;
 import com.esc.test.apps.common.network.ConnectionLiveData;

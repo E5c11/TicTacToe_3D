@@ -1,5 +1,6 @@
 package com.esc.test.apps.data.models.pojos;
 
+import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.google.gson.annotations.SerializedName;
 
 public class UserInfo {
@@ -25,7 +26,7 @@ public class UserInfo {
     @SerializedName("invite_date")
     private String invite_date;
     @SerializedName("move")
-    private MoveInfo move;
+    private MoveResponse move;
 
     public UserInfo() {}
 
@@ -60,11 +61,11 @@ public class UserInfo {
 
     public void setInvite_date(String invite_date) { this.invite_date = invite_date; }
 
-    public MoveInfo getMove() {
+    public MoveResponse getMove() {
         return move;
     }
 
-    public void setMove(MoveInfo move) {
+    public void setMove(MoveResponse move) {
         this.move = move;
     }
 }

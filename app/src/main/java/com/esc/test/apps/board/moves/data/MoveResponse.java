@@ -1,11 +1,11 @@
-package com.esc.test.apps.data.models.pojos;
+package com.esc.test.apps.board.moves.data;
 
 import com.google.gson.annotations.SerializedName;
 
-public class MoveInfo {
+public class MoveResponse {
 
     @SerializedName("piece_played")
-    private String piece_played;
+    private String piecePlayed;
     @SerializedName("coordinates")
     private String coordinates;
     @SerializedName("position")
@@ -15,17 +15,17 @@ public class MoveInfo {
     @SerializedName("uid")
     private String uid;
 
-    public MoveInfo(String coordinates, String position, String piece_played, String moveId, String uid) {
-        this.piece_played = piece_played;
+    public MoveResponse(String coordinates, String position, String piecePlayed, String moveId, String uid) {
+        this.piecePlayed = piecePlayed;
         this.coordinates = coordinates;
         this.position = position;
         this.moveID = moveId;
         this.uid = uid;
     }
 
-    public MoveInfo() {}
+    public MoveResponse() {}
 
-    public String getPiece_played() {return piece_played;}
+    public String getPiecePlayed() {return piecePlayed;}
 
     public String getCoordinates() {return coordinates;}
 
@@ -35,8 +35,8 @@ public class MoveInfo {
 
     public String getUid() { return uid; }
 
-    public void setPiece_played(String piece_played) {
-        this.piece_played = piece_played;
+    public void setPiecePlayed(String piecePlayed) {
+        this.piecePlayed = piecePlayed;
     }
 
     public void setCoordinates(String coordinates) {

@@ -228,7 +228,7 @@ public class Board extends Fragment {
 
     private void setPlayAIObserver() {
         playAIViewModel.getLastMove().observe(getViewLifecycleOwner(), move -> {
-            if (!move.getPosition().isEmpty()) updateGridView(move.getPosition(), move.getPiece_played());
+            if (!move.getPosition().isEmpty()) updateGridView(move.getPosition(), move.getPiecePlayed());
         });
         playAIViewModel.error.observe(getViewLifecycleOwner(), error -> Snackbar.make(
                 binding.getRoot(), error, Snackbar.LENGTH_LONG).show());
@@ -250,7 +250,7 @@ public class Board extends Fragment {
             if (s != null) {
                 if (!s.isEmpty()) {
                     playFriendViewModel.addExistingMoves(s);
-                    s.forEach(move -> updateGridView(move.getPosition(), move.getPiece_played()));
+                    s.forEach(move -> updateGridView(move.getPosition(), move.getPiecePlayed()));
                 }
             }
         });
@@ -278,7 +278,7 @@ public class Board extends Fragment {
     private void observeFriendMoves() {
         playFriendViewModel.moveInfo.observe(getViewLifecycleOwner(), s -> {
             if (s != null) {
-                updateGridView(s.getPosition(), s.getPiece_played());
+                updateGridView(s.getPosition(), s.getPiecePlayed());
                 passPlayViewModel.downloadedMove(s);
                 Log.d(TAG, "downloaded move view update: ");
             }

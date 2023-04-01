@@ -1,10 +1,7 @@
 package com.esc.test.apps.board.moves
 
-import com.esc.test.apps.board.moves.data.Move
-import com.esc.test.apps.board.moves.data.toMove
-import com.esc.test.apps.board.moves.data.toMoveEntity
-import com.esc.test.apps.board.moves.data.toMoveList
-import com.esc.test.apps.board.moves.io.GameMovesDao
+import com.esc.test.apps.board.moves.data.*
+import com.esc.test.apps.board.moves.io.MovesDao
 import com.esc.test.apps.common.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -12,13 +9,22 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class LocalMoveDataSource @Inject constructor(
-    private val dao: GameMovesDao
+    private val dao: MovesDao
 ): MoveDataSource {
 
     override suspend fun add(move: Move): Flow<Resource<Move>> = flow {
         try {
-            dao.insert(move.toMoveEntity())
-            emit(Resource.success(move))
+            val id = dao.insert(move.toMoveEntity())
+            emit(Resource.success(move.copy(id = id.toString())))
+        } catch (e: Exception) {
+            emit(Resource.error(e))
+        }
+    }
+
+    override suspend fun addAll(vararg move: Move): Flow<Resource<Int>> = flow {
+        try {
+            val idList = dao.insertMoves(*move.toMoveEntityArray())
+            emit(Resource.success(idList.size - 1))
         } catch (e: Exception) {
             emit(Resource.error(e))
         }

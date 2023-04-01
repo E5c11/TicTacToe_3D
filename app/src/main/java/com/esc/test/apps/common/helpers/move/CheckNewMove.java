@@ -7,7 +7,7 @@ import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.persistence.GamePreferences;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
-import com.esc.test.apps.board.moves.MoveRepository;
+import com.esc.test.apps.board.moves.MoveRepositoryLegacy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class CheckNewMove {
 
     private final GamePreferences gamePref;
     private final GameRepository gameRepository;
-    private final MoveRepository moveRepository;
+    private final MoveRepositoryLegacy moveRepositoryLegacy;
     private final FbMoveRepo firebaseMoveRepository;
     private final List<int[]> lines2check = new ArrayList<>();
     private int[] winnerRow = new int[4];
@@ -33,12 +33,12 @@ public class CheckNewMove {
     private final ExecutorService executor;
 
     public CheckNewMove(GameRepository gameRepository, ExecutorService executor, GamePreferences gamePref,
-                        MoveRepository moveRepository, FbMoveRepo firebaseMoveRepository,
+                        MoveRepositoryLegacy moveRepositoryLegacy, FbMoveRepo firebaseMoveRepository,
                         String coordinates, String playedPiece, String moveId, boolean onlineGame
     ) {
         this.gameRepository = gameRepository;
         this.executor = executor;
-        this.moveRepository = moveRepository;
+        this.moveRepositoryLegacy = moveRepositoryLegacy;
         this.firebaseMoveRepository = firebaseMoveRepository;
         this.onlineGame = onlineGame;
         this.gamePref = gamePref;
@@ -52,7 +52,7 @@ public class CheckNewMove {
         numInRow = 1;
         this.playedPiece = playedPiece;
 
-        moveRepository.insertMove(new Move(tempCube, String.valueOf(cubePos), playedPiece));
+        moveRepositoryLegacy.insertMove(new Move(tempCube, String.valueOf(cubePos), playedPiece));
         if (onlineGame) firebaseMoveRepository.addMove(
                 new MoveResponse(tempCube, String.valueOf(cubePos), playedPiece, moveId, null));
 
@@ -65,7 +65,7 @@ public class CheckNewMove {
     }
 
     private void checkOtherCubes() {
-        List<MoveEntity> list = moveRepository.getAllMoves();
+        List<MoveEntity> list = moveRepositoryLegacy.getAllMoves();
         outer : for(int[] line: lines2check) {
             numInRow = 1;
             int i = 0;

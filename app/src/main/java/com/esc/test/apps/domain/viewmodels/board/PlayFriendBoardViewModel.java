@@ -10,6 +10,7 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.board.moves.MoveRepositoryLegacy;
 import com.esc.test.apps.common.helpers.move.CheckMoveFactory;
 import com.esc.test.apps.common.network.ConnectionLiveData;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
@@ -21,7 +22,6 @@ import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
-import com.esc.test.apps.board.moves.MoveRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     private final UserPreferences userPref;
     private final GamePreferences gamePref;
     private final Application app;
-    private final MoveRepository moveRepository;
+    private final MoveRepositoryLegacy moveRepositoryLegacy;
     private final GameRepository gameRepository;
     private final CheckMoveFactory moves;
     private final FbGameRepo fbGameRepo;
@@ -59,13 +59,13 @@ public class PlayFriendBoardViewModel extends ViewModel {
     public static final String TAG = "myT";
 
     @Inject
-    public PlayFriendBoardViewModel(MoveRepository moveRepository, GameRepository gameRepository,
+    public PlayFriendBoardViewModel(MoveRepositoryLegacy moveRepositoryLegacy, GameRepository gameRepository,
                                     Application app, FbGameRepo fbGameRepo,
                                     GamePreferences gamePref, FbMoveRepo fbMoveRepo,
                                     CheckMoveFactory moves, ConnectionLiveData network, UserPreferences userPref
     ) {
         this.app = app;
-        this.moveRepository = moveRepository;
+        this.moveRepositoryLegacy = moveRepositoryLegacy;
         this.gameRepository = gameRepository;
         this.fbGameRepo = fbGameRepo;
         this.gamePref = gamePref;
@@ -108,7 +108,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
 
     public void addExistingMoves(List<MoveResponse> previousMoves) {
         MoveResponse[] moves = new MoveResponse[previousMoves.size()];
-        moveRepository.insertMultipleMoves(previousMoves.toArray(moves));
+        moveRepositoryLegacy.insertMultipleMoves(previousMoves.toArray(moves));
     }
 
     public void uploadWinner() {
@@ -134,7 +134,7 @@ public class PlayFriendBoardViewModel extends ViewModel {
     public LiveData<MoveResponse> getMoveInfo(String uid, String gameSetId) {
         return Transformations.map(fbMoveRepo.getMoveInfo(uid, gameSetId), friendMove -> {
             if (friendMove != null)
-                moveCount = Integer.parseInt(friendMove.getMoveID()) + 1;
+                moveCount = Integer.parseInt(friendMove.getId()) + 1;
             return friendMove;
         });
     }

@@ -7,12 +7,12 @@ import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface GameMovesDao {
+interface MovesDao {
     @Insert
-    suspend fun insert(moveEntity: MoveEntity)
+    suspend fun insert(moveEntity: MoveEntity): Long
 
     @Insert
-    suspend fun insertMoves(vararg moveEntities: MoveEntity)
+    suspend fun insertMoves(vararg moveEntities: MoveEntity): Array<Long>
 
     @Query("DELETE FROM game_moves_table")
     suspend fun deleteGame()

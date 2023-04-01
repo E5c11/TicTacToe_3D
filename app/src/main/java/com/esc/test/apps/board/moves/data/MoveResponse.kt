@@ -1,53 +1,11 @@
-package com.esc.test.apps.board.moves.data;
+package com.esc.test.apps.board.moves.data
 
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.annotations.SerializedName
 
-public class MoveResponse {
-
-    @SerializedName("piece_played")
-    private String piecePlayed;
-    @SerializedName("coordinates")
-    private String coordinates;
-    @SerializedName("position")
-    private String position;
-    @SerializedName("move_id")
-    private String moveID;
-    @SerializedName("uid")
-    private String uid;
-
-    public MoveResponse(String coordinates, String position, String piecePlayed, String moveId, String uid) {
-        this.piecePlayed = piecePlayed;
-        this.coordinates = coordinates;
-        this.position = position;
-        this.moveID = moveId;
-        this.uid = uid;
-    }
-
-    public MoveResponse() {}
-
-    public String getPiecePlayed() {return piecePlayed;}
-
-    public String getCoordinates() {return coordinates;}
-
-    public String getPosition() {return position;}
-
-    public String getMoveID() {return moveID;}
-
-    public String getUid() { return uid; }
-
-    public void setPiecePlayed(String piecePlayed) {
-        this.piecePlayed = piecePlayed;
-    }
-
-    public void setCoordinates(String coordinates) {
-        this.coordinates = coordinates;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    public void setMoveID(String moveID) { this.moveID = moveID; }
-
-    public void setUid(String uid) { this.uid = uid; }
-}
+data class MoveResponse(
+    @SerializedName("piece_played") val piecePlayed: String,
+    @SerializedName("coordinates") val coordinates: String,
+    @SerializedName("position") val position: String,
+    @SerializedName("move_id") var id: String = "",
+    @SerializedName("uid") var userId: String = "",
+)

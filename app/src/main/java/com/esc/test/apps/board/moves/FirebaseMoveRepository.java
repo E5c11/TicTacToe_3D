@@ -62,10 +62,10 @@ public class FirebaseMoveRepository implements FbMoveRepo {
 
     @Override
     public void addMove(MoveResponse move) {
-        move.setUid(uid);
+        move.setUserId(uid);
         d = gamePref.getGamePreference().subscribeOn(Schedulers.io()).doOnNext( pref -> {
             ref.child(GAMES).child(pref.getSetId()).child(pref.getId()).child(MOVES)
-                    .child(String.valueOf(move.getMoveID()))
+                    .child(move.getId())
                     .setValue(move)
                     .addOnCompleteListener(task -> Log.d(TAG, "Move " + move.getPosition() + " uploaded"));
             dispose(d);
@@ -79,7 +79,7 @@ public class FirebaseMoveRepository implements FbMoveRepo {
         FirebaseQueryLiveData moveLiveData = new FirebaseQueryLiveData(moveRef);
         return Transformations.map(moveLiveData, snapshot -> {
            MoveResponse move = snapshot.getValue(MoveResponse.class);
-           if (move != null && !move.getUid().equals(uid)) return move;
+           if (move != null && !move.getUserId().equals(uid)) return move;
            else return null;
         });
     }

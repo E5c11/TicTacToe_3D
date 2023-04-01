@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface MoveDataSource {
     suspend fun add(move: Move): Flow<Resource<Move>>
+    suspend fun addAll(vararg move: Move): Flow<Resource<Int>>
     fun getMove(): Flow<Resource<Move>>
     suspend fun getAllMoves(): Flow<Resource<List<Move>>>
 }

@@ -13,6 +13,7 @@ import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.board.moves.MoveRepositoryLegacy;
 import com.esc.test.apps.common.adaptors.CubeAdapter;
 import com.esc.test.apps.common.helpers.move.CheckMoveFactory;
 import com.esc.test.apps.data.persistence.GamePreferences;
@@ -21,7 +22,6 @@ import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.models.pojos.MoveUpdate;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
-import com.esc.test.apps.board.moves.MoveRepository;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     private final Flowable<String> turn;
     private final GamePreferences gamePref;
     private final GameRepository gameRepository;
-    private final MoveRepository moveRepository;
+    private final MoveRepositoryLegacy moveRepositoryLegacy;
     private final CheckMoveFactory moves;
     private static final String TAG = "myT";
     private boolean isEnd = true;
@@ -61,13 +61,13 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     @Inject
     public PassPlayBoardViewModel(CheckMoveFactory moves, Application app, GamePreferences gamePref,
-                                  MoveRepository moveRepository, GameRepository gameRepository
+                                  MoveRepositoryLegacy moveRepositoryLegacy, GameRepository gameRepository
     ) {
         populateGridLists();
         setDrawables();
         this.moves = moves;
         this.gameRepository = gameRepository;
-        this.moveRepository = moveRepository;
+        this.moveRepositoryLegacy = moveRepositoryLegacy;
         this.gamePref = gamePref;
         turn = gameRepository.getTurn();
         this.app = app;
@@ -167,7 +167,7 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     public void downloadedMove(MoveResponse move) {
         moves.createMoves(String.valueOf(move.getCoordinates()),
-                String.valueOf(move.getPiecePlayed()), move.getMoveID(), false);
+                String.valueOf(move.getPiecePlayed()), move.getId(), false);
         if (String.valueOf(move.getPiecePlayed()).equals(app.getString(R.string.cross)))
             circleTurn();
         else crossTurn();
@@ -217,7 +217,7 @@ public class PassPlayBoardViewModel extends ViewModel {
     }
 
     public LiveData<String> getStarter() {
-        return Transformations.map(moveRepository.getFirstMove(), starterResult -> {
+        return Transformations.map(moveRepositoryLegacy.getFirstMove(), starterResult -> {
             if (starterResult != null) {
                 gamePref.updateStarterJava(starterResult);
                 return starterResult;
@@ -270,6 +270,6 @@ public class PassPlayBoardViewModel extends ViewModel {
 
     public void clearMoves() {
         isEnd = false;
-        moveRepository.deleteGameMoves();
+        moveRepositoryLegacy.deleteGameMoves();
     }
 }

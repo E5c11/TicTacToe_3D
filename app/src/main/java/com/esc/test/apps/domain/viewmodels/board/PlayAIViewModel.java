@@ -7,11 +7,11 @@ import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.ViewModel;
 
 import com.esc.test.apps.R;
+import com.esc.test.apps.board.moves.MoveRepositoryLegacy;
 import com.esc.test.apps.board.moves.data.MoveEntity;
 import com.esc.test.apps.common.helpers.move.BotMoveGenerator;
 import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.data.persistence.UserPreferences;
-import com.esc.test.apps.board.moves.MoveRepository;
 import com.esc.test.apps.domain.usecases.moves.MovesUsecase;
 
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class PlayAIViewModel extends ViewModel {
 
     private final Application app;
-    private final MoveRepository moveRepo;
+    private final MoveRepositoryLegacy moveRepo;
     public final LiveData<String> error;
     private final UserPreferences userPref;
     private final MovesUsecase movesUsecase;
@@ -33,7 +33,7 @@ public class PlayAIViewModel extends ViewModel {
     public static final String AI_GAME = "play_ai";
 
     @Inject
-    public PlayAIViewModel(Application app, MoveRepository moveRepo, BotMoveGenerator botMoveGenerator,
+    public PlayAIViewModel(Application app, MoveRepositoryLegacy moveRepo, BotMoveGenerator botMoveGenerator,
                            UserPreferences userPref, MovesUsecase movesUsecase
     ) {
         this.app = app;

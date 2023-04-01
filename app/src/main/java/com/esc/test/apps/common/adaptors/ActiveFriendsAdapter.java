@@ -64,7 +64,7 @@ public class ActiveFriendsAdapter extends
                 holder.bindStarter(context.getResources().getString(R.string.your_turn));
         } else if (user.getMove() != null) {
             d = userInfo.getUserPreference().subscribeOn(Schedulers.io()).doOnNext( prefs -> {
-                if (user.getMove().getUid().equals(prefs.getUid())) holder.bindStarter(context.getResources().getString(R.string.your_turn));
+                if (user.getMove().getUserId().equals(prefs.getUid())) holder.bindStarter(context.getResources().getString(R.string.your_turn));
                 else holder.bindStarter(context.getResources().getString(R.string.their_turn));
                 Utils.dispose(d);
             }).subscribe();

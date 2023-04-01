@@ -2,7 +2,7 @@ package com.esc.test.apps.common.helpers.move;
 
 import com.esc.test.apps.board.moves.MoveRepositoryLegacy;
 import com.esc.test.apps.common.utils.ExecutorFactory;
-import com.esc.test.apps.data.persistence.GamePreferences;
+import com.esc.test.apps.board.games.io.GamePreferences;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
 

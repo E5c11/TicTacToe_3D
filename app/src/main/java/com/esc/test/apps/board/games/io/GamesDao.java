@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.source.local;
+package com.esc.test.apps.board.games.io;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
@@ -7,7 +7,7 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import com.esc.test.apps.data.models.entities.Game;
+import com.esc.test.apps.board.games.data.Game;
 
 import io.reactivex.rxjava3.core.Flowable;
 

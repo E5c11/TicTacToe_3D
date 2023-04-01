@@ -7,9 +7,9 @@ import com.esc.test.apps.board.moves.LocalMoveDataSource
 import com.esc.test.apps.board.moves.MoveDataSource
 import com.esc.test.apps.board.moves.RemoteMoveDataSource
 import com.esc.test.apps.board.moves.io.MovesDao
-import com.esc.test.apps.data.persistence.GamePreferences
+import com.esc.test.apps.board.games.io.GamePreferences
 import com.esc.test.apps.data.persistence.UserPreferences
-import com.esc.test.apps.data.source.local.GamesDao
+import com.esc.test.apps.board.games.io.GamesDao
 import com.google.firebase.database.DatabaseReference
 import dagger.Module
 import dagger.Provides

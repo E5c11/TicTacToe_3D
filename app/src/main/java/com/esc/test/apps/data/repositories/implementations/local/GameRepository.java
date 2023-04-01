@@ -2,8 +2,9 @@ package com.esc.test.apps.data.repositories.implementations.local;
 
 import androidx.lifecycle.LiveData;
 
-import com.esc.test.apps.data.models.entities.Game;
-import com.esc.test.apps.data.source.local.GamesDao;
+import com.esc.test.apps.board.games.data.Game;
+import com.esc.test.apps.board.games.data.Type;
+import com.esc.test.apps.board.games.io.GamesDao;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 
 import java.util.List;
@@ -48,6 +49,8 @@ public class GameRepository {
     public void setStarter(String starter) {
         service.submit(() -> gamesDao.updateStarter(starter));
     }
+
+    public Type getType() { return Type.LOCAL; }
 
     public Flowable<String> getTurn() {
         return turn;

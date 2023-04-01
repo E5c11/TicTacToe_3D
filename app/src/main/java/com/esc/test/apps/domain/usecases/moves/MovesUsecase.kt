@@ -4,7 +4,7 @@ import android.util.Log
 import com.esc.test.apps.common.helpers.move.BotMoveGenerator
 import com.esc.test.apps.common.helpers.move.CheckMoveFactory
 import com.esc.test.apps.board.moves.data.MoveEntity
-import com.esc.test.apps.data.persistence.GamePreferences
+import com.esc.test.apps.board.games.io.GamePreferences
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import javax.inject.Inject

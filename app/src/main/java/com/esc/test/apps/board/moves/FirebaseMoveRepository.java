@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
-import com.esc.test.apps.data.persistence.GamePreferences;
+import com.esc.test.apps.board.games.io.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.repositories.FbMoveRepo;

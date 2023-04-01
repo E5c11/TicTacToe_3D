@@ -4,7 +4,7 @@ import android.app.Application;
 
 import com.esc.test.apps.common.helpers.move.BotMoveGenerator;
 import com.esc.test.apps.common.helpers.move.CheckMoveFactory;
-import com.esc.test.apps.data.persistence.GamePreferences;
+import com.esc.test.apps.board.games.io.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;

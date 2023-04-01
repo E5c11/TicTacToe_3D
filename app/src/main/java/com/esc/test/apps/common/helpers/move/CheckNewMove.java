@@ -4,7 +4,7 @@ import com.esc.test.apps.board.moves.data.Move;
 import com.esc.test.apps.common.utils.moves.MoveUtils;
 import com.esc.test.apps.board.moves.data.MoveEntity;
 import com.esc.test.apps.board.moves.data.MoveResponse;
-import com.esc.test.apps.data.persistence.GamePreferences;
+import com.esc.test.apps.board.games.io.GamePreferences;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
 import com.esc.test.apps.board.moves.MoveRepositoryLegacy;

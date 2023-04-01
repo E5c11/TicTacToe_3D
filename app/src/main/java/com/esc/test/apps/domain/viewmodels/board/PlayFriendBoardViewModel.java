@@ -17,7 +17,7 @@ import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.models.pojos.Turn;
-import com.esc.test.apps.data.persistence.GamePreferences;
+import com.esc.test.apps.board.games.io.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;

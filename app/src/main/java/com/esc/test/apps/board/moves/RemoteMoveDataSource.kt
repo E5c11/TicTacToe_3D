@@ -11,7 +11,7 @@ import com.esc.test.apps.common.utils.observeValue
 import com.esc.test.apps.board.moves.data.MoveResponse
 import com.esc.test.apps.board.moves.data.toMove
 import com.esc.test.apps.board.moves.data.toRemoteMove
-import com.esc.test.apps.data.persistence.GamePreferences
+import com.esc.test.apps.board.games.io.GamePreferences
 import com.esc.test.apps.data.persistence.UserPreferences
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.*

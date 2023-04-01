@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.persistence
+package com.esc.test.apps.board.games.io
 
 import android.content.Context
 import androidx.datastore.core.DataStore

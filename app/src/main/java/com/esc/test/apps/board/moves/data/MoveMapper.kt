@@ -11,7 +11,8 @@ fun Move.toMoveEntity() = MoveEntity(
     id = "",
     coordinates = this.coordinates,
     position = this.position,
-    piecePlayed = this.piecePlayed
+    piecePlayed = this.piecePlayed,
+    state = this.state
 )
 
 fun MoveResponse.toMove() = Move(

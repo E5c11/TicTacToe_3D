@@ -65,10 +65,9 @@ public class Board extends Fragment {
         numLayers = 0;
         layers.forEach(i -> {
             passPlayViewModel.setCubes(numLayers);
-            CubeAdapter cubeAdapter = new CubeAdapter(requireContext(), passPlayViewModel.getLayerIDs().get(numLayers));
+            CubeAdapter cubeAdapter = new CubeAdapter(requireContext(), passPlayViewModel.getLayerIDs().get(numLayers++));
             i.setAdapter(cubeAdapter);
             i.setOnItemClickListener((adapterView, view, j, l) -> changeSquareIcon(view));
-            numLayers++;
         });
         setObservers();
     }

@@ -8,17 +8,18 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.esc.test.apps.board.moves.data.Move;
 import com.esc.test.apps.data.models.pojos.CubeID;
 
 public class CubeAdapter extends BaseAdapter {
 
     private final Context context;
-    private final CubeID[] bPosition;
+    private final Move[] move;
     private final int screenWidth;
 
-    public CubeAdapter(Context context, CubeID[] bPosition) {
+    public CubeAdapter(Context context, Move[] move) {
         this.context = context;
-        this.bPosition = bPosition;
+        this.move = move;
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         screenWidth = metrics.widthPixels;
     }
@@ -30,19 +31,19 @@ public class CubeAdapter extends BaseAdapter {
             button = new ImageView(context);
             button.setLayoutParams(new GridView.LayoutParams(screenWidth/10, screenWidth/10));
             button.setBackground(null);
-            button.setTag(bPosition[i]);
+            button.setTag(move[i]);
         } else button = (ImageView) view;
         return button;
     }
 
     @Override
     public int getCount() {
-        return bPosition.length;
+        return move.length;
     }
 
     @Override
     public Object getItem(int i) {
-        return bPosition[i];
+        return move[i];
     }
 
     @Override

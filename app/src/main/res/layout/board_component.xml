@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/front_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Front"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/front"
+        app:layout_constraintStart_toStartOf="@id/front"
+        app:layout_constraintEnd_toEndOf="@id/front"/>
+    <GridView
+        android:id="@+id/front"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_background"
+        android:numColumns="4"
+        app:layout_constraintBottom_toTopOf="@id/centre_space"
+        app:layout_constraintEnd_toStartOf="@id/centre_space"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintDimensionRatio="1:1"/>
+
+    <TextView
+        android:id="@+id/front_middle_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Front middle"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/front_middle"
+        app:layout_constraintStart_toStartOf="@id/front_middle"
+        app:layout_constraintEnd_toEndOf="@id/front_middle"/>
+    <GridView
+        android:id="@+id/front_middle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_background"
+        android:numColumns="4"
+        app:layout_constraintBottom_toTopOf="@id/centre_space"
+        app:layout_constraintStart_toEndOf="@id/centre_space"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintDimensionRatio="1:1"/>
+
+    <View
+        android:id="@+id/centre_space"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.05"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/front"
+        app:layout_constraintBottom_toTopOf="@id/back_middle"/>
+
+    <TextView
+        android:id="@+id/back_middle_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Back middle"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/back_middle"
+        app:layout_constraintStart_toStartOf="@id/back_middle"
+        app:layout_constraintEnd_toEndOf="@id/back_middle"/>
+    <GridView
+        android:id="@+id/back_middle"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_background"
+        android:numColumns="4"
+        app:layout_constraintTop_toBottomOf="@id/centre_space"
+        app:layout_constraintEnd_toStartOf="@id/centre_space"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintDimensionRatio="1:1"/>
+
+    <TextView
+        android:id="@+id/back_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toTopOf="@id/back"
+        app:layout_constraintStart_toStartOf="@id/back"
+        app:layout_constraintEnd_toEndOf="@id/back"/>
+    <GridView
+        android:id="@+id/back"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/grid_background"
+        android:numColumns="4"
+        app:layout_constraintTop_toBottomOf="@id/centre_space"
+        app:layout_constraintStart_toEndOf="@id/centre_space"
+        app:layout_constraintWidth_percent="0.4"
+        app:layout_constraintDimensionRatio="1:1"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

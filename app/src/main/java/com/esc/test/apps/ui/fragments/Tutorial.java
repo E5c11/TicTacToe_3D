@@ -138,7 +138,7 @@ public class Tutorial extends Fragment {
         viewModel.pcMove.observe(getViewLifecycleOwner(), move -> {
             int[] turnPos = getGridAdapter(move);
             layers.get(turnPos[0]).getChildAt(turnPos[1])
-                    .setBackground(requireContext().getDrawable(R.drawable.baseline_circle_24));
+                    .setBackground(requireContext().getDrawable(R.drawable.black_circle));
             layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
         });
         viewModel.winner.observe(getViewLifecycleOwner(), line -> {
@@ -160,7 +160,7 @@ public class Tutorial extends Fragment {
         int[] turnPos = getGridAdapter(tag);
         layers.get(turnPos[0]).getChildAt(turnPos[1])
                 .setBackground(requireContext().getDrawable(
-                        animation ? R.color.colorTransBlue : R.drawable.baseline_close_24));
+                        animation ? R.color.colorTransBlue : R.drawable.black_cross));
         layers.get(turnPos[0]).getChildAt(turnPos[1]).setAnimation(animation ? getFlashAnimation() : null);
         if (!animation) layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
     }

@@ -80,10 +80,10 @@ public class TutorialViewModel extends AndroidViewModel {
     private void setDrawables() {
         turnColor = R.color.colorAccent;
         notTurnColor = R.color.colorPrimary;
-        circleDrawable = R.drawable.baseline_circle_24;
-        crossDrawable = R.drawable.baseline_close_24;
-        lastCircle = R.drawable.baseline_panorama_fish_eye_red;
-        lastCross = R.drawable.baseline_close_red;
+        circleDrawable = R.drawable.black_circle;
+        crossDrawable = R.drawable.black_cross;
+        lastCircle = R.drawable.red_circle;
+        lastCross = R.drawable.red_cross;
     }
 
     public void startPrompts() {

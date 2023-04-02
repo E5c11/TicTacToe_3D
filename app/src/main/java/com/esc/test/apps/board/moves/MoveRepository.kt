@@ -3,6 +3,7 @@ package com.esc.test.apps.board.moves
 import com.esc.test.apps.board.di.Local
 import com.esc.test.apps.board.di.Remote
 import com.esc.test.apps.board.moves.data.Move
+import com.esc.test.apps.board.moves.data.emptyMove
 import com.esc.test.apps.common.utils.Constants.FETCHING_DATA
 import com.esc.test.apps.common.utils.Constants.SAVING
 import com.esc.test.apps.common.utils.Resource
@@ -13,6 +14,8 @@ class MoveRepository @Inject constructor(
     @Remote private val remote: MoveDataSource,
     @Local private val local: MoveDataSource
 ) {
+
+    var previousMove: Move = emptyMove()
 
     fun insert(move: Move) = flow {
         emit(Resource.loading(SAVING))

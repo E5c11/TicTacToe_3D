@@ -1,9 +1,9 @@
 package com.esc.test.apps.domain.viewmodels;
 
-import static com.esc.test.apps.common.utils.moves.MoveUtils.getCubeIds;
-import static com.esc.test.apps.common.utils.tutorial.TutAction.END;
-import static com.esc.test.apps.common.utils.tutorial.TutAction.FLASH;
-import static com.esc.test.apps.common.utils.tutorial.TutAction.RESTART;
+import static com.esc.test.apps.common.helpers.move.MoveUtils.getCubeIds;
+import static com.esc.test.apps.tutorial.helpers.TutAction.END;
+import static com.esc.test.apps.tutorial.helpers.TutAction.FLASH;
+import static com.esc.test.apps.tutorial.helpers.TutAction.RESTART;
 
 import android.app.Application;
 import android.os.Handler;
@@ -18,7 +18,7 @@ import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.models.entities.PlayerInstruction;
 import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
-import com.esc.test.apps.common.utils.tutorial.TutorialInstructions;
+import com.esc.test.apps.tutorial.helpers.TutorialInstructions;
 
 import java.util.ArrayList;
 import java.util.List;

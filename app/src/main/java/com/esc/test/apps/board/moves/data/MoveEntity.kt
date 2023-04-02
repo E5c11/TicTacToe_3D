@@ -10,5 +10,6 @@ data class MoveEntity(
     @ColumnInfo(name = "id") val id: String,
     @ColumnInfo(name = "coordinates") var coordinates: String,
     @ColumnInfo(name = "position") var position: String,
-    @ColumnInfo(name = "piece_played") var piecePlayed: String
+    @ColumnInfo(name = "piece_played") var piecePlayed: String,
+    @ColumnInfo(name = "winner") var winner: String
 )

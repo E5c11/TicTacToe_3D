@@ -1,6 +1,6 @@
 package com.esc.test.apps.data.models.entities;
 
-import com.esc.test.apps.common.utils.tutorial.TutAction;
+import com.esc.test.apps.tutorial.helpers.TutAction;
 
 public class PlayerInstruction {
 

@@ -1,6 +1,6 @@
 package com.esc.test.apps.domain.viewmodels.board;
 
-import static com.esc.test.apps.common.utils.moves.MoveUtils.getCubeIds;
+import static com.esc.test.apps.common.helpers.move.MoveUtils.getCubeIds;
 import static com.esc.test.apps.common.utils.Utils.dispose;
 
 import android.app.Application;

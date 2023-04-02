@@ -1,4 +1,4 @@
-package com.esc.test.apps.common.utils.moves;
+package com.esc.test.apps.common.helpers.move;
 
 import static com.esc.test.apps.common.utils.Utils.addNonNull;
 

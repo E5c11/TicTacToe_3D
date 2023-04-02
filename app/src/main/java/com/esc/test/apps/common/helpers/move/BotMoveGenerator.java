@@ -5,8 +5,6 @@ import static com.esc.test.apps.common.utils.Utils.dispose;
 import androidx.lifecycle.LiveData;
 
 import com.esc.test.apps.common.utils.SingleLiveEvent;
-import com.esc.test.apps.common.utils.moves.Lines;
-import com.esc.test.apps.common.utils.moves.MoveUtils;
 import com.esc.test.apps.board.moves.data.MoveEntity;
 import com.esc.test.apps.data.persistence.UserPreferences;
 

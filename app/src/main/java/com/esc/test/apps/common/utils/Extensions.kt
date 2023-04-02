@@ -1,6 +1,9 @@
 package com.esc.test.apps.common.utils
 
-import com.esc.test.apps.common.network.io.FirebaseException
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -8,6 +11,7 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.regex.Pattern
 import kotlin.coroutines.resumeWithException
@@ -52,3 +56,13 @@ fun DatabaseReference.observeValue(): Flow<DataSnapshot?> =
         addValueEventListener(listener)
         awaitClose { removeEventListener(listener) }
     }
+
+fun <T> Flow<T>.collectIn(
+    owner: LifecycleOwner,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    action: suspend (value: T) -> Unit
+) = owner.lifecycleScope.launch {
+    owner.repeatOnLifecycle(minActiveState) {
+        collect { action(it) }
+    }
+}

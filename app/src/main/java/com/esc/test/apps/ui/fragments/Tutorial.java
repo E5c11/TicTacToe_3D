@@ -1,7 +1,7 @@
 package com.esc.test.apps.ui.fragments;
 
 import static com.esc.test.apps.common.adaptors.CubeAdapter.getGridAdapter;
-import static com.esc.test.apps.common.utils.tutorial.TutAction.FLASH;
+import static com.esc.test.apps.tutorial.helpers.TutAction.FLASH;
 import static com.esc.test.apps.common.utils.Utils.getFlashAnimation;
 import static com.esc.test.apps.domain.viewmodels.board.PlayAIViewModel.AI_GAME;
 

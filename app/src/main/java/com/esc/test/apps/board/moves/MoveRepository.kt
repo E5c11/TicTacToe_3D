@@ -14,7 +14,7 @@ class MoveRepository @Inject constructor(
     @Local private val local: MoveDataSource
 ) {
 
-    fun saveMove(move: Move) = flow {
+    fun insert(move: Move) = flow {
         emit(Resource.loading(SAVING))
         try {
             val moveWithId = local.add(move).first().data
@@ -25,7 +25,7 @@ class MoveRepository @Inject constructor(
         }
     }
 
-    private fun saveAll(vararg move: Move) = flow {
+    private fun insertAll(vararg move: Move) = flow {
         emit(Resource.loading(SAVING))
         try {
             val lastPlayMoveId = local.addAll(*move).first().data
@@ -35,20 +35,20 @@ class MoveRepository @Inject constructor(
         }
     }
 
-    suspend fun observeNewMove(flow: MutableStateFlow<Resource<Move>>) {
+    fun observeLatest() = flow {
         try {
             local.getMove().collect {
                 it.apply {
-                    flow.emit(Resource(status, data, error, loading))
+                    emit(Resource(status, data, error, loading))
                 }
             }
         } catch (e: Exception) {
-            flow.emit(Resource.error(e))
+            emit(Resource.error(e))
         }
     }
 
-    suspend fun observeRemoteMove() = remote.getMove().collect { resource ->
-        resource.data?.let { saveMove(it) }
+    suspend fun fetchRemote() = remote.getMove().collect { resource ->
+        resource.data?.let { insert(it) }
     }
 
     suspend fun getAllRemoteMoves() = flow {
@@ -56,7 +56,7 @@ class MoveRepository @Inject constructor(
         try {
             val moves: Resource<List<Move>> = remote.getAllMoves().first()
             moves.data?.let {
-                saveAll(*it.toTypedArray())
+                insertAll(*it.toTypedArray())
             }
             emit(Resource.success(moves.data))
         } catch (e: Exception) {
@@ -64,7 +64,7 @@ class MoveRepository @Inject constructor(
         }
     }
 
-    suspend fun getAllMoves(flow: MutableSharedFlow<Resource<List<Move>>>) {
+    suspend fun getAll(flow: MutableSharedFlow<Resource<List<Move>>>) {
         flow.emit(Resource.loading(FETCHING_DATA))
         try {
             local.getAllMoves().collect {

@@ -31,6 +31,7 @@
     <string name="accept">Accept</string>
     <string name="invite">Invite</string>
     <string name="cancel">Cancel</string>
+    <string name="okay">Okay</string>
     <string name="resume">Resume</string>
     <string name="start">Start</string>
     <string name="quit">Quit</string>
@@ -51,6 +52,15 @@
     <string name="winner">winner</string>
 
     <string name="confirm_quit">Quit game</string>
+
+    <string name="loading">Loading…</string>
+
+    <!--Error handling-->
+    <string name="general_error_title">Error</string>
+    <string name="general_error">Something went wrong, please try again!</string>
+
+    <string name="no_moves_error_title">No moves</string>
+    <string name="no_moves_error">Could not find any moves.</string>
 
     <!--Tutorial Instructions-->
     <string name="tutorial_welcome">Welcome to Tic Tac Toe in 3D</string>

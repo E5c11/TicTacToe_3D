@@ -3,13 +3,16 @@ package com.esc.test.apps.board.moves
 import com.esc.test.apps.board.moves.data.*
 import com.esc.test.apps.board.moves.io.MovesDao
 import com.esc.test.apps.common.utils.Resource
+import ik.emerge.ikhokha.helper.DispatcherProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class LocalMoveDataSource @Inject constructor(
-    private val dao: MovesDao
+    private val dao: MovesDao,
+    private val dispatcherProvider: DispatcherProvider
 ): MoveDataSource {
 
     override suspend fun add(move: Move): Flow<Resource<Move>> = flow {
@@ -35,7 +38,7 @@ class LocalMoveDataSource @Inject constructor(
             dao.getMove().map { Resource.success(it.toMove()) }
         } catch (e: Exception) {
             flow { emit(Resource.error(e)) }
-        }
+        }.flowOn(dispatcherProvider.io)
     }
 
     override suspend fun getAllMoves(): Flow<Resource<List<Move>>> = flow {

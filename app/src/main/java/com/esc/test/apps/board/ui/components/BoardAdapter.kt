@@ -9,10 +9,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.esc.test.apps.R
-import com.esc.test.apps.board.moves.data.Colour
 import com.esc.test.apps.board.moves.data.Move
-import com.esc.test.apps.board.moves.data.Piece
 import com.esc.test.apps.board.moves.data.State
+import com.esc.test.apps.board.moves.helpers.getTurnPiece
 import com.esc.test.apps.databinding.BoardSquareBinding
 
 class BoardAdapter(
@@ -53,7 +52,7 @@ class BoardAdapter(
             if (tag != null) tag = move
             when (move.state) {
                 State.WAITING -> this.setBackgroundColor(confirmColor)
-                State.CONFIRMED -> background = ContextCompat.getDrawable(context, getTurnPiece(move))
+                State.CONFIRMED -> background = ContextCompat.getDrawable(context, move.getTurnPiece())
                 State.WINNER -> background = ContextCompat.getDrawable(context, R.drawable.baseline_star_24)
                 State.NONE -> Unit
             }
@@ -67,17 +66,5 @@ class BoardAdapter(
         override fun areContentsTheSame(oldItem: Move, newItem: Move) =
             oldItem == newItem
     }
-
-    private fun getTurnPiece(move: Move): Int = when (move.piecePlayed) {
-        Piece.CROSS -> {
-            if (Colour.RED == move.color) R.drawable.red_cross
-            else R.drawable.black_cross
-        }
-        else -> {
-            if (Colour.RED == move.color) R.drawable.red_circle
-            else R.drawable.black_circle
-        }
-    }
-
 
 }

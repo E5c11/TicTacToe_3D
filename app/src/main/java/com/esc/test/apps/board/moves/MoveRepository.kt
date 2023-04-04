@@ -7,7 +7,8 @@ import com.esc.test.apps.board.moves.data.emptyMove
 import com.esc.test.apps.common.utils.Constants.FETCHING_DATA
 import com.esc.test.apps.common.utils.Constants.SAVING
 import com.esc.test.apps.common.utils.Resource
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class MoveRepository @Inject constructor(
@@ -28,7 +29,7 @@ class MoveRepository @Inject constructor(
         }
     }
 
-    private fun insertAll(vararg move: Move) = flow {
+    fun insertAll(vararg move: Move) = flow {
         emit(Resource.loading(SAVING))
         try {
             val lastPlayMoveId = local.addAll(*move).first().data
@@ -67,16 +68,16 @@ class MoveRepository @Inject constructor(
         }
     }
 
-    suspend fun getAll(flow: MutableSharedFlow<Resource<List<Move>>>) {
-        flow.emit(Resource.loading(FETCHING_DATA))
+    suspend fun getAll() = flow {
+        emit(Resource.loading(FETCHING_DATA))
         try {
             local.getAllMoves().collect {
                 it.apply {
-                    flow.emit(Resource(status, data, error, loading))
+                    emit(Resource(status, data, error, loading))
                 }
             }
         } catch (e: Exception) {
-            flow.emit(Resource.error(e))
+            emit(Resource.error(e))
         }
     }
 

@@ -27,6 +27,7 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
+import ik.emerge.ikhokha.helper.DispatcherProvider;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -52,25 +53,37 @@ public class AppModule {
 
     @Provides
     @Singleton
+    public DispatcherProvider provideDispatcherProvider() {
+        return new DispatcherProvider();
+    }
+
+    @Provides
+    @Singleton
     public Random provideRandomClass() { return new Random(); }
 
     @Provides
     @Singleton
-    public FbUserRepo provideFbUserRepo(FirebaseAuth firebaseAuth, DatabaseReference db,
-                                        Application app, UserPreferences userPref) {
+    public FbUserRepo provideFbUserRepo(
+            FirebaseAuth firebaseAuth, DatabaseReference db,
+            Application app, UserPreferences userPref
+    ) {
         return new FirebaseUserRepository(firebaseAuth, db, app, userPref);
     }
 
     @Provides
     @Singleton
-    public FbMoveRepo provideFbMoveRepo(DatabaseReference db, UserPreferences userPref, GamePreferences gamePref) {
+    public FbMoveRepo provideFbMoveRepo(
+            DatabaseReference db, UserPreferences userPref, GamePreferences gamePref
+    ) {
         return new FirebaseMoveRepository(db, userPref, gamePref);
     }
 
     @Provides
     @Singleton
-    public FbGameRepo provideFbGameRepo(Application app, Random rand, GamePreferences gamePref,
-                                        DatabaseReference db, FbMoveRepo fbMoveRepo, UserPreferences userPref) {
+    public FbGameRepo provideFbGameRepo(
+            Application app, Random rand, GamePreferences gamePref,
+            DatabaseReference db, FbMoveRepo fbMoveRepo, UserPreferences userPref
+    ) {
         return new FirebaseGameRepository(app, rand, gamePref, db, fbMoveRepo, userPref);
     }
 
@@ -80,8 +93,11 @@ public class AppModule {
     }
 
     @Provides
-    public MovesUsecase provideMovesUsecase(CheckMoveFactory checkMoveFactory,
-                                            BotMoveGenerator botMoveGenerator, GamePreferences gamePref) {
+    public MovesUsecase provideMovesUsecase(
+            CheckMoveFactory checkMoveFactory,
+            BotMoveGenerator botMoveGenerator,
+            GamePreferences gamePref
+    ) {
         return new MovesUsecase(checkMoveFactory, botMoveGenerator, gamePref);
     }
 }

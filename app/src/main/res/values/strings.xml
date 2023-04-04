@@ -124,6 +124,10 @@
     <string name="opponent">opponent</string>
     <string name="in_progress">in progress</string>
     <string name="game_won">\ has won the game</string>
+    <string name="game_title">O\'s and X\'s</string>
+    <string name="x">X</string>
+    <string name="o">O</string>
+    <string name="zero_score">0</string>
 
     <string name="quit_error">Quit failed, try again.</string>
 

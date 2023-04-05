@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Title-->
+    <string name="register">Register</string>
+    <string name="login">Login</string>
+    <string name="register_welcome">Welcome to Tic Tac Toe \n in 3D</string>
+
+    <!--Clickable-->
+    <string name="login_instead">Login</string>
+    <string name="new_user_register">New user? Create account</string>
+    <string name="forgot_password">Forgot password?</string>
+
+    <!--Hints-->
+    <string name="phone_asterisk">Phone number </string>
+    <string name="email_asterisk">Email address </string>
+    <string name="display_name_asterisk">Display name </string>
+    <string name="password_asterisk">Password </string>
+    <string name="passcon_asterisk">Confirm Password </string>
+
+    <!--Registration-->
+    <string name="register_message">Please enter an Email and Password to register your an account to play with friends</string>
+    <string name="login_message">Please enter your Email and Password to login in</string>
+
+    <!--Errors-->
+    <string name="email_exists">This email already exists</string>
+    <string name="email_does_not_exists">This email does not exist</string>
+    <string name="display_name_exists">Display name exists</string>
+
+</resources>

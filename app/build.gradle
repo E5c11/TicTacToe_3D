@@ -28,6 +28,19 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
         sourceCompatibility = JavaVersion.VERSION_11
     }
+    sourceSets {
+        main {
+            res.srcDirs = [
+                    'src/main/res/board',
+                    'src/main/res/profile',
+                    'src/main/res/friends',
+                    'src/main/res/home',
+                    'src/main/res/login',
+                    'src/main/res/tutorial',
+                    'src/main/res'
+            ]
+        }
+    }
 }
 
 dependencies {

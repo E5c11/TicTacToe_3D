@@ -145,7 +145,7 @@ public class Tutorial extends Fragment {
             for (String move : line) {
                 int[] turnPos = getGridAdapter(move);
                 layers.get(turnPos[0]).getChildAt(turnPos[1])
-                        .setBackground(requireContext().getDrawable(R.drawable.baseline_star_24));
+                        .setBackground(requireContext().getDrawable(R.drawable.win_star));
                 layers.get(turnPos[0]).getChildAt(turnPos[1]).setOnClickListener(null);
             }
         });

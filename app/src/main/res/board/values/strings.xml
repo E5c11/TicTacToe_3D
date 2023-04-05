@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--Game buttons-->
+    <string name="new_set">New set</string>
+    <string name="new_game">New game</string>
+    <string name="confirm_quit">Quit game</string>
+    <string name="level">Level</string>
+    <string name="quit">Quit</string>
+
+    <!--Levels-->
+    <string name="easy">Easy</string>
+    <string name="normal">Normal</string>
+    <string name="difficult">Difficult</string>
+
+    <!--Score-->
+    <string name="x">X</string>
+    <string name="o">O</string>
+    <string name="zero_score">0</string>
+
+    <!--AI-->
+    <string name="no_moves_error_title">No moves</string>
+    <string name="no_moves_error">Could not find any moves.</string>
+
+    <!--Title-->
+    <string name="game_won">\ has won the game</string>
+    <string name="game_title">O\'s and X\'s</string>
+    <string name="your_turn">Your turn</string>
+    <string name="their_turn">Their turn</string>
+    <string name="cross">cross</string>
+    <string name="circle">circle</string>
+    <string name="winner">winner</string>
+
+    <!--Dialogs-->
+    <string name="quit_msg">Are you sure you want to quit the game</string>
+    <string name="quit_error">Quit failed, try again.</string>
+    <string name="delete_msg">Are you sure you want to delete your account</string>
+</resources>

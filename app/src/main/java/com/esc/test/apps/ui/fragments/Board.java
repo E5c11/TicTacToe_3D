@@ -212,7 +212,7 @@ public class Board extends Fragment {
             if (winnerLine != null) {
                 for (int[] winPos : winnerLine)
                     layers.get(winPos[0]).getChildAt(winPos[1])
-                            .setBackground(requireContext().getDrawable(R.drawable.baseline_star_24));
+                            .setBackground(requireContext().getDrawable(R.drawable.win_star));
                 passPlayViewModel.clearWinnerLine();
             }
         });

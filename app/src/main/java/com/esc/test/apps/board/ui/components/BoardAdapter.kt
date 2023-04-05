@@ -53,7 +53,7 @@ class BoardAdapter(
             when (move.state) {
                 State.WAITING -> this.setBackgroundColor(confirmColor)
                 State.CONFIRMED -> background = ContextCompat.getDrawable(context, move.getTurnPiece())
-                State.WINNER -> background = ContextCompat.getDrawable(context, R.drawable.baseline_star_24)
+                State.WINNER -> background = ContextCompat.getDrawable(context, R.drawable.win_star)
                 State.NONE -> Unit
             }
         }

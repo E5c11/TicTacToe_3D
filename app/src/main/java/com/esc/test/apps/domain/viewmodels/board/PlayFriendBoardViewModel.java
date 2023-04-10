@@ -16,12 +16,12 @@ import com.esc.test.apps.common.network.ConnectionLiveData;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.board.moves.data.MoveResponse;
-import com.esc.test.apps.data.models.pojos.Turn;
+import com.esc.test.apps.board.games.data.Turn;
 import com.esc.test.apps.board.games.io.GamePreferences;
 import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
-import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
+import com.esc.test.apps.board.games.GameRepository;
 
 import java.util.List;
 import java.util.Map;

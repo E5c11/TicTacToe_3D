@@ -12,6 +12,9 @@ import com.esc.test.apps.board.moves.data.MoveResponse
 import com.esc.test.apps.board.moves.data.toMove
 import com.esc.test.apps.board.moves.data.toRemoteMove
 import com.esc.test.apps.board.games.io.GamePreferences
+import com.esc.test.apps.board.moves.helpers.MoveFlow
+import com.esc.test.apps.board.moves.helpers.MovesFlow
+import com.esc.test.apps.common.helpers.RoomFlow
 import com.esc.test.apps.data.persistence.UserPreferences
 import com.google.firebase.database.DatabaseReference
 import kotlinx.coroutines.flow.*
@@ -26,7 +29,7 @@ class RemoteMoveDataSource @Inject constructor(
     private val gamePrefs: GamePreferences
 ): MoveDataSource {
 
-    override suspend fun add(move: Move): Flow<Resource<Move>> = flow {
+    override suspend fun add(move: Move): MoveFlow = flow {
         emit(Resource.loading(SAVING))
         try {
             val uid = userPrefs.userPref.first().uid
@@ -41,11 +44,11 @@ class RemoteMoveDataSource @Inject constructor(
         }
     }
 
-    override suspend fun addAll(vararg move: Move): Flow<Resource<Int>> {
+    override suspend fun addAll(vararg move: Move): RoomFlow {
         TODO("Not yet implemented")
     }
 
-    override fun getMove(): Flow<Resource<Move>> = callbackFlow {
+    override fun getMove(): MoveFlow = callbackFlow {
         trySend(Resource.loading(FETCHING_DATA))
         try {
             val uid = userPrefs.userPref.first().uid
@@ -63,7 +66,7 @@ class RemoteMoveDataSource @Inject constructor(
         }
     }
 
-    override suspend fun getAllMoves(): Flow<Resource<List<Move>>> = callbackFlow {
+    override suspend fun getAllMoves(): MovesFlow = callbackFlow {
         trySend(Resource.loading(FETCHING_DATA))
         try {
             val list = mutableListOf<Move>()

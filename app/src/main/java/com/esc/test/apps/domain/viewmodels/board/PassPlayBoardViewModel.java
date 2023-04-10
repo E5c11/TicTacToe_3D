@@ -21,7 +21,7 @@ import com.esc.test.apps.board.games.data.Game;
 import com.esc.test.apps.data.models.pojos.CubeID;
 import com.esc.test.apps.board.moves.data.MoveResponse;
 import com.esc.test.apps.data.models.pojos.MoveUpdate;
-import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
+import com.esc.test.apps.board.games.GameRepository;
 import com.esc.test.apps.common.utils.SingleLiveEvent;
 
 import java.util.ArrayList;

@@ -9,7 +9,7 @@ import com.esc.test.apps.data.persistence.UserPreferences;
 import com.esc.test.apps.data.repositories.FbGameRepo;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
 import com.esc.test.apps.data.repositories.FbUserRepo;
-import com.esc.test.apps.data.repositories.implementations.remote.FirebaseGameRepository;
+import com.esc.test.apps.board.games.FirebaseGameRepository;
 import com.esc.test.apps.board.moves.FirebaseMoveRepository;
 import com.esc.test.apps.data.repositories.implementations.remote.FirebaseUserRepository;
 import com.esc.test.apps.common.network.ConnectionLiveData;

@@ -3,10 +3,8 @@ package com.esc.test.apps.board.games.data;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "games_table")
 public class Game {
 
-    @PrimaryKey(autoGenerate = true)
     private int id;
 
     private String winner = "in progress";

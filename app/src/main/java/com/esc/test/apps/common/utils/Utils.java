@@ -71,7 +71,7 @@ public class Utils {
             return one + "_" + two;
         else if(Integer.compare(getLookUpIndex(Character.toUpperCase(one.charAt(index))), getLookUpIndex(Character.toUpperCase(two.charAt(index)))) == 1)
             return two + "_" + one;
-        else return getGameSetUID(one, two, index++);
+        else return getGameSetUID(one, two, ++index);
     }
 
     private static int getLookUpIndex(char firstChar) { return lookUp.indexOf(firstChar); }

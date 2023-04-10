@@ -4,7 +4,7 @@ import com.esc.test.apps.board.moves.MoveRepositoryLegacy;
 import com.esc.test.apps.common.utils.ExecutorFactory;
 import com.esc.test.apps.board.games.io.GamePreferences;
 import com.esc.test.apps.data.repositories.FbMoveRepo;
-import com.esc.test.apps.data.repositories.implementations.local.GameRepository;
+import com.esc.test.apps.board.games.GameRepository;
 
 import java.util.concurrent.ExecutorService;
 

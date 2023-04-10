@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.repositories.implementations.remote;
+package com.esc.test.apps.board.games;
 
 import static com.esc.test.apps.common.utils.DatabaseConstants.ACTIVE_GAME;
 import static com.esc.test.apps.common.utils.DatabaseConstants.DISPLAY_NAME;

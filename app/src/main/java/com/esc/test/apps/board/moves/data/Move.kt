@@ -10,8 +10,8 @@ data class Move(
     var state: State = State.NONE
 )
 
-enum class State { NONE, WAITING, CONFIRMED, WINNER }
+enum class State(val value: Int) { NONE(0), WAITING(1), CONFIRMED(2), WINNER(3) }
 
-enum class Piece { CROSS, CIRCLE }
+enum class Piece(val value: Int) { CROSS(1), CIRCLE(0) }
 
-enum class Colour { RED, BLACK }
+enum class Colour(val value: Int) { RED(0), BLACK(1) }

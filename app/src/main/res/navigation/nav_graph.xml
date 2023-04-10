@@ -22,6 +22,9 @@
         <action
             android:id="@+id/action_home_to_tutorial"
             app:destination="@id/tutorial" />
+        <action
+            android:id="@+id/action_home_to_boardFragment"
+            app:destination="@id/boardFragment" />
     </fragment>
     <fragment
         android:id="@+id/boardActivity"
@@ -112,5 +115,14 @@
         <action
             android:id="@+id/action_tutorial_to_boardActivity"
             app:destination="@id/boardActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/boardFragment"
+        android:name="com.esc.test.apps.board.ui.BoardFragment"
+        android:label="game_fragment"
+        tools:layout="@layout/game_fragment" >
+        <action
+            android:id="@+id/action_boardFragment_to_alertDialogFragment"
+            app:destination="@id/alertDialogFragment" />
     </fragment>
 </navigation>

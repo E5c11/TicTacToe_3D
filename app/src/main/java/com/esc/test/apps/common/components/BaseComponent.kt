@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
  * It makes sure we don't clutter an android Fragment/Activity with ui logic.
  */
 @Suppress("LeakingThis")
-abstract class BaseComponent<T>(val owner: LifecycleOwner) : DefaultLifecycleObserver {
+abstract class BaseComponent<T>(owner: LifecycleOwner) : DefaultLifecycleObserver {
 
     init {
         owner.lifecycle.addObserver(this)

@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.models.pojos;
+package com.esc.test.apps.board.games.data;
 
 public class Turn {
 

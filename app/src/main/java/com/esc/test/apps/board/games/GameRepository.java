@@ -1,4 +1,4 @@
-package com.esc.test.apps.data.repositories.implementations.local;
+package com.esc.test.apps.board.games;
 
 import androidx.lifecycle.LiveData;
 

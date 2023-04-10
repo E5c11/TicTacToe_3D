@@ -10,9 +10,9 @@ interface Repository {
      * @param data is the generic object that will [insert]ed, [delete]d or [update]ed
      * likewise it is the object that will be returned by [fetch] and [fetchAll]
      */
-    fun <T> insert(vararg data: T): Flow<Resource<Long>>
-    fun <T> delete(data: T, vararg conditions: T): Flow<Resource<Long>>
-    fun <T> update(data: T? = null, vararg conditions: T): Flow<Resource<Long>>
+    fun <T> insert(vararg data: T): Flow<Resource<Int>>
+    fun <T> delete(data: T, vararg conditions: T): Flow<Resource<Int>>
+    fun <T> update(data: T? = null, vararg conditions: T): Flow<Resource<Int>>
     fun <T> fetch(data: T? = null, vararg conditions: T): Flow<Resource<T>>
     fun <T> fetchAll(): Flow<Resource<List<T>>>
 
@@ -23,6 +23,6 @@ interface Repository {
      * Once [fetchRemote] and [fetchAllRemote] has returned a value
      * It should update the local source
      */
-    fun <T> fetchRemote(data: T): Flow<Resource<Long>>
+    fun <T> fetchRemote(data: T): Flow<Resource<Int>>
     fun <T> fetchAllRemote(): Flow<Resource<String>>
 }
